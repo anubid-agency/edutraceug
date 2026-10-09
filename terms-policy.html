@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en-UG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3570BC">
+<title>Terms &amp; Policies | Edutrace</title>
+<meta name="description" content="Edutrace Terms of Service and Privacy Policy. How we handle school, teacher, student and parent data.">
+<meta name="robots" content="index, follow">
+
+<link rel="icon" type="image/jpeg" href="/edutrace-favicon.jpg">
+<link rel="apple-touch-icon" href="/edutrace-favicon.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --primary:#3570BC;
+  --primary-dark:#2A5A96;
+  --primary-light:#EBF1FB;
+  --green:#008E34;--yellow:#F9B515;--red:#D7040A;
+  --dark:#1A1A1A;--muted:#555;--border:#E5E5E5;--light:#F8F9FA;--white:#fff;
+  --bg:#F2F4F7;
+  --font:'Plus Jakarta Sans',Arial,sans-serif;
+  --header-h:64px;
+  --shadow:0 1px 3px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:var(--font);color:var(--dark);line-height:1.7;background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+ul,ol{list-style:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:1rem;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#ccc}
+
+/* noscript */
+.noscript-bar{background:var(--red);color:#fff;padding:12px 16px;text-align:center;font-weight:600;font-size:.9rem}
+
+/* cookie */
+.cookie{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;z-index:9999;display:none;border-top:3px solid var(--primary)}
+.cookie.show{display:block}
+.cookie-in{width:96%;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.cookie-text{flex:1;font-size:.78rem;min-width:200px}
+.cookie-text a{color:var(--yellow);text-decoration:underline;font-weight:600}
+.cookie-btn{padding:8px 14px;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.cookie-btn.allow{background:var(--green);color:#fff}
+.cookie-btn.reject{border:2px solid #fff;color:#fff}
+
+/* header */
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);z-index:100;display:flex;align-items:center}
+.header::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.header-inner{display:flex;align-items:center;gap:14px;width:100%;padding:0 20px;max-width:1200px;margin:0 auto}
+.h-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.h-brand img{height:38px;width:auto;border:2px solid var(--primary);background:#fff;object-fit:contain}
+.h-brand .h-name{font-weight:800;font-size:1rem;line-height:1.15}
+.h-spacer{flex:1}
+.h-back{font-size:.85rem;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:2px solid var(--border)}
+.h-back:hover{border-color:var(--primary);color:var(--primary)}
+
+/* layout */
+.layout{padding-top:var(--header-h);min-height:100vh;padding-bottom:60px}
+.main{max-width:1200px;margin:0 auto;padding:32px 20px;display:grid;grid-template-columns:280px 1fr;gap:40px;align-items:start}
+
+/* hero */
+.hero{grid-column:1/-1;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:36px 32px;position:relative;overflow:hidden;margin-bottom:8px}
+.hero::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.hero .label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--primary);margin-bottom:10px;display:block}
+.hero h1{font-size:2rem;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:12px}
+.hero p{color:var(--muted);font-size:1rem;max-width:640px;margin-bottom:14px}
+.hero .meta{font-size:.82rem;color:var(--muted);font-weight:600;display:flex;gap:16px;flex-wrap:wrap}
+.hero .meta span{display:inline-flex;align-items:center;gap:6px}
+.hero .meta i{color:var(--primary)}
+
+/* toc */
+.toc{position:sticky;top:calc(var(--header-h) + 20px);background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);max-height:calc(100vh - var(--header-h) - 40px);overflow-y:auto}
+.toc-head{padding:16px 18px;border-bottom:1px solid var(--border);font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.toc-head i{color:var(--primary)}
+.toc-nav{padding:10px 0}
+.toc-group{padding:8px 0}
+.toc-group-title{padding:8px 18px 4px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--primary)}
+.toc-nav a{display:block;padding:8px 18px;font-size:.85rem;font-weight:600;color:var(--muted);border-left:3px solid transparent;transition:all .15s;line-height:1.35}
+.toc-nav a:hover{background:var(--light);color:var(--primary);border-left-color:var(--primary)}
+
+/* content */
+.content{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:40px 44px;min-width:0}
+.content > section{margin-bottom:48px}
+.content > section:last-child{margin-bottom:0}
+
+.section-head{margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--border)}
+.section-head .num{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--primary);margin-bottom:6px;display:block}
+.section-head h2{font-size:1.5rem;font-weight:800;letter-spacing:-.3px;line-height:1.2;color:var(--dark)}
+.section-head .sub{color:var(--muted);font-size:.92rem;margin-top:8px}
+
+.content h3{font-size:1.05rem;font-weight:800;margin:28px 0 10px;letter-spacing:-.2px;color:var(--dark);display:flex;align-items:center;gap:10px}
+.content h3:first-of-type{margin-top:0}
+.content h3 .h-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--primary-light);color:var(--primary);font-size:.75rem;font-weight:800;flex-shrink:0}
+.content h4{font-size:.95rem;font-weight:800;margin:20px 0 8px;color:var(--dark)}
+.content p{margin-bottom:12px;font-size:.94rem;color:#333}
+.content p strong{font-weight:800;color:var(--dark)}
+.content ul,.content ol{margin:8px 0 14px 0;padding-left:0}
+.content ul li,.content ol li{position:relative;padding-left:26px;margin-bottom:8px;font-size:.94rem;color:#333;line-height:1.65}
+.content ul li::before{content:"";position:absolute;left:6px;top:11px;width:6px;height:6px;background:var(--primary)}
+.content ol{counter-reset:item}
+.content ol li{counter-increment:item;padding-left:34px}
+.content ol li::before{content:counter(item);position:absolute;left:0;top:1px;font-size:.78rem;font-weight:800;color:var(--primary);width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:1px solid var(--primary)}
+.content a.inline{color:var(--primary);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.content a.inline:hover{color:var(--primary-dark)}
+
+/* callout boxes */
+.callout{padding:18px 20px;margin:16px 0;border-left:5px solid var(--primary);background:var(--primary-light);font-size:.92rem;line-height:1.65}
+.callout.warn{border-left-color:var(--yellow);background:#FFF9E6;color:#6B5100}
+.callout.important{border-left-color:var(--red);background:#FEF2F2;color:#7A1616}
+.callout.success{border-left-color:var(--green);background:#F0FDF4;color:#006B29}
+.callout strong{font-weight:800;display:block;margin-bottom:4px}
+.callout p{margin-bottom:6px;color:inherit}
+.callout p:last-child{margin-bottom:0}
+
+/* definition rows */
+.def-table{margin:16px 0;border:1px solid var(--border)}
+.def-row{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--border)}
+.def-row:last-child{border-bottom:none}
+.def-row .key{padding:14px 16px;background:var(--light);font-weight:800;font-size:.85rem;color:var(--dark);border-right:1px solid var(--border)}
+.def-row .val{padding:14px 16px;font-size:.88rem;color:#333;line-height:1.6}
+
+/* contact card */
+.contact-card{background:var(--light);border:1px solid var(--border);padding:24px;margin-top:20px}
+.contact-card h4{font-size:.95rem;font-weight:800;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;font-size:.8rem;color:var(--muted)}
+.contact-card .contact-row{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:.92rem;border-bottom:1px solid var(--border)}
+.contact-card .contact-row:last-child{border-bottom:none;padding-bottom:0}
+.contact-card .contact-row i{color:var(--primary);width:20px;text-align:center;flex-shrink:0}
+.contact-card .contact-row a{color:var(--primary);font-weight:700}
+.contact-card .contact-row a:hover{text-decoration:underline}
+
+/* footer */
+footer{background:#111;color:#bbb;padding-top:48px;border-top:5px solid var(--primary);margin-top:40px}
+.fgrid{max-width:1200px;margin:0 auto;padding:0 20px 32px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px}
+.fgrid img{width:42px;height:42px;margin-bottom:12px}
+.fgrid h4{color:#fff;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+.fgrid .name{color:#fff;font-size:1.1rem;font-weight:800;margin-bottom:8px;text-transform:none;letter-spacing:0}
+.fgrid p,.fgrid a{font-size:.86rem}
+.fgrid li{margin-bottom:10px}
+.fgrid a:hover{color:var(--yellow)}
+.fgrid .c{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;font-size:.86rem}
+.fgrid .c i{color:var(--yellow);margin-top:4px}
+.fbot{background:#080808;padding:20px 0;text-align:center;font-size:.8rem}
+.fbot .credit{color:#777;font-size:.76rem;margin-top:4px}
+.fbot .credit a{color:#999;text-decoration:underline}
+
+/* responsive */
+@media(max-width:980px){
+  .main{grid-template-columns:1fr;gap:24px}
+  .toc{position:static;max-height:none;order:2}
+  .content{padding:28px 24px;order:1}
+  .hero{order:0}
+}
+@media(max-width:640px){
+  .main{padding:20px 16px}
+  .hero{padding:26px 22px}
+  .hero h1{font-size:1.5rem}
+  .content{padding:22px 18px}
+  .section-head h2{font-size:1.2rem}
+  .content h3{font-size:.98rem}
+  .def-row{grid-template-columns:1fr}
+  .def-row .key{border-right:none;border-bottom:1px solid var(--border)}
+  .fgrid{grid-template-columns:1fr;gap:28px}
+  .h-back span{display:none}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<noscript><div class="noscript-bar"><i class="fa-solid fa-triangle-exclamation"></i> JavaScript is required for the cookie preference controls on this page.</div></noscript>
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-in">
+    <div class="cookie-text">We use cookies to keep you signed in and improve your experience. Read our <a href="#cookies">Cookie section</a> below.</div>
+    <button class="cookie-btn reject" id="cookieReject" type="button">Reject</button>
+    <button class="cookie-btn allow" id="cookieAllow" type="button">Allow</button>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="h-brand">
+      <img src="/logo.png" alt="Edutrace logo">
+      <span class="h-name">Edutrace</span>
+
+  </div>
+</header>
+
+<div class="layout">
+  <div class="main">
+
+    <!-- hero -->
+    <div class="hero">
+      <span class="label">Legal</span>
+      <h1>Terms of Service &amp; Privacy Policy</h1>
+      <p>This document explains how Edutrace is used by schools, teachers, students and parents — and how we handle the data entrusted to us.</p>
+      <div class="meta">
+        <span><i class="fa-solid fa-calendar-check"></i> Effective: October 2026</span>
+        <span><i class="fa-solid fa-clock-rotate-left"></i> Last updated: October 2026</span>
+        <span><i class="fa-solid fa-location-dot"></i> Governing law: Republic of Uganda</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="Table of contents">
+      <div class="toc-head"><i class="fa-solid fa-list"></i> Contents</div>
+      <div class="toc-nav">
+        <div class="toc-group">
+          <div class="toc-group-title">Terms of Service</div>
+          <a href="#intro">1. Introduction</a>
+          <a href="#eligibility">2. Eligibility &amp; accounts</a>
+          <a href="#roles">3. Roles &amp; responsibilities</a>
+          <a href="#acceptable">4. Acceptable use</a>
+          <a href="#subscriptions">5. Subscriptions &amp; fees</a>
+          <a href="#ip">6. Intellectual property</a>
+          <a href="#termination">7. Suspension &amp; termination</a>
+          <a href="#disclaimers">8. Disclaimers</a>
+          <a href="#liability">9. Limitation of liability</a>
+          <a href="#changes-terms">10. Changes to these terms</a>
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-title">Privacy Policy</div>
+          <a href="#privacy-intro">11. Overview</a>
+          <a href="#data-collect">12. What we collect</a>
+          <a href="#data-use">13. How we use data</a>
+          <a href="#data-access">14. Who can see what</a>
+          <a href="#processors">15. Third-party processors</a>
+          <a href="#cookies">16. Cookies</a>
+          <a href="#retention">17. Retention</a>
+          <a href="#children">18. Children &amp; parental consent</a>
+          <a href="#security">19. Security</a>
+          <a href="#rights">20. Your rights</a>
+          <a href="#transfers">21. International transfers</a>
+          <a href="#changes-privacy">22. Changes to this policy</a>
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-title">Support</div>
+          <a href="#contact">23. Contact us</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- content -->
+    <div class="content">
+
+      <!-- =================== TERMS OF SERVICE =================== -->
+
+      <section id="intro">
+        <div class="section-head">
+          <span class="num">Part 1 — Terms of Service</span>
+          <h2>1. Introduction</h2>
+        </div>
+        <p>Edutrace ("we", "us", "our") provides a school management platform for Ugandan secondary schools. The platform helps schools manage student rosters, teacher assignments, assessment marks, term reports and report cards.</p>
+        <p>By accessing or using Edutrace — including the website at <strong>edutraceug.com</strong>, any school subdomain under <strong>*.edutraceug.com</strong>, and any related services — you agree to these Terms of Service. If you do not agree, please do not use the platform.</p>
+        <div class="callout">
+          <strong>Who operates Edutrace</strong>
+          <p>Edutrace is operated from Uganda and serves Ugandan schools. All content, services and data processing described in this document are provided under the laws of the Republic of Uganda.</p>
+        </div>
+      </section>
+
+      <section id="eligibility">
+        <div class="section-head">
+          <span class="num">Section 2</span>
+          <h2>Eligibility &amp; Accounts</h2>
+        </div>
+
+        <h3><span class="h-num">2.1</span> Who can use Edutrace</h3>
+        <p>Edutrace accounts are created for four user roles:</p>
+        <ul>
+          <li><strong>School administrators</strong> — account created by Edutrace staff on behalf of a school.</li>
+          <li><strong>Teachers</strong> — self-register using details that match the school's official roster.</li>
+          <li><strong>Students</strong> — self-register using details that match the school's official roster.</li>
+          <li><strong>Parents or guardians</strong> — self-register by matching their child's record, and must give explicit consent.</li>
+        </ul>
+
+        <h3><span class="h-num">2.2</span> Accurate information</h3>
+        <p>You agree that the information you provide during registration is accurate and current. If your details change, you must update them through your school's office or contact us at <a class="inline" href="mailto:support@edutraceug.com">support@edutraceug.com</a>.</p>
+
+        <h3><span class="h-num">2.3</span> Account security</h3>
+        <p>You are responsible for keeping your password confidential. Do not share your account. If you suspect your account has been accessed by someone else, reset your password immediately and notify your school administrator.</p>
+
+        <h3><span class="h-num">2.4</span> Age</h3>
+        <p>Students under the age of 18 may only use Edutrace through an account created by their school or with the consent of a parent or guardian (see <a class="inline" href="#children">Section 18 — Children &amp; parental consent</a>).</p>
+      </section>
+
+      <section id="roles">
+        <div class="section-head">
+          <span class="num">Section 3</span>
+          <h2>Roles &amp; Responsibilities</h2>
+        </div>
+
+        <h3><span class="h-num">3.1</span> School administrators</h3>
+        <p>School administrators are responsible for:</p>
+        <ul>
+          <li>Maintaining accurate student and teacher rosters.</li>
+          <li>Assigning teachers to classes, streams and subjects.</li>
+          <li>Setting scoring modes, assessment types and grading rules.</li>
+          <li>Handling parent consent records and any report holds.</li>
+          <li>Deciding who within the school can access which data.</li>
+        </ul>
+        <p>The school administrator acts as the school's data controller for the information held under their school's account. Edutrace acts as a data processor on the school's behalf.</p>
+
+        <h3><span class="h-num">3.2</span> Teachers</h3>
+        <p>Teachers agree to:</p>
+        <ul>
+          <li>Only enter marks for classes and subjects they have been assigned.</li>
+          <li>Enter accurate marks and use the correct status flags (Absent, Excused, N/A) where appropriate.</li>
+          <li>Not share access to their account with anyone else.</li>
+          <li>Respect the confidentiality of student data.</li>
+        </ul>
+
+        <h3><span class="h-num">3.3</span> Students</h3>
+        <p>Students agree to view only their own results and not attempt to access another student's records. Sharing a report card publicly is the student's own decision and responsibility.</p>
+
+        <h3><span class="h-num">3.4</span> Parents &amp; guardians</h3>
+        <p>Parents agree to:</p>
+        <ul>
+          <li>Only access the results of the child linked to their account.</li>
+          <li>Provide truthful information when linking their account.</li>
+          <li>Give informed consent for their child's data to be processed.</li>
+        </ul>
+      </section>
+
+      <section id="acceptable">
+        <div class="section-head">
+          <span class="num">Section 4</span>
+          <h2>Acceptable Use</h2>
+        </div>
+        <p>You agree not to:</p>
+        <ul>
+          <li>Attempt to gain unauthorised access to any part of Edutrace, including other schools' data.</li>
+          <li>Upload files containing viruses, malware or anything harmful.</li>
+          <li>Use Edutrace to send spam, bulk unsolicited messages or communications unrelated to school business.</li>
+          <li>Reverse-engineer, scrape, or attempt to extract data from the platform beyond normal use.</li>
+          <li>Impersonate another user, teacher, student or school.</li>
+          <li>Use Edutrace for any activity that is illegal under Ugandan law.</li>
+        </ul>
+        <div class="callout warn">
+          <strong>Uploading files</strong>
+          <p>All uploaded files pass through a virus scan. Uploads that fail the scan are rejected and logged. Attempting to upload harmful files may result in account suspension.</p>
+        </div>
+      </section>
+
+      <section id="subscriptions">
+        <div class="section-head">
+          <span class="num">Section 5</span>
+          <h2>Subscriptions &amp; Fees</h2>
+        </div>
+        <p>Edutrace is offered to schools on a subscription basis. Some features — such as bulk emails to parents, students or teachers — depend on an active school subscription.</p>
+
+        <h3><span class="h-num">5.1</span> Active subscription requirement</h3>
+        <p>Certain features require the school's subscription to be active. If a school's subscription lapses, those features will be disabled until the subscription is renewed. Existing data will not be deleted because of a lapse.</p>
+
+        <h3><span class="h-num">5.2</span> Pricing and payment</h3>
+        <p>Subscription pricing and payment arrangements are agreed directly between the school and Edutrace. Inquiries: <a class="inline" href="mailto:schools@edutraceug.com">schools@edutraceug.com</a>.</p>
+
+        <h3><span class="h-num">5.3</span> Communication limits</h3>
+        <p>Bulk email features may be subject to daily limits and per-message credit allowances to protect email deliverability. Limits are shown in the admin dashboard.</p>
+      </section>
+
+      <section id="ip">
+        <div class="section-head">
+          <span class="num">Section 6</span>
+          <h2>Intellectual Property</h2>
+        </div>
+
+        <h3><span class="h-num">6.1</span> Our property</h3>
+        <p>The Edutrace platform — including its source code, design, structure, brand, logos and documentation — is owned by Edutrace and its licensors. You may not copy, redistribute or resell any part of the platform without written permission.</p>
+
+        <h3><span class="h-num">6.2</span> Your data</h3>
+        <p>All data you upload or enter — rosters, marks, comments, notes, school information — belongs to the school. You retain ownership. We only process it to provide the service.</p>
+
+        <h3><span class="h-num">6.3</span> Illustrations</h3>
+        <p>Illustrations used on our public website are provided by <a class="inline" href="https://storyset.com" target="_blank" rel="noopener">Storyset</a> under their licensing terms.</p>
+      </section>
+
+      <section id="termination">
+        <div class="section-head">
+          <span class="num">Section 7</span>
+          <h2>Suspension &amp; Termination</h2>
+        </div>
+
+        <h3><span class="h-num">7.1</span> By us</h3>
+        <p>We may suspend or terminate an account if:</p>
+        <ul>
+          <li>These terms are breached.</li>
+          <li>The account is used for illegal activity.</li>
+          <li>We are required to do so by law or by a valid request from a competent authority.</li>
+        </ul>
+
+        <h3><span class="h-num">7.2</span> By the school</h3>
+        <p>A school administrator may request closure of their school's account at any time by emailing <a class="inline" href="mailto:schools@edutraceug.com">schools@edutraceug.com</a>. We will export the school's data on request and delete it in line with <a class="inline" href="#retention">Section 17</a>.</p>
+
+        <h3><span class="h-num">7.3</span> By you</h3>
+        <p>You may stop using Edutrace at any time. Individual accounts (teacher, student, parent) can be removed on request by contacting your school administrator or us directly.</p>
+      </section>
+
+      <section id="disclaimers">
+        <div class="section-head">
+          <span class="num">Section 8</span>
+          <h2>Disclaimers</h2>
+        </div>
+        <p>Edutrace is provided on an "as available" basis. While we work to keep the platform running reliably, we do not guarantee that the service will be uninterrupted, error-free, or free from data loss caused by factors outside our control.</p>
+        <ul>
+          <li>We do not verify the accuracy of any marks, roster entries or reports entered by a school.</li>
+          <li>We do not produce the school's results — we provide the tool that the school uses to record and compute them.</li>
+          <li>We do not guarantee that a report card generated by the platform will be accepted by any specific exam board or ministry — the school is responsible for compliance with NCDC and other regulations.</li>
+        </ul>
+      </section>
+
+      <section id="liability">
+        <div class="section-head">
+          <span class="num">Section 9</span>
+          <h2>Limitation of Liability</h2>
+        </div>
+        <p>To the maximum extent permitted by Ugandan law, Edutrace is not liable for:</p>
+        <ul>
+          <li>Any indirect, incidental or consequential damages arising from use of the platform.</li>
+          <li>Loss of data caused by the school failing to maintain backups.</li>
+          <li>Losses arising from decisions made by the school, a teacher, a student or a parent based on information shown by Edutrace.</li>
+          <li>Service interruptions caused by third-party providers (hosting, email, database, virus scanning) or by internet connectivity issues.</li>
+        </ul>
+        <p>Nothing in these terms excludes liability that cannot be excluded under the laws of the Republic of Uganda.</p>
+      </section>
+
+      <section id="changes-terms">
+        <div class="section-head">
+          <span class="num">Section 10</span>
+          <h2>Changes to These Terms</h2>
+        </div>
+        <p>We may update these terms as the platform evolves. Material changes will be announced on the platform and reflected in the "Last updated" date at the top of this document. Continued use of Edutrace after changes are posted means you accept the updated terms.</p>
+      </section>
+
+      <!-- =================== PRIVACY POLICY =================== -->
+
+      <section id="privacy-intro">
+        <div class="section-head">
+          <span class="num">Part 2 — Privacy Policy</span>
+          <h2>11. Overview</h2>
+        </div>
+        <p>This Privacy Policy explains what personal data Edutrace collects, why we collect it, who can see it, and how we protect it. It is written to comply with the <strong>Uganda Data Protection and Privacy Act, 2019</strong> and its accompanying regulations.</p>
+        <div class="callout success">
+          <strong>Our commitment</strong>
+          <p>We collect only what is needed to run a school management platform. We do not sell personal data. We do not use student data for advertising. Parents and students can see exactly what the platform holds about them.</p>
+        </div>
+      </section>
+
+      <section id="data-collect">
+        <div class="section-head">
+          <span class="num">Section 12</span>
+          <h2>What We Collect</h2>
+        </div>
+
+        <h3><span class="h-num">12.1</span> Account information</h3>
+        <div class="def-table">
+          <div class="def-row"><div class="key">Email address</div><div class="val">Used to identify you at login.</div></div>
+          <div class="def-row"><div class="key">Password</div><div class="val">Stored in hashed form by Firebase Authentication. We never see your plain password.</div></div>
+          <div class="def-row"><div class="key">Role</div><div class="val">One of: school administrator, teacher, student, parent.</div></div>
+          <div class="def-row"><div class="key">School affiliation</div><div class="val">Which school you belong to.</div></div>
+          <div class="def-row"><div class="key">Linked record</div><div class="val">For students and parents — which roster record your account is connected to.</div></div>
+        </div>
+
+        <h3><span class="h-num">12.2</span> Student data (uploaded by the school)</h3>
+        <p>Schools upload their official rosters, which may include:</p>
+        <ul>
+          <li>Student name, class, stream, gender.</li>
+          <li>Subjects taken.</li>
+          <li>Optional notes ("extraDetail") used by the school to disambiguate similar records.</li>
+        </ul>
+
+        <h3><span class="h-num">12.3</span> Teacher data (uploaded by the school)</h3>
+        <ul>
+          <li>Name, gender, subjects taught, classes assigned.</li>
+          <li>Permissions assigned by the school administrator.</li>
+        </ul>
+
+        <h3><span class="h-num">12.4</span> Assessment data</h3>
+        <ul>
+          <li>Marks entered by teachers (scores or CBC levels).</li>
+          <li>Status flags: entered, absent, excused, not applicable.</li>
+          <li>Assessment type, maximum score, and the term they belong to.</li>
+        </ul>
+
+        <h3><span class="h-num">12.5</span> Report data</h3>
+        <ul>
+          <li>Class teacher comments and conduct notes written by teachers.</li>
+          <li>Report holds (e.g. fee arrears) placed by the school administrator.</li>
+        </ul>
+
+        <h3><span class="h-num">12.6</span> Parent consent records</h3>
+        <ul>
+          <li>The fact that a parent has consented, and when.</li>
+          <li>The relationship (mother, father, guardian).</li>
+        </ul>
+
+        <h3><span class="h-num">12.7</span> Technical and usage data</h3>
+        <ul>
+          <li>Basic connection metadata (IP address, browser, device type) collected automatically by our hosting provider for security and diagnostics.</li>
+          <li>Cookies set by our platform (see <a class="inline" href="#cookies">Section 16</a>).</li>
+          <li>Audit log entries showing who changed what, when.</li>
+        </ul>
+      </section>
+
+      <section id="data-use">
+        <div class="section-head">
+          <span class="num">Section 13</span>
+          <h2>How We Use Data</h2>
+        </div>
+        <p>We use personal data only to:</p>
+        <ol>
+          <li>Authenticate users and secure accounts.</li>
+          <li>Show students, teachers, parents and administrators the data they are entitled to see.</li>
+          <li>Compute term reports and generate report cards.</li>
+          <li>Send transactional emails (welcome messages, password resets).</li>
+          <li>Send school-authorised bulk communications (only when the school has an active subscription).</li>
+          <li>Detect and prevent fraud, abuse and security threats.</li>
+          <li>Comply with legal obligations.</li>
+        </ol>
+        <p>We do <strong>not</strong>:</p>
+        <ul>
+          <li>Sell personal data to third parties.</li>
+          <li>Use student or parent data for advertising.</li>
+          <li>Share data with other schools.</li>
+          <li>Use personal data to train external AI models.</li>
+        </ul>
+      </section>
+
+      <section id="data-access">
+        <div class="section-head">
+          <span class="num">Section 14</span>
+          <h2>Who Can See What</h2>
+        </div>
+        <p>Access to data is strictly controlled by role and by school. A user from one school cannot see another school's data — this is enforced by the platform.</p>
+
+        <div class="def-table">
+          <div class="def-row"><div class="key">School administrator</div><div class="val">Full access to their own school's rosters, teachers, marks, reports, notes, holds and audit log.</div></div>
+          <div class="def-row"><div class="key">Teacher</div><div class="val">Only the classes and subjects they are assigned. Class teachers see additional reports for their own class.</div></div>
+          <div class="def-row"><div class="key">Student</div><div class="val">Only their own marks, term reports and report card.</div></div>
+          <div class="def-row"><div class="key">Parent</div><div class="val">Only their linked child's marks, term report and report card — and only after giving consent.</div></div>
+          <div class="def-row"><div class="key">Edutrace staff</div><div class="val">Limited technical access, only when necessary to operate, maintain or support the platform. All access is logged.</div></div>
+        </div>
+
+        <h3><span class="h-num">14.1</span> Report holds</h3>
+        <p>A school may place a hold on a student's report (for example, for unpaid fees). When a hold is active, the student and parent cannot view the report until the school removes the hold. The reason for the hold is shown to the student or parent.</p>
+      </section>
+
+      <section id="processors">
+        <div class="section-head">
+          <span class="num">Section 15</span>
+          <h2>Third-Party Processors</h2>
+        </div>
+        <p>We use the following trusted service providers to operate Edutrace. Each acts as a data processor under our instruction and under their own terms.</p>
+
+        <div class="def-table">
+          <div class="def-row">
+            <div class="key">Google Firebase</div>
+            <div class="val">Authentication and database (Firestore). Stores account credentials and the school data. Google operates under its own data processing terms.</div>
+          </div>
+          <div class="def-row">
+            <div class="key">Cloudflare</div>
+            <div class="val">Hosting and edge network for all platform traffic. Cloudflare processes requests to serve pages and prevent abuse.</div>
+          </div>
+          <div class="def-row">
+            <div class="key">Cloudmersive</div>
+            <div class="val">Virus scanning for uploaded spreadsheets. Files are transmitted to Cloudmersive's virus-scan API and are not retained by Cloudmersive after the scan.</div>
+          </div>
+          <div class="def-row">
+            <div class="key">Cloudinary</div>
+            <div class="val">Storage of archived roster uploads and school images (logos, hero photos). Files are stored on our Cloudinary account and are only accessible to authorised users.</div>
+          </div>
+          <div class="def-row">
+            <div class="key">Resend</div>
+            <div class="val">Transactional and bulk email delivery. Resend receives the recipient email address and message contents in order to deliver the email.</div>
+          </div>
+          <div class="def-row">
+            <div class="key">Storyset</div>
+            <div class="val">Illustrations used on our public website. No personal data is shared with Storyset.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="cookies">
+        <div class="section-head">
+          <span class="num">Section 16</span>
+          <h2>Cookies</h2>
+        </div>
+        <p>We use a small number of cookies and browser storage keys. You can accept or reject non-essential cookies at any time using the banner at the bottom of the page.</p>
+
+        <div class="def-table">
+          <div class="def-row"><div class="key">Essential</div><div class="val">Session cookies and Firebase authentication tokens. Required to keep you signed in. These cannot be disabled.</div></div>
+          <div class="def-row"><div class="key">Preferences</div><div class="val">A local storage key that remembers your cookie choice. Stored on your device only.</div></div>
+          <div class="def-row"><div class="key">Analytics</div><div class="val">Loaded only if you choose "Allow". Used to understand how the platform is used so we can improve it.</div></div>
+        </div>
+
+        <p>You can clear cookies at any time from your browser settings. Clearing essential cookies will sign you out.</p>
+      </section>
+
+      <section id="retention">
+        <div class="section-head">
+          <span class="num">Section 17</span>
+          <h2>Data Retention</h2>
+        </div>
+        <ul>
+          <li><strong>Active account data</strong> is retained for as long as the school's account is active.</li>
+          <li><strong>Marks and reports</strong> are retained for as long as the school chooses to keep them.</li>
+          <li><strong>Audit logs</strong> are retained for at least 12 months to support security and dispute resolution.</li>
+          <li><strong>Uploaded files archived on Cloudinary</strong> are retained indefinitely unless the school requests removal.</li>
+          <li><strong>Deleted accounts</strong> — when a school closes its account or requests deletion, we remove the school's data within 30 days, except where we are required to retain it by law.</li>
+        </ul>
+      </section>
+
+      <section id="children">
+        <div class="section-head">
+          <span class="num">Section 18</span>
+          <h2>Children &amp; Parental Consent</h2>
+        </div>
+        <p>Most users of Edutrace are students under 18. We take the protection of their data seriously.</p>
+
+        <h3><span class="h-num">18.1</span> Parental consent</h3>
+        <p>When a parent registers on Edutrace, they must explicitly consent to their child's data being processed. Consent is recorded on the platform and can be withdrawn by contacting the school or us.</p>
+
+        <h3><span class="h-num">18.2</span> School responsibility</h3>
+        <p>Schools are responsible for informing parents that student data will be processed on Edutrace and for obtaining any consent required by Ugandan law before uploading that data.</p>
+
+        <h3><span class="h-num">18.3</span> Withdrawing consent</h3>
+        <p>A parent may withdraw consent at any time by contacting their school or emailing <a class="inline" href="mailto:support@edutraceug.com">support@edutraceug.com</a>. Withdrawing consent may prevent the parent from accessing their child's results on Edutrace. It does not automatically remove the child's record — the school controls that data.</p>
+      </section>
+
+      <section id="security">
+        <div class="section-head">
+          <span class="num">Section 19</span>
+          <h2>Security</h2>
+        </div>
+        <p>We protect data using:</p>
+        <ul>
+          <li>Encrypted HTTPS connections for every request.</li>
+          <li>Firebase Authentication with industry-standard password hashing.</li>
+          <li>Role-based access controls enforced at the API level, not just in the interface.</li>
+          <li>Virus scanning of every uploaded file.</li>
+          <li>An audit log recording significant changes to marks, rosters and settings.</li>
+          <li>Secure, server-side handling of service-account credentials — never exposed to the browser.</li>
+        </ul>
+        <p>No system is perfectly secure. If you notice a security issue, please report it to <a class="inline" href="mailto:support@edutraceug.com">support@edutraceug.com</a>.</p>
+      </section>
+
+      <section id="rights">
+        <div class="section-head">
+          <span class="num">Section 20</span>
+          <h2>Your Rights</h2>
+        </div>
+        <p>Under the Uganda Data Protection and Privacy Act, 2019, you have the right to:</p>
+        <ol>
+          <li><strong>Access</strong> the personal data we hold about you.</li>
+          <li><strong>Correct</strong> any inaccurate data.</li>
+          <li><strong>Request deletion</strong> of data we no longer have a legitimate reason to keep.</li>
+          <li><strong>Object</strong> to processing in certain circumstances.</li>
+          <li><strong>Withdraw consent</strong> where processing is based on consent.</li>
+          <li><strong>Complain</strong> to the Personal Data Protection Office of Uganda if you believe your rights have been violated.</li>
+        </ol>
+        <p>To exercise any of these rights, contact <a class="inline" href="mailto:support@edutraceug.com">support@edutraceug.com</a>. Where the data belongs to a school, we may need to refer your request to the school as the data controller.</p>
+      </section>
+
+      <section id="transfers">
+        <div class="section-head">
+          <span class="num">Section 21</span>
+          <h2>International Transfers</h2>
+        </div>
+        <p>Some of our service providers (Google, Cloudflare, Cloudinary, Cloudmersive, Resend) operate servers outside Uganda. When data is transferred internationally, we rely on the providers' standard contractual protections and security measures. We do not transfer personal data to jurisdictions that do not provide adequate protection without such safeguards in place.</p>
+      </section>
+
+      <section id="changes-privacy">
+        <div class="section-head">
+          <span class="num">Section 22</span>
+          <h2>Changes to This Policy</h2>
+        </div>
+        <p>We may update this Privacy Policy to reflect changes in the platform, our practices, or legal requirements. Material changes will be posted on the platform and the "Last updated" date at the top of this page will change. We encourage you to review this page periodically.</p>
+      </section>
+
+      <!-- =================== CONTACT =================== -->
+
+      <section id="contact">
+        <div class="section-head">
+          <span class="num">Section 23</span>
+          <h2>Contact Us</h2>
+        </div>
+        <p>For any question about these terms, our privacy practices, or your data, please reach out:</p>
+
+        <div class="contact-card">
+          <h4>Edutrace — Uganda</h4>
+          <div class="contact-row">
+            <i class="fa-solid fa-headset"></i>
+            <span>General support:&nbsp;<a href="mailto:support@edutraceug.com">support@edutraceug.com</a></span>
+          </div>
+          <div class="contact-row">
+            <i class="fa-solid fa-school"></i>
+            <span>Schools and onboarding:&nbsp;<a href="mailto:schools@edutraceug.com">schools@edutraceug.com</a></span>
+          </div>
+          <div class="contact-row">
+            <i class="fa-solid fa-phone"></i>
+            <span>Phone:&nbsp;<a href="tel:+256742228675">+256 742 228 675</a></span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="fgrid">
+    <div>
+      <img src="/logo.png" alt="Edutrace logo">
+      <h4 class="name">Edutrace</h4>
+      <p>School management system built for Ugandan secondary schools. Marks, report cards, rosters and parent access in one place.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="register.html">Register your school</a></li>
+        <li><a href="terms-policy.html">Terms &amp; Policies</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a class="c" href="tel:+256742228675"><i class="fa-solid fa-phone"></i> +256 742 228 675</a>
+      <a class="c" href="mailto:schools@edutraceug.com"><i class="fa-solid fa-envelope"></i> schools@edutraceug.com</a>
+      <a class="c" href="mailto:support@edutraceug.com"><i class="fa-solid fa-headset"></i> support@edutraceug.com</a>
+    </div>
+  </div>
+  <div class="fbot">
+    <div>
+      <p>&copy; <span id="year"></span> Edutrace. All rights reserved.</p>
+      <p class="credit">Illustrations by <a href="https://storyset.com" target="_blank" rel="noopener">Storyset</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* year */
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* cookie consent */
+(function () {
+  var KEY = "edutrace_cookie_consent_v1";
+  var b = document.getElementById("cookie");
+  var v = null;
+  try { v = localStorage.getItem(KEY); } catch (e) {}
+  if (!v) b.classList.add("show");
+  function set(x) {
+    try { localStorage.setItem(KEY, x); } catch (e) {}
+    b.classList.remove("show");
+    if (x === "allow" && typeof window.__edutraceAnalytics === "function") window.__edutraceAnalytics();
+  }
+  document.getElementById("cookieAllow").addEventListener("click", function () { set("allow"); });
+  document.getElementById("cookieReject").addEventListener("click", function () { set("reject"); });
+})();
+</script>
+
+</body>
+</html>

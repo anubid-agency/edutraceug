@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en-UG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3570BC">
+<title>My Results | Edutrace</title>
+<meta name="description" content="View your term results and report card.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/jpeg" href="/edutrace-favicon.jpg">
+<link rel="apple-touch-icon" href="/edutrace-favicon.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --primary:#3570BC;
+  --primary-dark:#2A5A96;
+  --primary-light:#EBF1FB;
+  --green:#008E34;--yellow:#F9B515;--red:#D7040A;
+  --dark:#1A1A1A;--muted:#555;--border:#E5E5E5;--light:#F8F9FA;--white:#fff;
+  --bg:#F2F4F7;
+  --font:'Plus Jakarta Sans',Arial,sans-serif;
+  --header-h:64px;
+  --shadow:0 1px 3px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--dark);line-height:1.5;background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:1rem;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#ccc}
+
+/* noscript */
+.noscript-bar{background:var(--red);color:#fff;padding:12px 16px;text-align:center;font-weight:600;font-size:.9rem}
+
+/* cookie */
+.cookie{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;z-index:9999;display:none;border-top:3px solid var(--primary)}
+.cookie.show{display:block}
+.cookie-in{width:96%;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.cookie-text{flex:1;font-size:.78rem;min-width:200px}
+.cookie-text a{color:var(--yellow);text-decoration:underline;font-weight:600}
+.cookie-btn{padding:8px 14px;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.cookie-btn.allow{background:var(--green);color:#fff}
+.cookie-btn.reject{border:2px solid #fff;color:#fff}
+
+/* header */
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);z-index:100;display:flex;align-items:center}
+.header::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.header-inner{display:flex;align-items:center;gap:14px;width:100%;padding:0 20px;max-width:1200px;margin:0 auto}
+.h-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.h-brand img{height:38px;width:auto;border:2px solid var(--primary);background:#fff;object-fit:contain}
+.h-brand .h-name{font-weight:800;font-size:1rem;line-height:1.15;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-spacer{flex:1}
+.h-user{display:flex;align-items:center;gap:10px;font-size:.85rem}
+.h-user .avatar{width:36px;height:36px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+.h-user .uname{font-weight:700;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-user .role-badge{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:#E6F4EC;color:var(--green);padding:3px 8px}
+.h-logout{padding:8px 14px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:2px solid var(--border);display:inline-flex;align-items:center;gap:6px}
+.h-logout:hover{border-color:var(--red);color:var(--red)}
+
+/* layout */
+.layout{padding-top:var(--header-h);padding-bottom:60px;min-height:100vh}
+.main{max-width:960px;margin:0 auto;padding:24px 20px}
+
+/* page head */
+.page-head{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.page-head h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:4px}
+.page-head p{color:var(--muted);font-size:.9rem}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.head-actions select{padding:9px 12px;border:2px solid var(--border);font-size:.85rem;font-weight:600;background:#fff}
+
+/* cards */
+.card{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-head h2{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:10px}
+.card-head h2 i{color:var(--primary)}
+.card-body{padding:20px}
+
+/* overview */
+.overview{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px;position:relative;overflow:hidden}
+.overview::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.overview-inner{padding:28px 24px;display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center}
+.ov-left h2{font-size:.85rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}
+.ov-left .greeting{font-size:1.5rem;font-weight:800;line-height:1.15;letter-spacing:-.4px;margin-bottom:6px}
+.ov-left .term-name{font-size:.9rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ov-left .term-name i{color:var(--primary)}
+.ov-right{text-align:right}
+.ov-right .big{font-size:3rem;font-weight:800;line-height:1;letter-spacing:-1.5px}
+.ov-right .big-label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px}
+.ov-right .grade{display:inline-block;margin-top:10px;padding:5px 14px;font-weight:800;font-size:.9rem;color:#fff}
+
+/* grade pills */
+.grade-pill{display:inline-block;padding:4px 12px;font-weight:800;font-size:.85rem;min-width:36px;text-align:center}
+.grade-A,.grade-3,.grade-good{background:#E6F4EC;color:var(--green)}
+.grade-B,.grade-2,.grade-blue{background:#EBF1FB;color:var(--primary)}
+.grade-C,.grade-medium{background:#FFF9E6;color:#8A6800}
+.grade-D,.grade-E,.grade-low{background:#FFF3E8;color:#C25A00}
+.grade-F,.grade-1,.grade-fail{background:#FEF2F2;color:var(--red)}
+
+/* stats row */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:16px 18px;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--primary)}
+.stat.green::before{background:var(--green)}
+.stat.yellow::before{background:var(--yellow)}
+.stat.red::before{background:var(--red)}
+.stat .label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.stat .value{font-size:1.15rem;font-weight:800;line-height:1.2}
+.stat .sub{font-size:.75rem;color:var(--muted);margin-top:2px}
+
+/* subjects */
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.subj{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;flex-direction:column}
+.subj-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--light)}
+.subj-head h3{font-size:.95rem;font-weight:800;line-height:1.2}
+.subj-body{padding:8px 16px 12px;flex:1}
+.subj-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.subj-row:last-child{border-bottom:none}
+.subj-row .type{color:var(--muted);font-weight:600}
+.subj-row .val{font-weight:700;font-variant-numeric:tabular-nums}
+.subj-row .val small{color:var(--muted);font-weight:500;font-size:.75rem;margin-left:2px}
+.subj-row.absent .val,.subj-row.excused .val,.subj-row.na .val,.subj-row.missing .val{color:var(--muted);font-style:italic;font-weight:500}
+.subj-foot{padding:10px 16px;border-top:1px solid var(--border);background:#fafbfc;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.subj-foot .lbl{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.subj-foot .tot{font-size:1.1rem;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* comment */
+.comment-box{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 24px;margin-bottom:20px;border-left:5px solid var(--primary)}
+.comment-box h3{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.comment-box h3 i{color:var(--primary)}
+.comment-box .conduct{font-size:.9rem;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.comment-box .conduct b{font-weight:800}
+.comment-box p{font-size:.92rem;line-height:1.7;color:var(--dark);white-space:pre-wrap}
+
+/* hold notice */
+.hold-card{background:#FEF2F2;border:1px solid var(--red);border-left:5px solid var(--red);padding:24px;margin-bottom:20px}
+.hold-card h2{font-size:1.15rem;font-weight:800;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.hold-card p{color:#7a1616;font-size:.92rem;margin-bottom:6px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.4px;border:2px solid transparent;transition:all .15s;white-space:nowrap}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);border-color:var(--primary-dark)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover:not(:disabled){background:#007029}
+.btn-outline{background:#fff;color:var(--dark);border-color:var(--border)}
+.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn .spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite}
+.btn.loading .spinner{display:inline-block}
+.btn.loading .btn-label{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(10,15,25,.65);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.modal-back.show{display:flex}
+.modal{background:#fff;width:100%;max-width:900px;margin:16px auto;border:1px solid var(--border);box-shadow:var(--shadow-lg)}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:2}
+.modal-head h2{font-size:1rem;font-weight:800}
+.modal-head .close{padding:8px 12px;font-size:1.05rem;color:var(--muted);border:2px solid var(--border)}
+.modal-head .close:hover{color:var(--red);border-color:var(--red)}
+.modal-body{padding:0}
+.report-frame{width:100%;height:80vh;border:none;background:#fff;display:block}
+
+/* skeleton */
+.skel{background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sh 1.4s infinite;height:16px;margin-bottom:12px}
+.skel.h24{height:24px}
+.skel.h40{height:40px}
+.skel.h60{height:60px}
+.skel.h100{height:100px}
+.skel.w50{width:50%}
+.skel.w30{width:30%}
+.skel.w70{width:70%}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* toast */
+.toast-wrap{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:calc(100vw - 40px)}
+.toast{background:#fff;border-left:4px solid var(--primary);padding:14px 18px;box-shadow:var(--shadow-lg);min-width:260px;max-width:380px;pointer-events:auto;animation:slideIn .25s ease-out;font-size:.88rem;font-weight:600;display:flex;align-items:flex-start;gap:10px}
+.toast i{flex-shrink:0;margin-top:2px}
+.toast.success{border-left-color:var(--green)}.toast.success i{color:var(--green)}
+.toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+.toast.warn{border-left-color:var(--yellow)}.toast.warn i{color:var(--yellow)}
+.toast.info{border-left-color:var(--primary)}.toast.info i{color:var(--primary)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* empty */
+.empty{padding:60px 24px;text-align:center;color:var(--muted)}
+.empty i{font-size:2.5rem;color:var(--border);margin-bottom:16px;display:block}
+.empty h3{font-size:1.05rem;font-weight:800;margin-bottom:6px;color:var(--dark)}
+.empty p{font-size:.9rem}
+
+/* responsive */
+@media(max-width:720px){
+  .overview-inner{grid-template-columns:1fr;gap:18px;padding:24px 20px}
+  .ov-right{text-align:left;border-top:1px solid var(--border);padding-top:18px}
+  .ov-right .big{font-size:2.4rem}
+  .page-head h1{font-size:1.3rem}
+  .subjects-grid{grid-template-columns:1fr}
+  .h-user .uname,.h-user .role-badge{display:none}
+  .h-brand .h-name{max-width:140px;font-size:.9rem}
+  .h-brand img{height:32px}
+  .report-frame{height:70vh}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<noscript><div class="noscript-bar"><i class="fa-solid fa-triangle-exclamation"></i> JavaScript is required. Please enable it in your browser settings.</div></noscript>
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-in">
+    <div class="cookie-text">We use cookies to keep you signed in and improve your experience. <a href="/terms-policy.html">Terms &amp; Policies</a></div>
+    <button class="cookie-btn reject" id="cookieReject" type="button">Reject</button>
+    <button class="cookie-btn allow" id="cookieAllow" type="button">Allow</button>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="h-brand">
+      <img src="/logo.png" alt="" id="schoolLogo">
+      <span class="h-name" id="schoolName">Loading…</span>
+    </a>
+    <div class="h-spacer"></div>
+    <div class="h-user">
+      <div class="avatar" id="userAvatar">S</div>
+      <span class="uname" id="userName">—</span>
+      <span class="role-badge">Student</span>
+    </div>
+    <button class="h-logout" id="logoutBtn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  </div>
+</header>
+
+<div class="layout">
+  <main class="main">
+
+    <!-- page head -->
+    <div class="page-head">
+      <div>
+        <h1>My Results</h1>
+        <p id="pageSubtitle">Your term report</p>
+      </div>
+      <div class="head-actions">
+        <select id="termSelect" aria-label="Select term"></select>
+        <button class="btn btn-primary" id="viewCardBtn" type="button">
+          <span class="spinner"></span>
+          <i class="fa-solid fa-file-lines"></i>
+          <span class="btn-label">Report card</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- loading skeleton -->
+    <div id="loading">
+      <div class="overview"><div class="overview-inner" style="display:block">
+        <div class="skel h24 w50"></div>
+        <div class="skel h60"></div>
+        <div class="skel h40"></div>
+      </div></div>
+      <div class="stats">
+        <div class="stat"><div class="skel h24"></div><div class="skel h24 w70"></div></div>
+        <div class="stat"><div class="skel h24"></div><div class="skel h24 w70"></div></div>
+        <div class="stat"><div class="skel h24"></div><div class="skel h24 w70"></div></div>
+      </div>
+    </div>
+
+    <!-- error / hold / empty states -->
+    <div id="stateArea"></div>
+
+    <!-- content -->
+    <div id="content" style="display:none">
+
+      <!-- overview card -->
+      <div class="overview">
+        <div class="overview-inner">
+          <div class="ov-left">
+            <h2>Hello</h2>
+            <div class="greeting" id="studentGreeting">Student</div>
+            <div class="term-name" id="termLine">
+              <i class="fa-solid fa-calendar"></i>
+              <span>—</span>
+            </div>
+          </div>
+          <div class="ov-right">
+            <div class="big-label" id="overallLabel">Overall</div>
+            <div class="big" id="overallValue">—</div>
+            <div id="overallGradeWrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- stats -->
+      <div class="stats" id="statsRow"></div>
+
+      <!-- class teacher comment -->
+      <div id="commentWrap"></div>
+
+      <!-- subjects -->
+      <div class="card-head" style="border:1px solid var(--border);background:#fff;margin-bottom:0">
+        <h2><i class="fa-solid fa-book-open"></i> Subject breakdown</h2>
+        <span style="font-size:.82rem;color:var(--muted)" id="subjectCount"></span>
+      </div>
+      <div class="subjects-grid" id="subjectsGrid" style="margin-top:14px"></div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- report card modal -->
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Report Card</h2>
+      <button class="close" id="modalClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <iframe class="report-frame" id="reportFrame" title="Report card"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module">
+/* ------------------------------------------------------------------ *
+ * IMPORTS + CONFIG
+ * ------------------------------------------------------------------ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAR1NEHhZwUujpGEjb-IvTV2A04PTQuYLE",
+  authDomain: "edutrace-ug.firebaseapp.com",
+  projectId: "edutrace-ug",
+  storageBucket: "edutrace-ug.firebasestorage.app",
+  messagingSenderId: "219055117140",
+  appId: "1:219055117140:web:97ec99de8e25b6f9266ec1"
+};
+
+const WORKERS = {
+  profile: "https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev",
+  teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
+  marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev"
+};
+
+const ROLE_ROUTES = {
+  schoolAdmin: "/school-admin.html",
+  teacher: "/teacher.html",
+  student: "/student.html",
+  parent: "/parent.html"
+};
+
+/* ------------------------------------------------------------------ *
+ * STATE
+ * ------------------------------------------------------------------ */
+const state = {
+  user: null,
+  claims: null,
+  schoolId: null,
+  school: null,
+  terms: [],
+  currentTermId: null,
+  report: null
+};
+
+const $ = (id) => document.getElementById(id);
+const el = (sel, root = document) => root.querySelector(sel);
+const els = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+/* ------------------------------------------------------------------ *
+ * HELPERS
+ * ------------------------------------------------------------------ */
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fmtDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return "—";
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+function setBtnLoading(btn, on) {
+  if (!btn) return;
+  btn.classList.toggle("loading", on);
+  btn.disabled = on;
+}
+
+function toast(msg, kind = "info", ms = 4000) {
+  const icons = { success: "fa-circle-check", error: "fa-circle-exclamation", warn: "fa-triangle-exclamation", info: "fa-circle-info" };
+  const t = document.createElement("div");
+  t.className = `toast ${kind}`;
+  t.innerHTML = `<i class="fa-solid ${icons[kind] || icons.info}"></i><span>${escapeHtml(msg)}</span>`;
+  $("toastWrap").appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transition = "opacity .3s";
+    setTimeout(() => t.remove(), 300);
+  }, ms);
+}
+
+class ApiError extends Error {
+  constructor(message, status, body) {
+    super(message);
+    this.status = status;
+    this.body = body;
+  }
+}
+
+async function idToken() {
+  if (!state.user) throw new Error("Not signed in");
+  return state.user.getIdToken();
+}
+
+async function api(url, options = {}) {
+  const token = await idToken();
+  const headers = { Authorization: `Bearer ${token}`, ...(options.headers || {}) };
+  const res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401) {
+    // token may be stale — refresh once
+    const fresh = await state.user.getIdToken(true);
+    const retry = await fetch(url, { ...options, headers: { Authorization: `Bearer ${fresh}`, ...(options.headers || {}) } });
+    if (!retry.ok) throw await apiError(retry);
+    return parseResponse(retry);
+  }
+  if (!res.ok) throw await apiError(res);
+  return parseResponse(res);
+}
+
+async function parseResponse(res) {
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return res.json();
+  return res.text();
+}
+
+async function apiError(res) {
+  let message = `Request failed (${res.status})`;
+  let body = null;
+  try {
+    const ct = res.headers.get("content-type") || "";
+    if (ct.includes("application/json")) {
+      body = await res.json();
+      if (body && body.error) message = body.error;
+    }
+  } catch {}
+  return new ApiError(message, res.status, body);
+}
+
+/* ------------------------------------------------------------------ *
+ * BOOT
+ * ------------------------------------------------------------------ */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    location.replace("/account.html");
+    return;
+  }
+  state.user = user;
+
+  let claims;
+  try {
+    const tr = await user.getIdTokenResult(true);
+    claims = tr.claims;
+  } catch {
+    const tr = await user.getIdTokenResult();
+    claims = tr.claims;
+  }
+  state.claims = claims;
+
+  if (claims.role !== "student") {
+    const target = ROLE_ROUTES[claims.role];
+    if (target) {
+      location.replace(target);
+    } else {
+      await signOut(auth);
+      location.replace("/account.html");
+    }
+    return;
+  }
+
+  if (!claims.rosterId) {
+    showState("error", "Your account isn't linked to a roster record. Ask your school office.");
+    return;
+  }
+
+  state.schoolId = claims.schoolId;
+
+  try {
+    await loadInitial();
+    paintHeader();
+    bindEvents();
+    await loadReport();
+  } catch (err) {
+    console.error(err);
+    showState("error", err.message || "Failed to load. Please refresh.");
+  }
+});
+
+async function loadInitial() {
+  const sid = state.schoolId;
+  const [school, termsData] = await Promise.all([
+    api(`${WORKERS.profile}/school/id/${encodeURIComponent(sid)}`).catch(() => null),
+    api(`${WORKERS.teachers}/schools/${encodeURIComponent(sid)}/terms`)
+  ]);
+  state.school = school;
+  state.terms = termsData.terms || [];
+
+  const current = state.terms.find((t) => t.isCurrent);
+  state.currentTermId = current ? current.id : (state.terms[0] && state.terms[0].id) || null;
+
+  // populate term select
+  const sel = $("termSelect");
+  sel.innerHTML = "";
+  if (!state.terms.length) {
+    sel.innerHTML = `<option value="">No terms</option>`;
+    sel.disabled = true;
+  } else {
+    state.terms.forEach((t) => {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = `${t.name}${t.year ? ", " + t.year : ""}${t.isCurrent ? " (current)" : ""}`;
+      if (t.id === state.currentTermId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function paintHeader() {
+  if (state.school) {
+    $("schoolName").textContent = state.school.name || "School";
+    if (state.school.logoUrl) $("schoolLogo").src = state.school.logoUrl;
+    if (state.school.themeColor) {
+      const root = document.documentElement;
+      root.style.setProperty("--primary", state.school.themeColor);
+      root.style.setProperty("--primary-dark", darken(state.school.themeColor, 0.15));
+      root.style.setProperty("--primary-light", lighten(state.school.themeColor, 0.9));
+    }
+  }
+  const email = state.user.email || "";
+  $("userName").textContent = email.split("@")[0] || "Student";
+  $("userAvatar").textContent = (email[0] || "S").toUpperCase();
+}
+
+function darken(hex, amount) {
+  const c = hex.replace("#", "");
+  const n = parseInt(c, 16);
+  let r = (n >> 16) & 0xff, g = (n >> 8) & 0xff, b = n & 0xff;
+  r = Math.max(0, Math.floor(r * (1 - amount)));
+  g = Math.max(0, Math.floor(g * (1 - amount)));
+  b = Math.max(0, Math.floor(b * (1 - amount)));
+  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+function lighten(hex, amount) {
+  const c = hex.replace("#", "");
+  const n = parseInt(c, 16);
+  let r = (n >> 16) & 0xff, g = (n >> 8) & 0xff, b = n & 0xff;
+  r = Math.min(255, Math.floor(r + (255 - r) * amount));
+  g = Math.min(255, Math.floor(g + (255 - g) * amount));
+  b = Math.min(255, Math.floor(b + (255 - b) * amount));
+  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+/* ------------------------------------------------------------------ *
+ * EVENTS
+ * ------------------------------------------------------------------ */
+function bindEvents() {
+  $("termSelect").addEventListener("change", () => {
+    state.currentTermId = $("termSelect").value;
+    loadReport();
+  });
+
+  $("viewCardBtn").addEventListener("click", openReportCard);
+
+  $("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    location.replace("/account.html");
+  });
+
+  $("modalClose").addEventListener("click", closeModal);
+  $("modalBack").addEventListener("click", (e) => {
+    if (e.target === $("modalBack")) closeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+}
+
+function closeModal() {
+  $("modalBack").classList.remove("show");
+  $("reportFrame").srcdoc = "";
+}
+
+/* ------------------------------------------------------------------ *
+ * LOAD REPORT
+ * ------------------------------------------------------------------ */
+async function loadReport() {
+  const termId = state.currentTermId;
+  if (!termId) {
+    showState("empty", "No terms available yet. Check back later.");
+    return;
+  }
+
+  hideAllStates();
+  $("loading").style.display = "";
+
+  try {
+    const data = await api(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/me?termId=${encodeURIComponent(termId)}`);
+    state.report = data;
+    renderReport();
+  } catch (err) {
+    state.report = null;
+    $("loading").style.display = "none";
+    if (err.status === 403) {
+      // held — the backend message says something like "Report withheld: ..."
+      const reason = (err.message || "").replace(/^Report withheld:\s*/i, "");
+      showHold(reason || "Please contact the school office.");
+    } else if (err.status === 404) {
+      showState("empty", "No report found for this term yet.");
+    } else if (err.status === 400) {
+      showState("error", err.message || "Your account isn't linked to a roster record.");
+    } else {
+      showState("error", err.message || "Couldn't load your report.");
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * RENDER
+ * ------------------------------------------------------------------ */
+function renderReport() {
+  const r = state.report;
+  if (!r) return;
+  $("loading").style.display = "none";
+  hideAllStates();
+  $("content").style.display = "";
+
+  const isCbc = r.scoringMode === "cbc";
+  const termLabel = `${r.term.name}${r.term.year ? ", " + r.term.year : ""}`;
+
+  // greeting
+  const firstName = (r.student.firstName || "").trim();
+  $("studentGreeting").textContent = firstName ? `Hello, ${firstName}` : "Your results";
+  $("termLine").innerHTML = `<i class="fa-solid fa-calendar"></i> <span>${escapeHtml(termLabel)}${r.term.startDate && r.term.endDate ? " · " + fmtDate(r.term.startDate) + " → " + fmtDate(r.term.endDate) : ""}</span>`;
+
+  // overall
+  if (isCbc) {
+    // Rollup-based overall for CBC
+    $("overallLabel").textContent = "Summary";
+    const rollup = r.rollup || { rows: [] };
+    const top = rollup.rows && rollup.rows.length ? rollup.rows[rollup.rows.length - 1] : null;
+    if (top && top.level) {
+      $("overallValue").textContent = `${top.count}`;
+      $("overallValue").style.fontSize = "2.4rem";
+      $("overallGradeWrap").innerHTML = `<span class="grade-pill grade-${escapeHtml(String(top.level))}">${escapeHtml(top.label)}</span>`;
+    } else {
+      $("overallValue").textContent = "—";
+      $("overallGradeWrap").innerHTML = "";
+    }
+  } else {
+    $("overallLabel").textContent = "Overall";
+    const pct = r.overall.pct != null ? `${r.overall.pct.toFixed(1)}%` : "—";
+    $("overallValue").textContent = pct;
+    const grade = r.overall.grade;
+    if (grade) {
+      $("overallGradeWrap").innerHTML = `<span class="grade-pill grade-${escapeHtml(grade.grade)}">${escapeHtml(grade.grade)}</span>`;
+    } else {
+      $("overallGradeWrap").innerHTML = "";
+    }
+  }
+
+  // stats
+  const statsHtml = [
+    `<div class="stat">
+      <div class="label">Class</div>
+      <div class="value">${escapeHtml(r.student.class || "—")}</div>
+      <div class="sub">${escapeHtml(r.student.stream || "No stream")}</div>
+    </div>`,
+    `<div class="stat ${r.subjects.length ? "green" : ""}">
+      <div class="label">Subjects</div>
+      <div class="value">${r.subjects.length}</div>
+      <div class="sub">${r.subjects.filter((s) => (s.assessments || []).some((a) => a.status === "entered")).length} with marks</div>
+    </div>`,
+    r.rank && r.rank.position
+      ? `<div class="stat yellow">
+          <div class="label">Position</div>
+          <div class="value">${r.rank.position}${r.rank.total ? ` <span style="font-size:.75rem;font-weight:600;color:var(--muted)">of ${r.rank.total}</span>` : ""}</div>
+          <div class="sub">in class</div>
+        </div>`
+      : `<div class="stat">
+          <div class="label">Scoring</div>
+          <div class="value">${isCbc ? "CBC" : "Percentage"}</div>
+          <div class="sub">${isCbc ? "competency levels" : "weighted assessments"}</div>
+        </div>`
+  ].join("");
+  $("statsRow").innerHTML = statsHtml;
+
+  // class teacher comment
+  const note = r.note || {};
+  if (note.comment || note.conduct) {
+    $("commentWrap").innerHTML = `
+      <div class="comment-box">
+        <h3><i class="fa-solid fa-comment-dots"></i> Class Teacher's Comment</h3>
+        ${note.conduct ? `<div class="conduct"><b>Conduct:</b> ${escapeHtml(note.conduct)}</div>` : ""}
+        ${note.comment ? `<p>${escapeHtml(note.comment)}</p>` : `<p style="color:var(--muted);font-style:italic">No comment written.</p>`}
+      </div>
+    `;
+  } else {
+    $("commentWrap").innerHTML = "";
+  }
+
+  // subjects
+  $("subjectCount").textContent = r.subjects.length ? `${r.subjects.length} subjects` : "";
+  renderSubjects(r, isCbc);
+}
+
+function renderSubjects(report, isCbc) {
+  const grid = $("subjectsGrid");
+  const subjects = report.subjects || [];
+  if (!subjects.length) {
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;background:#fff;border:1px solid var(--border)">
+        <i class="fa-solid fa-inbox"></i>
+        <h3>No subjects yet</h3>
+        <p>No marks have been recorded for this term yet.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = subjects.map((sub) => {
+    const assessments = (sub.assessments || []).map((a) => {
+      let valHtml;
+      if (a.status === "entered") {
+        if (isCbc) valHtml = `<span class="val">${escapeHtml(String(a.level ?? "—"))}</span>`;
+        else valHtml = `<span class="val">${escapeHtml(String(a.score ?? "—"))}<small>/${escapeHtml(String(a.maxScore ?? "—"))}</small></span>`;
+      } else {
+        const label = a.status === "absent" ? "Absent" : a.status === "excused" ? "Excused" : a.status === "na" ? "N/A" : "—";
+        valHtml = `<span class="val">${label}</span>`;
+      }
+      return `<div class="subj-row ${escapeHtml(a.status || "missing")}">
+        <span class="type">${escapeHtml(a.typeName || a.typeId || "Assessment")}</span>
+        ${valHtml}
+      </div>`;
+    }).join("");
+
+    let footLeft, footRight;
+    if (isCbc) {
+      footLeft = `<span class="lbl">Level</span>`;
+      footRight = sub.level
+        ? `<span class="grade-pill grade-${escapeHtml(String(sub.level.level))}">${escapeHtml(sub.level.label)}</span>`
+        : `<span class="grade-pill grade-1">—</span>`;
+    } else {
+      footLeft = `<span class="lbl">Total</span>`;
+      const pct = sub.pct != null ? `${sub.pct.toFixed(1)}%` : "—";
+      const grade = sub.grade ? `<span class="grade-pill grade-${escapeHtml(sub.grade.grade)}">${escapeHtml(sub.grade.grade)}</span>` : "";
+      footRight = `<div style="display:flex;align-items:center;gap:10px"><span class="tot">${pct}</span>${grade}</div>`;
+    }
+
+    return `
+      <div class="subj">
+        <div class="subj-head">
+          <h3>${escapeHtml(sub.name || "Subject")}</h3>
+        </div>
+        <div class="subj-body">${assessments || `<div style="padding:12px 0;color:var(--muted);font-size:.85rem">No assessments recorded.</div>`}</div>
+        <div class="subj-foot">${footLeft}${footRight}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+/* ------------------------------------------------------------------ *
+ * REPORT CARD MODAL
+ * ------------------------------------------------------------------ */
+async function openReportCard() {
+  const termId = state.currentTermId;
+  if (!termId) { toast("Pick a term first.", "warn"); return; }
+
+  const btn = $("viewCardBtn");
+  setBtnLoading(btn, true);
+
+  try {
+    const token = await idToken();
+    const res = await fetch(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/me/card?termId=${encodeURIComponent(termId)}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.status === 401) {
+      // refresh once
+      const fresh = await state.user.getIdToken(true);
+      const retry = await fetch(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/me/card?termId=${encodeURIComponent(termId)}`, {
+        headers: { Authorization: `Bearer ${fresh}` }
+      });
+      if (!retry.ok) throw new ApiError("Could not load report card", retry.status);
+      const html = await retry.text();
+      showCard(html);
+      return;
+    }
+    if (!res.ok) {
+      const err = await apiError(res);
+      if (err.status === 403) {
+        const reason = (err.message || "").replace(/^Report withheld:\s*/i, "");
+        toast(`Report withheld — ${reason || "contact the school"}`, "error", 6000);
+      } else {
+        toast(err.message || "Could not load report card.", "error", 6000);
+      }
+      return;
+    }
+    const html = await res.text();
+    showCard(html);
+  } catch (err) {
+    toast(err.message || "Could not load report card.", "error", 6000);
+  } finally {
+    setBtnLoading(btn, false);
+  }
+}
+
+function showCard(html) {
+  $("reportFrame").srcdoc = html;
+  $("modalTitle").textContent = "Report Card";
+  $("modalBack").classList.add("show");
+}
+
+/* ------------------------------------------------------------------ *
+ * STATE MESSAGES
+ * ------------------------------------------------------------------ */
+function hideAllStates() {
+  $("stateArea").innerHTML = "";
+  $("content").style.display = "none";
+}
+
+function showState(kind, message) {
+  $("loading").style.display = "none";
+  $("content").style.display = "none";
+  const icon = kind === "error" ? "fa-triangle-exclamation" : "fa-inbox";
+  const color = kind === "error" ? "var(--red)" : "var(--muted)";
+  $("stateArea").innerHTML = `
+    <div class="card"><div class="empty">
+      <i class="fa-solid ${icon}" style="color:${color}"></i>
+      <h3>${kind === "error" ? "Something went wrong" : "Nothing here yet"}</h3>
+      <p>${escapeHtml(message)}</p>
+    </div></div>`;
+}
+
+function showHold(reason) {
+  $("loading").style.display = "none";
+  $("content").style.display = "none";
+  $("stateArea").innerHTML = `
+    <div class="hold-card">
+      <h2><i class="fa-solid fa-lock"></i> Report withheld</h2>
+      <p>${escapeHtml(reason)}</p>
+      <p style="font-size:.85rem;color:#a04141;margin-top:10px">Once the matter is resolved, your report will appear here automatically.</p>
+    </div>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * COOKIE
+ * ------------------------------------------------------------------ */
+(function () {
+  const KEY = "edutrace_cookie_consent_v1";
+  const b = $("cookie");
+  let v = null;
+  try { v = localStorage.getItem(KEY); } catch {}
+  if (!v) b.classList.add("show");
+  function set(x) {
+    try { localStorage.setItem(KEY, x); } catch {}
+    b.classList.remove("show");
+    if (x === "allow" && typeof window.__edutraceAnalytics === "function") window.__edutraceAnalytics();
+  }
+  $("cookieAllow").addEventListener("click", () => set("allow"));
+  $("cookieReject").addEventListener("click", () => set("reject"));
+})();
+</script>
+
+</body>
+</html>

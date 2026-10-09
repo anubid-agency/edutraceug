@@ -1,0 +1,1603 @@
+ <!DOCTYPE html>
+<html lang="en-UG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3570BC">
+<title>System Admin | Edutrace</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/jpeg" href="/edutrace-favicon.jpg">
+<link rel="apple-touch-icon" href="/edutrace-favicon.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --primary:#3570BC;--primary-dark:#2A5A96;--primary-light:#EBF1FB;
+  --green:#008E34;--yellow:#F9B515;--red:#D7040A;
+  --dark:#1A1A1A;--muted:#555;--border:#E5E5E5;--light:#F8F9FA;--white:#fff;--bg:#F2F4F7;
+  --font:'Plus Jakarta Sans',Arial,sans-serif;
+  --header-h:64px;--sidebar-w:240px;
+  --shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 8px 24px rgba(0,0,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--dark);line-height:1.5;background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:1rem;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#ccc}
+
+/* ================ LOGIN ================ */
+.signin-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+.signin-card{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-lg);padding:44px 36px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden}
+.signin-card::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.signin-card .brand-logo{height:56px;width:auto;margin:0 auto 20px;border:2px solid var(--primary);padding:4px;background:#fff}
+.signin-card .role-label{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--primary);background:var(--primary-light);padding:5px 12px;margin-bottom:14px}
+.signin-card h1{font-size:1.4rem;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+.signin-card p.lead{color:var(--muted);font-size:.9rem;margin-bottom:26px;line-height:1.5}
+
+.signin-form{text-align:left}
+.signin-form .field{margin-bottom:14px}
+.signin-form .field label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+.signin-form .field input{width:100%;padding:13px 14px;border:2px solid var(--border);font-size:.95rem;font-weight:500;transition:border-color .15s}
+.signin-form .field input:focus{outline:none;border-color:var(--primary)}
+.signin-form .field.pw-field{position:relative}
+.signin-form .field.pw-field .toggle{position:absolute;right:10px;bottom:8px;padding:5px 8px;color:var(--muted);font-size:.85rem;border:1px solid var(--border);background:#fff}
+.signin-form .field.pw-field .toggle:hover{color:var(--primary);border-color:var(--primary)}
+.signin-form button[type="submit"]{width:100%;padding:14px 20px;background:var(--primary);color:#fff;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;border:2px solid var(--primary);transition:all .15s;margin-top:6px}
+.signin-form button[type="submit"]:hover:not(:disabled){background:var(--primary-dark);border-color:var(--primary-dark)}
+.signin-form button[type="submit"]:disabled{opacity:.6;cursor:not-allowed}
+.signin-form .spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:8px}
+.signin-form button[type="submit"].loading .spinner{display:inline-block}
+
+.signin-err{background:#fef2f2;color:var(--red);border-left:4px solid var(--red);padding:12px 16px;font-size:.85rem;font-weight:600;margin-bottom:18px;display:none;text-align:left;line-height:1.5}
+.signin-err.show{display:block}
+.signin-note{margin-top:22px;color:var(--muted);font-size:.78rem;line-height:1.55;padding-top:20px;border-top:1px solid var(--border);text-align:left}
+
+/* ================ HEADER ================ */
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);z-index:100;display:none;align-items:center}
+.header::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.header.show{display:flex}
+.header-inner{display:flex;align-items:center;gap:14px;width:100%;padding:0 20px}
+.h-brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.h-brand img{height:38px;width:auto;border:2px solid var(--primary);background:#fff;object-fit:contain}
+.h-brand .h-name{font-weight:800;font-size:1rem;line-height:1.15}
+.h-brand .h-sub{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--primary)}
+.h-spacer{flex:1}
+.h-user{display:flex;align-items:center;gap:10px;font-size:.85rem}
+.h-user .avatar{width:36px;height:36px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
+.h-user .uname{font-weight:700;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.h-user .role-badge{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:var(--primary-light);color:var(--primary);padding:3px 8px}
+.h-logout{padding:8px 14px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:2px solid var(--border);display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.h-logout:hover{border-color:var(--red);color:var(--red)}
+.h-menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border)}
+
+/* ================ LAYOUT ================ */
+.layout{padding-top:var(--header-h);min-height:100vh;display:none}
+.layout.show{display:flex}
+.sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);overflow-y:auto;z-index:90}
+.snav{padding:12px 0}
+.snav-label{padding:12px 20px 4px;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
+.snav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;font-weight:600;font-size:.86rem;color:var(--dark);border-left:3px solid transparent;transition:background .15s,color .15s;cursor:pointer}
+.snav-item:hover{background:var(--light);color:var(--primary)}
+.snav-item.active{background:var(--primary-light);color:var(--primary);border-left-color:var(--primary)}
+.snav-item i{width:18px;text-align:center;font-size:.95rem}
+.snav-item .pill{margin-left:auto;background:var(--red);color:#fff;font-size:.68rem;font-weight:800;padding:2px 7px;border-radius:10px;min-width:20px;text-align:center}
+.main{flex:1;margin-left:var(--sidebar-w);padding:24px 32px 80px;min-width:0}
+.sidebar-back{display:none;position:fixed;inset:0;background:rgba(10,15,25,.5);z-index:80}
+.sidebar-back.show{display:block}
+
+/* ================ PAGE HEAD ================ */
+.page-head{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.page-head h1{font-size:1.55rem;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:4px}
+.page-head p{color:var(--muted);font-size:.88rem}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ================ VIEWS ================ */
+.view{display:none}
+.view.active{display:block}
+
+/* ================ CARDS ================ */
+.card{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-head h2{font-size:.95rem;font-weight:800;display:flex;align-items:center;gap:10px}
+.card-head h2 i{color:var(--primary)}
+.card-head .sub{font-size:.8rem;color:var(--muted);font-weight:600}
+.card-body{padding:20px}
+.card-body.tight{padding:0}
+
+/* ================ STATS ================ */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+.stat{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:18px;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--primary)}
+.stat.green::before{background:var(--green)}
+.stat.yellow::before{background:var(--yellow)}
+.stat.red::before{background:var(--red)}
+.stat .label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
+.stat .value{font-size:1.8rem;font-weight:800;line-height:1.1;letter-spacing:-.5px}
+.stat .value.sm{font-size:1.1rem;letter-spacing:0}
+.stat .sub{font-size:.75rem;color:var(--muted);margin-top:4px}
+
+/* ================ TABS ================ */
+.tabs{display:flex;border-bottom:2px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:12px 18px;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .15s;flex-shrink:0}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab:hover:not(.active){color:var(--dark)}
+.tab .count{background:var(--light);color:var(--muted);font-size:.7rem;font-weight:800;padding:2px 7px;border-radius:10px;min-width:22px;text-align:center}
+.tab.active .count{background:var(--primary-light);color:var(--primary)}
+
+/* ================ TABLE ================ */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{width:100%;border-collapse:collapse;font-size:.88rem}
+table.tbl th{background:var(--light);padding:10px 14px;text-align:left;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap}
+table.tbl td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+table.tbl tr:hover{background:#fafbfc}
+table.tbl td.actions{text-align:right;white-space:nowrap}
+table.tbl .name{font-weight:700}
+table.tbl .meta{font-size:.75rem;color:var(--muted)}
+
+/* ================ PILLS ================ */
+.pill{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;white-space:nowrap}
+.pill.green{background:#E6F4EC;color:var(--green)}
+.pill.yellow{background:#FFF9E6;color:#8A6800}
+.pill.red{background:#FEF2F2;color:var(--red)}
+.pill.blue{background:var(--primary-light);color:var(--primary)}
+.pill.grey{background:var(--light);color:var(--muted)}
+
+/* ================ EMPTY ================ */
+.empty{padding:52px 24px;text-align:center;color:var(--muted)}
+.empty i{font-size:2.4rem;color:var(--border);margin-bottom:14px;display:block}
+.empty h3{font-size:1rem;font-weight:800;margin-bottom:6px;color:var(--dark)}
+.empty p{font-size:.88rem;margin-bottom:14px}
+
+/* ================ SKELETON ================ */
+.skel{background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sh 1.4s infinite;height:16px;margin-bottom:12px}
+.skel.h20{height:20px}.skel.h40{height:40px}.skel.h60{height:60px}
+.skel.w30{width:30%}.skel.w50{width:50%}.skel.w70{width:70%}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ================ MODAL ================ */
+.modal-back{position:fixed;inset:0;background:rgba(10,15,25,.7);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-back.show{display:flex}
+.modal{background:#fff;width:100%;max-width:680px;margin:20px auto;border:1px solid var(--border);box-shadow:var(--shadow-lg)}
+.modal.wide{max-width:900px}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:2}
+.modal-head h2{font-size:1.05rem;font-weight:800}
+.modal-head .close{padding:7px 11px;font-size:1rem;color:var(--muted);border:2px solid var(--border)}
+.modal-head .close:hover{color:var(--red);border-color:var(--red)}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:#fff;z-index:2}
+
+/* ================ DETAIL ================ */
+.detail-section{margin-bottom:20px}
+.detail-section h3{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--primary);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.detail-row{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:8px 0;font-size:.88rem}
+.detail-row .key{font-weight:700;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px}
+.detail-row .val{color:var(--dark);word-break:break-word}
+.detail-row .val a{color:var(--primary);font-weight:700}
+.detail-row .val a:hover{text-decoration:underline}
+.detail-row .val pre{white-space:pre-wrap;font-family:inherit;font-size:.88rem;line-height:1.55}
+
+.photo-thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:8px}
+.photo-thumbs a{display:block;border:1px solid var(--border);overflow:hidden;aspect-ratio:4/3;background:var(--light)}
+.photo-thumbs img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.photo-thumbs a:hover img{transform:scale(1.05)}
+
+/* ================ FORM ================ */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+.field label .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted);font-size:.75rem;margin-left:6px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:2px solid var(--border);background:#fff;font-size:.9rem;font-weight:500;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary)}
+.field textarea{resize:vertical;min-height:90px;font-family:inherit;line-height:1.5}
+.field.has-error input,.field.has-error textarea{border-color:var(--red)}
+.field .err{display:none;color:var(--red);font-size:.78rem;font-weight:600;margin-top:5px}
+.field.has-error .err{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+.slug-wrap{display:flex;align-items:stretch}
+.slug-wrap input{border-right:none;min-width:0}
+.slug-wrap .suffix{padding:11px 12px;border:2px solid var(--border);border-left:none;background:var(--light);font-size:.8rem;font-weight:700;color:var(--muted);white-space:nowrap;display:flex;align-items:center}
+.slug-preview{font-size:.78rem;color:var(--muted);margin-top:6px;word-break:break-all}
+.slug-preview b{color:var(--primary)}
+
+/* ================ BUTTONS ================ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.4px;border:2px solid transparent;transition:all .15s;white-space:nowrap}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);border-color:var(--primary-dark)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover:not(:disabled){background:#007029}
+.btn-red{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-red:hover:not(:disabled){background:#a00308}
+.btn-outline{background:#fff;color:var(--dark);border-color:var(--border)}
+.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn-sm{padding:7px 11px;font-size:.72rem}
+.btn .spinner{display:none;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite}
+.btn.loading .spinner{display:inline-block}
+.btn.loading .btn-label{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ================ CONFIRM ================ */
+.confirm-back{position:fixed;inset:0;background:rgba(10,15,25,.65);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-back.show{display:flex}
+.confirm{background:#fff;max-width:440px;width:100%;padding:24px;box-shadow:var(--shadow-lg)}
+.confirm h3{font-size:1.05rem;font-weight:800;margin-bottom:10px}
+.confirm p{font-size:.9rem;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.confirm-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+/* ================ TOAST ================ */
+.toast-wrap{position:fixed;top:80px;right:20px;left:auto;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:calc(100vw - 40px)}
+.toast{background:#fff;border-left:4px solid var(--primary);padding:13px 16px;box-shadow:var(--shadow-lg);min-width:250px;max-width:380px;pointer-events:auto;animation:slideIn .25s;font-size:.86rem;font-weight:600;display:flex;align-items:flex-start;gap:10px;line-height:1.45}
+.toast i{flex-shrink:0;margin-top:2px}
+.toast.success{border-left-color:var(--green)}.toast.success i{color:var(--green)}
+.toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+.toast.warn{border-left-color:var(--yellow)}.toast.warn i{color:var(--yellow)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ================ RESPONSIVE ================ */
+@media(max-width:900px){
+  :root{--sidebar-w:0px}
+  .sidebar{transform:translateX(-100%);transition:transform .25s;width:270px}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:20px 16px 100px}
+  .h-menu-btn{display:inline-flex}
+  .grid2{grid-template-columns:1fr}
+}
+
+@media(max-width:640px){
+  .h-user .uname,.h-user .role-badge{display:none}
+  .h-brand .h-name{font-size:.9rem}
+  .h-brand img{height:32px}
+  .header-inner{padding:0 14px;gap:10px}
+
+  .page-head{margin-bottom:16px;align-items:flex-start}
+  .page-head h1{font-size:1.2rem}
+  .page-head p{font-size:.82rem}
+  .head-actions{width:100%}
+  .head-actions .btn,.head-actions a.btn{flex:1;min-width:0}
+
+  .card-body{padding:16px}
+  .card-head{padding:12px 14px}
+  .card-head h2{font-size:.9rem}
+
+  .stats{grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+  .stat{padding:14px}
+  .stat .value{font-size:1.5rem}
+  .stat .value.sm{font-size:1rem}
+
+  table.tbl{font-size:.85rem;display:block}
+  table.tbl thead{display:none}
+  table.tbl tbody{display:block}
+  table.tbl tr{display:block;padding:12px 14px;border-bottom:1px solid var(--border);background:#fff}
+  table.tbl tr:last-child{border-bottom:0}
+  table.tbl tr:hover{background:#fff}
+  table.tbl td{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:6px 0;border-bottom:none;text-align:right}
+  table.tbl td::before{content:attr(data-label);font-weight:800;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:left;flex-shrink:0;max-width:45%}
+  table.tbl td[data-label] > *{text-align:right}
+  table.tbl td.actions{justify-content:flex-end;padding-top:10px;border-top:1px dashed var(--border);margin-top:6px}
+  table.tbl td.actions::before{content:"";display:none}
+  table.tbl td.actions .btn,
+  table.tbl td.actions a.btn{width:100%}
+  table.tbl .name{text-align:right}
+
+  .tab{padding:10px 12px;font-size:.72rem}
+
+  .modal-back{padding:10px}
+  .modal{margin:10px auto;max-width:100%}
+  .modal-head{padding:14px 16px}
+  .modal-head h2{font-size:.95rem}
+  .modal-body{padding:16px}
+  .modal-foot{padding:12px 16px;flex-direction:column-reverse}
+  .modal-foot .btn{width:100%}
+
+  .detail-row{grid-template-columns:1fr;gap:2px;padding:8px 0}
+  .detail-row .key{font-size:.66rem}
+  .detail-row .val{font-size:.88rem}
+
+  .photo-thumbs{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+
+  .signin-wrap{padding:14px}
+  .signin-card{padding:28px 20px}
+  .signin-card .brand-logo{height:48px}
+  .signin-card h1{font-size:1.2rem}
+  .signin-card p.lead{font-size:.85rem;margin-bottom:20px}
+
+  .toast-wrap{left:12px;right:12px;top:72px;max-width:none}
+  .toast{min-width:0;max-width:none;width:100%}
+}
+
+@media(max-width:400px){
+  .head-actions .btn{font-size:.72rem;padding:9px 10px}
+  .slug-wrap .suffix{font-size:.72rem;padding:11px 8px}
+  .tab{padding:9px 10px;font-size:.68rem}
+  .tab .count{font-size:.65rem;padding:2px 6px}
+}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="signin-wrap" id="signinWrap">
+  <div class="signin-card">
+    <img src="/logo.png" alt="Edutrace" class="brand-logo">
+    <span class="role-label">System Admin</span>
+    <h1>Admin Access</h1>
+    <p class="lead">Sign in with your administrator credentials.</p>
+
+    <div class="signin-err" id="signinErr"></div>
+
+    <form class="signin-form" id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username" spellcheck="false" required>
+      </div>
+      <div class="field pw-field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required>
+        <button type="button" class="toggle" id="pwToggle" aria-label="Show password">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+      <button type="submit" id="loginBtn">
+        <span class="spinner"></span>
+        <span class="btn-label"><i class="fa-solid fa-right-to-bracket"></i> Sign in</span>
+      </button>
+    </form>
+
+    <p class="signin-note">This page is for platform administrators only. Unauthorized access attempts are logged.</p>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <button class="h-menu-btn" id="menuBtn" type="button" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    <a href="/" class="h-brand">
+      <img src="/logo.png" alt="">
+      <div>
+        <div class="h-name">Edutrace</div>
+        <div class="h-sub">System Admin</div>
+      </div>
+    </a>
+    <div class="h-spacer"></div>
+    <div class="h-user">
+      <div class="avatar" id="userAvatar">A</div>
+      <span class="uname" id="userName">—</span>
+      <span class="role-badge">SysAdmin</span>
+    </div>
+    <button class="h-logout" id="logoutBtn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  </div>
+</header>
+
+<div class="sidebar-back" id="sidebarBack"></div>
+
+<!-- ============ LAYOUT ============ -->
+<div class="layout" id="layout">
+
+<aside class="sidebar" id="sidebar">
+  <nav class="snav">
+    <div class="snav-item" data-view="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</div>
+    <div class="snav-label">Requests</div>
+    <div class="snav-item" data-view="requests"><i class="fa-solid fa-inbox"></i> School Requests <span class="pill" id="pendingPill" style="display:none">0</span></div>
+    <div class="snav-label">Platform</div>
+    <div class="snav-item" data-view="schools"><i class="fa-solid fa-school"></i> Schools</div>
+    <div class="snav-item" data-view="admins"><i class="fa-solid fa-user-shield"></i> Admins</div>
+  </nav>
+</aside>
+
+<main class="main">
+
+<section class="view active" data-view="dashboard">
+  <div class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Overview of all school activity on Edutrace.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="dashRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="stats" id="statsWrap"></div>
+  <div class="card">
+    <div class="card-head">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Recent requests</h2>
+      <span class="sub" id="recentSub"></span>
+    </div>
+    <div class="card-body tight" id="recentList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="requests">
+  <div class="page-head">
+    <div>
+      <h1>School Requests</h1>
+      <p>Review and approve schools that want to join Edutrace.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="reqRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tabs" id="reqTabs">
+      <div class="tab active" data-status="pending">Pending <span class="count" id="tabPending">0</span></div>
+      <div class="tab" data-status="approved">Approved <span class="count" id="tabApproved">0</span></div>
+      <div class="tab" data-status="rejected">Rejected <span class="count" id="tabRejected">0</span></div>
+      <div class="tab" data-status="all">All</div>
+    </div>
+    <div class="card-body tight" id="requestsList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="schools">
+  <div class="page-head">
+    <div>
+      <h1>Schools</h1>
+      <p>Every school live on the Edutrace platform.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="schoolsRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="card"><div class="card-body tight" id="schoolsList"></div></div>
+</section>
+
+<section class="view" data-view="admins">
+  <div class="page-head">
+    <div>
+      <h1>School Admins</h1>
+      <p>Every admin account across the platform.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="adminsRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="card"><div class="card-body tight" id="adminsList"></div></div>
+</section>
+
+</main>
+</div>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Title</h2>
+      <button class="close" id="modalClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<div class="confirm-back" id="confirmBack">
+  <div class="confirm">
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmMsg"></p>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" id="confirmNo" type="button">Cancel</button>
+      <button class="btn btn-red" id="confirmYes" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module">
+/* ================================================================== *
+ * CONFIG
+ * ================================================================== */
+const WORKER = "https://edutraceug-sysadmin-worker.anubisdigital114-9df.workers.dev";
+const TOKEN_KEY = "edutrace_sysadmin_session";
+
+/* ================================================================== *
+ * DOM HELPERS
+ * ================================================================== */
+const $ = (id) => document.getElementById(id);
+const q = (sel, root = document) => root.querySelector(sel);
+const qa = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+/* ================================================================== *
+ * STATE
+ * ================================================================== */
+const S = {
+  email: null,
+  currentTab: "pending",
+  requests: [],
+  counts: { pending: 0, approved: 0, rejected: 0 },
+  shellBound: false,
+};
+
+/* ================================================================== *
+ * FORMATTERS
+ * ================================================================== */
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+function fmtDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return "—";
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+function fmtDateTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return "—";
+  return d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+function slugifyClient(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 32);
+}
+function generatePw() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  let s = "";
+  const bytes = crypto.getRandomValues(new Uint8Array(10));
+  for (const b of bytes) s += chars[b % chars.length];
+  return "Edu-" + s;
+}
+
+/* ================================================================== *
+ * TOKEN STORAGE
+ * ================================================================== */
+function getToken() {
+  try { return localStorage.getItem(TOKEN_KEY) || null; } catch { return null; }
+}
+function setToken(t) {
+  try { localStorage.setItem(TOKEN_KEY, t); } catch {}
+}
+function clearToken() {
+  try { localStorage.removeItem(TOKEN_KEY); } catch {}
+}
+
+/* ================================================================== *
+ * TOASTS
+ * ================================================================== */
+function toast(msg, kind = "info", ms = 4500) {
+  const icons = {
+    success: "fa-circle-check",
+    error: "fa-circle-exclamation",
+    warn: "fa-triangle-exclamation",
+    info: "fa-circle-info"
+  };
+  const t = document.createElement("div");
+  t.className = `toast ${kind}`;
+  t.innerHTML = `<i class="fa-solid ${icons[kind] || icons.info}"></i><span>${esc(msg)}</span>`;
+  $("toastWrap").appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transition = "opacity .3s";
+    setTimeout(() => t.remove(), 300);
+  }, ms);
+}
+
+/* ================================================================== *
+ * BUTTON / CONFIRM
+ * ================================================================== */
+function setBtn(btn, on) {
+  if (!btn) return;
+  btn.classList.toggle("loading", on);
+  btn.disabled = on;
+}
+function confirmDialog(title, msg, okLabel = "Confirm", danger = true) {
+  return new Promise((resolve) => {
+    $("confirmTitle").textContent = title;
+    $("confirmMsg").textContent = msg;
+    const yes = $("confirmYes");
+    yes.textContent = okLabel;
+    yes.className = "btn " + (danger ? "btn-red" : "btn-primary");
+    $("confirmBack").classList.add("show");
+
+    const done = (ok) => {
+      $("confirmBack").classList.remove("show");
+      yes.removeEventListener("click", onYes);
+      $("confirmNo").removeEventListener("click", onNo);
+      resolve(ok);
+    };
+    const onYes = () => done(true);
+    const onNo = () => done(false);
+    yes.addEventListener("click", onYes);
+    $("confirmNo").addEventListener("click", onNo);
+  });
+}
+
+/* ================================================================== *
+ * MODAL
+ * ================================================================== */
+function openModal({ title, body, foot, wide = "" }) {
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = body;
+  $("modalFoot").innerHTML = foot || "";
+  $("modal").className = "modal" + (wide ? " " + wide : "");
+  $("modalBack").classList.add("show");
+}
+function closeModal() {
+  $("modalBack").classList.remove("show");
+  $("modalBody").innerHTML = "";
+  $("modalFoot").innerHTML = "";
+}
+
+/* ================================================================== *
+ * API
+ * ================================================================== */
+class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}
+
+async function api(url, options = {}) {
+  const token = getToken();
+  if (!token) throw new ApiError("Not signed in", 401);
+
+  const headers = { Authorization: `Bearer ${token}`, ...(options.headers || {}) };
+  const res = await fetch(url, { ...options, headers });
+
+  if (res.status === 401) {
+    clearToken();
+    showLogin();
+    throw new ApiError("Session expired. Please sign in again.", 401);
+  }
+
+  if (!res.ok) {
+    let msg = `Request failed (${res.status})`;
+    try {
+      const j = await res.json();
+      if (j && j.error) msg = j.error;
+    } catch {}
+    throw new ApiError(msg, res.status);
+  }
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return res.json();
+  return res.text();
+}
+
+/* ================================================================== *
+ * LOGIN
+ * ================================================================== */
+function showLogin() {
+  $("signinWrap").style.display = "flex";
+  $("header").classList.remove("show");
+  $("layout").classList.remove("show");
+}
+function showApp() {
+  $("signinWrap").style.display = "none";
+  $("header").classList.add("show");
+  $("layout").classList.add("show");
+}
+
+(function bindPasswordToggle() {
+  const btn = $("pwToggle");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const pw = $("loginPassword");
+    const icon = btn.querySelector("i");
+    if (!pw || !icon) return;
+    if (pw.type === "password") {
+      pw.type = "text";
+      icon.className = "fa-solid fa-eye-slash";
+    } else {
+      pw.type = "password";
+      icon.className = "fa-solid fa-eye";
+    }
+  });
+})();
+
+(function bindLoginForm() {
+  const form = $("loginForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("loginEmail").value.trim();
+    const password = $("loginPassword").value;
+    const err = $("signinErr");
+    err.classList.remove("show");
+
+    if (!email || !password) {
+      err.textContent = "Enter both email and password.";
+      err.classList.add("show");
+      return;
+    }
+
+    const btn = $("loginBtn");
+    setBtn(btn, true);
+
+    try {
+      const res = await fetch(`${WORKER}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        err.textContent = data.error || "Sign-in failed";
+        err.classList.add("show");
+        setBtn(btn, false);
+        return;
+      }
+
+      setToken(data.token);
+      S.email = data.email || email;
+      $("loginPassword").value = "";
+      await bootApp();
+    } catch (err2) {
+      err.textContent = "Couldn't reach the server. Try again.";
+      err.classList.add("show");
+      setBtn(btn, false);
+    }
+  });
+})();
+
+/* ================================================================== *
+ * BOOT
+ * ================================================================== */
+async function bootApp() {
+  let me;
+  try {
+    me = await api(`${WORKER}/me`);
+  } catch {
+    clearToken();
+    showLogin();
+    return;
+  }
+
+  S.email = me.email || S.email || "admin";
+  paintHeader();
+  bindShell();
+  showApp();
+
+  const initialView = (location.hash || "").replace(/^#\/?/, "") || "dashboard";
+  showView(initialView);
+}
+
+function paintHeader() {
+  const name = (S.email || "admin").split("@")[0];
+  $("userName").textContent = name;
+  $("userAvatar").textContent = name.slice(0, 2).toUpperCase();
+}
+
+(function bindLogout() {
+  const btn = $("logoutBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    clearToken();
+    location.hash = "";
+    location.reload();
+  });
+})();
+
+/* ================================================================== *
+ * SHELL
+ * ================================================================== */
+function bindShell() {
+  if (S.shellBound) return;
+  S.shellBound = true;
+
+  qa(".snav-item").forEach((n) => n.addEventListener("click", () => showView(n.dataset.view)));
+
+  const menuBtn = $("menuBtn");
+  if (menuBtn) {
+    menuBtn.addEventListener("click", () => {
+      $("sidebar").classList.toggle("open");
+      $("sidebarBack").classList.toggle("show");
+    });
+  }
+  const sbBack = $("sidebarBack");
+  if (sbBack) {
+    sbBack.addEventListener("click", () => {
+      $("sidebar").classList.remove("open");
+      $("sidebarBack").classList.remove("show");
+    });
+  }
+
+  const modalClose = $("modalClose");
+  if (modalClose) modalClose.addEventListener("click", closeModal);
+
+  const modalBack = $("modalBack");
+  if (modalBack) {
+    modalBack.addEventListener("click", (e) => {
+      if (e.target === $("modalBack")) closeModal();
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeModal();
+      const cb = $("confirmBack");
+      if (cb) cb.classList.remove("show");
+    }
+  });
+
+  const dashRefresh = $("dashRefresh");
+  if (dashRefresh) {
+    dashRefresh.addEventListener("click", async () => {
+      await Promise.all([loadStats(), loadRecent()]);
+      toast("Refreshed", "success", 2000);
+    });
+  }
+  const reqRefresh = $("reqRefresh");
+  if (reqRefresh) reqRefresh.addEventListener("click", () => loadRequests(S.currentTab));
+  const schoolsRefresh = $("schoolsRefresh");
+  if (schoolsRefresh) schoolsRefresh.addEventListener("click", loadSchools);
+  const adminsRefresh = $("adminsRefresh");
+  if (adminsRefresh) adminsRefresh.addEventListener("click", loadAdmins);
+
+  qa("#reqTabs .tab").forEach((tab) => tab.addEventListener("click", () => {
+    qa("#reqTabs .tab").forEach((t) => t.classList.toggle("active", t === tab));
+    S.currentTab = tab.dataset.status;
+    loadRequests(S.currentTab);
+  }));
+}
+
+function showView(name) {
+  if (!name) name = "dashboard";
+  qa(".view").forEach((v) => v.classList.toggle("active", v.dataset.view === name));
+  qa(".snav-item").forEach((n) => n.classList.toggle("active", n.dataset.view === name));
+  location.hash = "#/" + name;
+  $("sidebar").classList.remove("open");
+  $("sidebarBack").classList.remove("show");
+
+  if (name === "dashboard") { loadStats(); loadRecent(); }
+  if (name === "requests") loadRequests(S.currentTab);
+  if (name === "schools") loadSchools();
+  if (name === "admins") loadAdmins();
+}
+
+/* ================================================================== *
+ * STATUS PILL
+ * ================================================================== */
+function statusPill(status) {
+  if (status === "approved") return `<span class="pill green">Approved</span>`;
+  if (status === "rejected") return `<span class="pill red">Rejected</span>`;
+  return `<span class="pill yellow">Pending</span>`;
+}
+
+/* ================================================================== *
+ * STATS
+ * ================================================================== */
+async function loadStats() {
+  $("statsWrap").innerHTML = `
+    <div class="stat"><div class="skel h20 w50"></div><div class="skel h40"></div></div>
+    <div class="stat"><div class="skel h20 w50"></div><div class="skel h40"></div></div>
+    <div class="stat"><div class="skel h20 w50"></div><div class="skel h40"></div></div>
+    <div class="stat"><div class="skel h20 w50"></div><div class="skel h40"></div></div>`;
+
+  try {
+    const s = await api(`${WORKER}/stats`);
+    S.counts = { pending: s.pending, approved: s.approved, rejected: s.rejected };
+    updatePendingPill();
+
+    $("statsWrap").innerHTML = `
+      <div class="stat yellow">
+        <div class="label">Pending Requests</div>
+        <div class="value">${s.pending}</div>
+        <div class="sub">awaiting your review</div>
+      </div>
+      <div class="stat green">
+        <div class="label">Schools Live</div>
+        <div class="value">${s.schools}</div>
+        <div class="sub">on the platform</div>
+      </div>
+      <div class="stat">
+        <div class="label">School Admins</div>
+        <div class="value">${s.admins}</div>
+        <div class="sub">active accounts</div>
+      </div>
+      <div class="stat red">
+        <div class="label">Rejected</div>
+        <div class="value">${s.rejected}</div>
+        <div class="sub">declined requests</div>
+      </div>`;
+
+    $("tabPending").textContent = s.pending;
+    $("tabApproved").textContent = s.approved;
+    $("tabRejected").textContent = s.rejected;
+  } catch (err) {
+    $("statsWrap").innerHTML = `
+      <div class="stat"><div class="label">Error</div><div class="value sm">${esc(err.message)}</div></div>`;
+  }
+}
+
+function updatePendingPill() {
+  const p = $("pendingPill");
+  if (S.counts.pending > 0) {
+    p.textContent = S.counts.pending;
+    p.style.display = "";
+  } else {
+    p.style.display = "none";
+  }
+}
+
+/* ================================================================== *
+ * RECENT
+ * ================================================================== */
+async function loadRecent() {
+  $("recentList").innerHTML = `
+    <div style="padding:20px">
+      <div class="skel h20 w50"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>
+    </div>`;
+
+  try {
+    const data = await api(`${WORKER}/requests?status=all`);
+    const recent = (data.requests || []).slice(0, 5);
+    $("recentSub").textContent = `${data.total || 0} total`;
+
+    if (!recent.length) {
+      $("recentList").innerHTML = `
+        <div class="empty">
+          <i class="fa-solid fa-inbox"></i>
+          <h3>No requests yet</h3>
+          <p>When a school registers, it'll show up here.</p>
+        </div>`;
+      return;
+    }
+
+    $("recentList").innerHTML = `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>School</th>
+              <th>Registrar</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recent.map((r) => `
+              <tr>
+                <td data-label="School">
+                  <div class="name">${esc(r.schoolName)}</div>
+                  <div class="meta">${esc(r.location)} · ${r.studentCount} students</div>
+                </td>
+                <td data-label="Registrar">${esc(r.registrarName)}</td>
+                <td data-label="Status">${statusPill(r.status)}</td>
+                <td data-label="Submitted" class="meta">${fmtDate(r.createdAt)}</td>
+                <td class="actions">
+                  <button class="btn btn-outline btn-sm" data-go-requests type="button">View</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+
+    qa("[data-go-requests]").forEach((b) => b.addEventListener("click", () => showView("requests")));
+  } catch (err) {
+    $("recentList").innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Couldn't load</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+  }
+}
+
+/* ================================================================== *
+ * REQUESTS
+ * ================================================================== */
+async function loadRequests(status) {
+  $("requestsList").innerHTML = `
+    <div style="padding:20px">
+      <div class="skel h20 w50"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>
+    </div>`;
+
+  try {
+    const data = await api(`${WORKER}/requests?status=${encodeURIComponent(status)}`);
+    S.requests = data.requests || [];
+
+    if (!S.requests.length) {
+      $("requestsList").innerHTML = `
+        <div class="empty">
+          <i class="fa-solid fa-inbox"></i>
+          <h3>Nothing here</h3>
+          <p>No ${status === "all" ? "" : status + " "}requests.</p>
+        </div>`;
+      return;
+    }
+
+    $("requestsList").innerHTML = `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>School</th>
+              <th>Registrar</th>
+              <th>Contact</th>
+              <th>Photos</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${S.requests.map((r) => `
+              <tr>
+                <td data-label="School">
+                  <div class="name">${esc(r.schoolName)}</div>
+                  <div class="meta">${esc(r.location)} · ${r.studentCount} students</div>
+                </td>
+                <td data-label="Registrar">
+                  <div>${esc(r.registrarName)}</div>
+                  <div class="meta">${esc(r.registrarRole || "—")}</div>
+                </td>
+                <td data-label="Contact">
+                  <div class="meta">${esc(r.contactEmail || "—")}</div>
+                  <div class="meta">${esc(r.contactPhone || "—")}</div>
+                </td>
+                <td data-label="Photos">${r.photoCount ? `<span class="pill blue">${r.photoCount}</span>` : `<span class="pill grey">0</span>`}</td>
+                <td data-label="Status">${statusPill(r.status)}</td>
+                <td data-label="Submitted" class="meta">${fmtDate(r.createdAt)}</td>
+                <td class="actions">
+                  <button class="btn btn-primary btn-sm" data-detail="${esc(r.id)}" type="button">Open</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+
+    qa("[data-detail]").forEach((b) => b.addEventListener("click", () => openRequestDetail(b.dataset.detail)));
+  } catch (err) {
+    $("requestsList").innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Couldn't load requests</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+  }
+}
+
+/* ================================================================== *
+ * REQUEST DETAIL
+ * ================================================================== */
+async function openRequestDetail(id) {
+  openModal({
+    title: "Loading…",
+    wide: "wide",
+    body: `
+      <div class="skel h20 w50"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>`,
+    foot: `<button class="btn btn-outline" id="rdClose" type="button">Close</button>`
+  });
+  $("rdClose").onclick = closeModal;
+
+  let req;
+  try {
+    req = await api(`${WORKER}/requests/${encodeURIComponent(id)}`);
+  } catch (err) {
+    $("modalTitle").textContent = "Error";
+    $("modalBody").innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Couldn't load request</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+    return;
+  }
+
+  const photoUrls = Array.isArray(req.photoUrls) ? req.photoUrls : [];
+  const subdomain = req.slug ? `https://${req.slug}.edutraceug.com` : null;
+
+  $("modalTitle").textContent = req.schoolName || "Request";
+
+  $("modalBody").innerHTML = `
+    <div class="detail-section">
+      <h3>School</h3>
+      <div class="detail-row"><div class="key">Name</div><div class="val">${esc(req.schoolName || "—")}</div></div>
+      <div class="detail-row"><div class="key">Location</div><div class="val">${esc(req.location || "—")}</div></div>
+      <div class="detail-row"><div class="key">Est. Students</div><div class="val">${esc(String(req.studentCount || "—"))}</div></div>
+      ${subdomain ? `
+        <div class="detail-row">
+          <div class="key">Live at</div>
+          <div class="val">
+            <a href="${esc(subdomain)}" target="_blank" rel="noopener">
+              ${esc(subdomain)}
+              <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.7rem"></i>
+            </a>
+          </div>
+        </div>` : ""}
+    </div>
+
+    <div class="detail-section">
+      <h3>Registrar</h3>
+      <div class="detail-row"><div class="key">Name</div><div class="val">${esc(req.registrarName || "—")}</div></div>
+      <div class="detail-row"><div class="key">Role</div><div class="val">${esc(req.registrarRole || "—")}</div></div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Contacts</h3>
+      <div class="detail-row">
+        <div class="key">Email</div>
+        <div class="val">${req.contactEmail ? `<a href="mailto:${esc(req.contactEmail)}">${esc(req.contactEmail)}</a>` : "—"}</div>
+      </div>
+      <div class="detail-row">
+        <div class="key">Phone</div>
+        <div class="val">${req.contactPhone ? `<a href="tel:${esc(req.contactPhone)}">${esc(req.contactPhone)}</a>` : "—"}</div>
+      </div>
+      <div class="detail-row"><div class="key">Alt. contact</div><div class="val">${esc(req.altContact || "—")}</div></div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Reasons &amp; aims</h3>
+      <div class="detail-row" style="grid-template-columns:1fr">
+        <div class="val"><pre>${esc(req.reasons || "—")}</pre></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Photos (${photoUrls.length})</h3>
+      ${photoUrls.length ? `
+        <div class="photo-thumbs">
+          ${photoUrls.map((u, i) => `
+            <a href="${esc(u)}" target="_blank" rel="noopener">
+              <img src="${esc(u)}" alt="Photo ${i + 1}" loading="lazy">
+            </a>
+          `).join("")}
+        </div>` : `<p style="color:var(--muted);font-size:.88rem">No photos provided.</p>`}
+    </div>
+
+    <div class="detail-section" style="margin-bottom:0">
+      <h3>Metadata</h3>
+      <div class="detail-row"><div class="key">Request ID</div><div class="val" style="font-family:monospace;font-size:.82rem">${esc(req.id)}</div></div>
+      <div class="detail-row"><div class="key">Status</div><div class="val">${statusPill(req.status || "pending")}</div></div>
+      <div class="detail-row"><div class="key">Submitted</div><div class="val">${fmtDateTime(req.createdAt)}</div></div>
+      ${req.approvedAt ? `
+        <div class="detail-row">
+          <div class="key">Approved</div>
+          <div class="val">${fmtDateTime(req.approvedAt)} by ${esc(req.approvedBy || "")}</div>
+        </div>` : ""}
+      ${req.rejectedAt ? `
+        <div class="detail-row">
+          <div class="key">Rejected</div>
+          <div class="val">${fmtDateTime(req.rejectedAt)} by ${esc(req.rejectedBy || "")}${req.rejectionReason ? " — " + esc(req.rejectionReason) : ""}</div>
+        </div>` : ""}
+    </div>
+  `;
+
+  const status = req.status || "pending";
+  let footHtml = `<button class="btn btn-outline" id="rdClose2" type="button">Close</button>`;
+
+  if (status === "pending") {
+    footHtml += `
+      <button class="btn btn-red" id="rdReject" type="button">
+        <i class="fa-solid fa-xmark"></i> Reject
+      </button>
+      <button class="btn btn-green" id="rdApprove" type="button">
+        <i class="fa-solid fa-check"></i> Approve
+      </button>`;
+  }
+
+  $("modalFoot").innerHTML = footHtml;
+  $("rdClose2").onclick = closeModal;
+
+  if (status === "pending") {
+    $("rdApprove").onclick = () => openApproveModal(req);
+    $("rdReject").onclick = () => openRejectModal(req);
+  }
+}
+
+/* ================================================================== *
+ * APPROVE
+ * ================================================================== */
+function openApproveModal(req) {
+  const defaultSlug = req.slug || slugifyClient(req.schoolName);
+  const defaultEmail = req.contactEmail || "";
+  const defaultPw = generatePw();
+
+  openModal({
+    title: "Approve school",
+    wide: "wide",
+    body: `
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:18px;line-height:1.55">
+        This will create the school on Edutrace, set up its public web page, and create the school admin account.
+        The admin will receive an email with their login details.
+      </p>
+
+      <div class="field" id="fldSchoolName">
+        <label for="apSchoolName">School name</label>
+        <input type="text" id="apSchoolName" maxlength="200" value="${esc(req.schoolName || "")}">
+        <div class="err"></div>
+      </div>
+
+      <div class="field" id="fldSlug">
+        <label for="apSlug">Subdomain <span class="hint">this becomes their web address</span></label>
+        <div class="slug-wrap">
+          <input type="text" id="apSlug" maxlength="32" value="${esc(defaultSlug)}">
+          <div class="suffix">.edutraceug.com</div>
+        </div>
+        <div class="err"></div>
+        <p class="slug-preview">Preview: <b id="slugPreview">https://${esc(defaultSlug)}.edutraceug.com</b></p>
+      </div>
+
+      <div class="field" id="fldAdminEmail">
+        <label for="apAdminEmail">Admin email <span class="hint">used for their login</span></label>
+        <input type="email" id="apAdminEmail" maxlength="200" value="${esc(defaultEmail)}">
+        <div class="err"></div>
+      </div>
+
+      <div class="field" id="fldAdminPassword">
+        <label for="apAdminPassword">Admin password <span class="hint">sent to them by email</span></label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="apAdminPassword" value="${esc(defaultPw)}" maxlength="60" style="flex:1;font-family:monospace;font-size:.95rem;min-width:0">
+          <button class="btn btn-outline" id="apRegen" type="button" title="Generate a new password">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+        <div class="err"></div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:6px">
+          They can change it after first login.
+        </p>
+      </div>
+    `,
+    foot: `
+      <button class="btn btn-outline" id="apCancel" type="button">Cancel</button>
+      <button class="btn btn-green" id="apConfirm" type="button">
+        <span class="spinner"></span>
+        <i class="fa-solid fa-check"></i>
+        <span class="btn-label">Approve and create account</span>
+      </button>
+    `
+  });
+
+  const slugInput = $("apSlug");
+  const nameInput = $("apSchoolName");
+  let userEditedSlug = false;
+
+  slugInput.addEventListener("input", () => {
+    userEditedSlug = true;
+    const v = (slugInput.value || "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+    slugInput.value = v;
+    $("slugPreview").textContent = "https://" + (v || "…") + ".edutraceug.com";
+  });
+
+  nameInput.addEventListener("input", () => {
+    if (!userEditedSlug) {
+      const s = slugifyClient(nameInput.value);
+      slugInput.value = s;
+      $("slugPreview").textContent = "https://" + (s || "…") + ".edutraceug.com";
+    }
+  });
+
+  $("apRegen").onclick = () => { $("apAdminPassword").value = generatePw(); };
+  $("apCancel").onclick = closeModal;
+
+  $("apConfirm").onclick = async () => {
+    qa(".field.has-error", $("modalBody")).forEach((f) => f.classList.remove("has-error"));
+
+    const schoolName = $("apSchoolName").value.trim();
+    const slug = $("apSlug").value.trim().toLowerCase();
+    const adminEmail = $("apAdminEmail").value.trim();
+    const adminPassword = $("apAdminPassword").value.trim();
+
+    let ok = true;
+    if (!schoolName) { setFieldErr("fldSchoolName", "School name is required"); ok = false; }
+    if (!/^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$/.test(slug)) {
+      setFieldErr("fldSlug", "Use lowercase letters, numbers and hyphens (3–32 characters)");
+      ok = false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
+      setFieldErr("fldAdminEmail", "Enter a valid email address");
+      ok = false;
+    }
+    if (adminPassword.length < 6) {
+      setFieldErr("fldAdminPassword", "Password must be at least 6 characters");
+      ok = false;
+    }
+    if (!ok) return;
+
+    const btn = $("apConfirm");
+    setBtn(btn, true);
+
+    try {
+      const result = await api(`${WORKER}/requests/${encodeURIComponent(req.id)}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schoolName, slug, adminEmail, adminPassword })
+      });
+
+      closeModal();
+      toast(`Approved. School live at ${result.slug}.edutraceug.com`, "success", 6000);
+      await loadStats();
+      if (S.currentTab === "pending") {
+        setTimeout(() => showView("schools"), 400);
+      } else {
+        loadRequests(S.currentTab);
+      }
+    } catch (err) {
+      setBtn(btn, false);
+      toast(err.message, "error", 7000);
+
+      if (err.message && err.message.toLowerCase().includes("slug")) {
+        setFieldErr("fldSlug", err.message);
+      }
+      if (err.message && err.message.toLowerCase().includes("email")) {
+        setFieldErr("fldAdminEmail", err.message);
+      }
+    }
+  };
+
+  function setFieldErr(id, msg) {
+    const f = $(id);
+    if (!f) return;
+    f.classList.add("has-error");
+    const e = f.querySelector(".err");
+    if (e) e.textContent = msg;
+  }
+}
+
+/* ================================================================== *
+ * REJECT
+ * ================================================================== */
+function openRejectModal(req) {
+  openModal({
+    title: "Reject request",
+    body: `
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px;line-height:1.55">
+        The school will be notified that their request was declined. You can leave the reason blank.
+      </p>
+      <div class="field">
+        <label for="rjReason">Reason <span class="hint">optional, sent to the applicant</span></label>
+        <textarea id="rjReason" maxlength="500" placeholder="e.g. We could not verify the school details."></textarea>
+      </div>
+    `,
+    foot: `
+      <button class="btn btn-outline" id="rjCancel" type="button">Cancel</button>
+      <button class="btn btn-red" id="rjConfirm" type="button">
+        <span class="spinner"></span>
+        <i class="fa-solid fa-xmark"></i>
+        <span class="btn-label">Confirm rejection</span>
+      </button>
+    `
+  });
+
+  $("rjCancel").onclick = closeModal;
+
+  $("rjConfirm").onclick = async () => {
+    const reason = $("rjReason").value.trim();
+    const btn = $("rjConfirm");
+    setBtn(btn, true);
+
+    try {
+      await api(`${WORKER}/requests/${encodeURIComponent(req.id)}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason })
+      });
+      closeModal();
+      toast("Request rejected", "success");
+      await loadStats();
+      loadRequests(S.currentTab);
+    } catch (err) {
+      setBtn(btn, false);
+      toast(err.message, "error", 6000);
+    }
+  };
+}
+
+/* ================================================================== *
+ * SCHOOLS
+ * ================================================================== */
+async function loadSchools() {
+  $("schoolsList").innerHTML = `
+    <div style="padding:20px">
+      <div class="skel h20 w50"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>
+    </div>`;
+
+  try {
+    const data = await api(`${WORKER}/schools`);
+    const list = data.schools || [];
+
+    if (!list.length) {
+      $("schoolsList").innerHTML = `
+        <div class="empty">
+          <i class="fa-solid fa-school"></i>
+          <h3>No schools yet</h3>
+          <p>Approve a request to see a school appear here.</p>
+        </div>`;
+      return;
+    }
+
+    $("schoolsList").innerHTML = `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>School</th>
+              <th>Subdomain</th>
+              <th>Location</th>
+              <th>Contact</th>
+              <th>Theme</th>
+              <th>Subscription</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map((s) => `
+              <tr>
+                <td data-label="School">
+                  <div class="name">${esc(s.name)}</div>
+                  <div class="meta">${s.logoUrl ? "has logo" : "no logo yet"}</div>
+                </td>
+                <td data-label="Subdomain">
+                  ${s.slug
+                    ? `<a href="https://${esc(s.slug)}.edutraceug.com" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">
+                        ${esc(s.slug)}.edutraceug.com
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.7rem"></i>
+                       </a>`
+                    : `<span class="pill grey">no slug</span>`}
+                </td>
+                <td data-label="Location">${esc(s.location || "—")}</td>
+                <td data-label="Contact">
+                  <div class="meta">${esc(s.email || "—")}</div>
+                  <div class="meta">${esc(s.phone || "—")}</div>
+                </td>
+                <td data-label="Theme">
+                  <span style="display:inline-block;width:20px;height:20px;border:1px solid var(--border);background:${esc(s.themeColor || "#3570BC")}"></span>
+                </td>
+                <td data-label="Subscription">
+                  ${s.subscriptionActive ? `<span class="pill green">Active</span>` : `<span class="pill grey">Inactive</span>`}
+                  <button class="btn ${s.subscriptionActive ? "btn-outline" : "btn-green"} btn-sm" data-sub="${esc(s.id)}" data-active="${s.subscriptionActive ? "1" : "0"}" type="button" style="margin-left:8px">${s.subscriptionActive ? "Deactivate" : "Activate"}</button>
+                </td>
+                <td class="actions">
+                  ${s.slug
+                    ? `<a href="https://${esc(s.slug)}.edutraceug.com" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit
+                       </a>`
+                    : ""}
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+
+    qa("[data-sub]", $("schoolsList")).forEach((b) => b.addEventListener("click", async () => {
+      const turnOn = b.dataset.active !== "1";
+      const ok = await confirmDialog(
+        turnOn ? "Activate subscription" : "Deactivate subscription",
+        turnOn ? "Bulk email will be enabled for this school." : "Bulk email will be disabled for this school.",
+        turnOn ? "Activate" : "Deactivate",
+        !turnOn
+      );
+      if (!ok) return;
+      setBtn(b, true);
+      try {
+        await api(`${WORKER}/schools/${encodeURIComponent(b.dataset.sub)}/subscription`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ active: turnOn })
+        });
+        toast(turnOn ? "Subscription activated" : "Subscription deactivated", "success");
+        loadSchools();
+      } catch (err) { setBtn(b, false); toast(err.message, "error"); }
+    }));
+  } catch (err) {
+    $("schoolsList").innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Couldn't load schools</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+  }
+}
+
+/* ================================================================== *
+ * ADMINS
+ * ================================================================== */
+async function loadAdmins() {
+  $("adminsList").innerHTML = `
+    <div style="padding:20px">
+      <div class="skel h20 w50"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>
+    </div>`;
+
+  try {
+    const data = await api(`${WORKER}/admins`);
+    const list = data.admins || [];
+
+    if (!list.length) {
+      $("adminsList").innerHTML = `
+        <div class="empty">
+          <i class="fa-solid fa-user-shield"></i>
+          <h3>No admins yet</h3>
+          <p>Approve a school request to create one.</p>
+        </div>`;
+      return;
+    }
+
+    $("adminsList").innerHTML = `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Name</th>
+              <th>School</th>
+              <th>Subdomain</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map((a) => `
+              <tr>
+                <td data-label="Email"><div class="name">${esc(a.email)}</div></td>
+                <td data-label="Name">${esc(a.name || "—")}</td>
+                <td data-label="School">${esc(a.schoolName || "—")}</td>
+                <td data-label="Subdomain">
+                  ${a.schoolSlug
+                    ? `<a href="https://${esc(a.schoolSlug)}.edutraceug.com" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">
+                        ${esc(a.schoolSlug)}.edutraceug.com
+                       </a>`
+                    : `<span class="pill grey">—</span>`}
+                </td>
+                <td data-label="Created" class="meta">${fmtDate(a.createdAt)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+  } catch (err) {
+    $("adminsList").innerHTML = `
+      <div class="empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Couldn't load admins</h3>
+        <p>${esc(err.message)}</p>
+      </div>`;
+  }
+}
+
+/* ================================================================== *
+ * HASH CHANGE ROUTER
+ * ================================================================== */
+window.addEventListener("hashchange", () => {
+  if (!getToken()) return;
+  const name = (location.hash || "").replace(/^#\/?/, "") || "dashboard";
+  if (["dashboard", "requests", "schools", "admins"].includes(name)) {
+    showView(name);
+  }
+});
+
+/* ================================================================== *
+ * INIT
+ * ================================================================== */
+(async function init() {
+  if (getToken()) {
+    await bootApp();
+  } else {
+    showLogin();
+  }
+})();
+</script>
+
+</body>
+</html>

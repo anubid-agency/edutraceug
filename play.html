@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumi UV Nail Lamp</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E10600; --deep:#8F0012; --ink:#1C0206; --paper:#FFF3F0; --white:#fff;
+  --font:'Archivo','Arial Narrow',Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0}
+html{scroll-behavior:auto}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+
+/* header */
+header{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:var(--red);color:var(--white)}
+header b{font-size:22px;font-weight:900;font-stretch:75%;letter-spacing:-.5px}
+header a.btn{background:var(--white);color:var(--red);padding:8px 18px;font-weight:700;text-decoration:none;font-size:15px}
+
+/* scroll video */
+.scroll{height:450vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--white)}
+.stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage video{opacity:0;pointer-events:none}
+.bar{position:absolute;left:0;bottom:0;height:8px;width:100%;background:var(--ink);z-index:5}
+.bar i{display:block;height:100%;width:0;background:var(--red)}
+.cap{position:absolute;left:24px;bottom:56px;max-width:min(560px,calc(100% - 48px));background:var(--red);color:var(--white);padding:22px 26px;opacity:0;transform:translateY(16px);transition:opacity .35s,transform .35s;z-index:4}
+.cap.on{opacity:1;transform:none}
+.cap h2{font-size:clamp(30px,6vw,58px);font-weight:900;font-stretch:70%;line-height:.98;letter-spacing:-1px}
+.cap p{margin-top:10px;font-size:16px;max-width:42ch}
+.hint{position:absolute;top:84px;right:24px;background:var(--ink);color:var(--white);padding:6px 12px;font-size:14px;z-index:4;transition:opacity .3s}
+
+/* content */
+section.block{padding:90px 24px;max-width:1100px;margin:0 auto}
+h3{font-size:clamp(34px,6vw,64px);font-weight:900;font-stretch:70%;line-height:1;letter-spacing:-1px;margin-bottom:28px;max-width:14ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border:3px solid var(--ink)}
+.grid div{padding:26px;border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);margin:0 -3px -3px 0;background:var(--white)}
+.grid div:nth-child(even){background:var(--red);color:var(--white)}
+.grid h4{font-size:24px;font-weight:800;font-stretch:80%;margin-bottom:6px}
+.parts{background:var(--ink);color:var(--paper)}
+.parts ul{list-style:none;columns:2 240px;border-top:3px solid var(--red)}
+.parts li{padding:14px 0;border-bottom:1px solid #5a1a22;font-size:20px;font-weight:600}
+.cta{background:var(--red);color:var(--white);text-align:left}
+.cta .block{padding:100px 24px}
+.cta h3{max-width:12ch}
+.cta a{display:inline-block;background:var(--white);color:var(--red);padding:16px 34px;font-size:20px;font-weight:800;text-decoration:none;border:3px solid var(--ink)}
+.cta a:focus-visible,header a:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+footer{background:var(--ink);color:var(--paper);padding:22px 24px;font-size:14px}
+@media(max-width:600px){.cap{padding:16px 18px;bottom:40px}header{padding:12px 16px}}
+</style>
+</head>
+<body>
+
+<header>
+  <b>Lumi</b>
+  <a class="btn" href="#buy">Buy now</a>
+</header>
+
+<div class="scroll" id="scroll">
+  <div class="stage">
+    <!-- Put your video file next to this HTML file and name it video.mp4 -->
+    <video id="v" src="video.mp4" muted playsinline preload="auto" disablepictureinpicture></video>
+    <canvas id="c"></canvas>
+    <div class="hint" id="hint">Scroll down</div>
+
+    <div class="cap" data-from="0" data-to=".30">
+      <h2>Cure your nails at home.</h2>
+      <p>The Lumi UV nail lamp gives a smooth, salon-style finish on your table.</p>
+    </div>
+    <div class="cap" data-from=".32" data-to=".62">
+      <h2>Look inside.</h2>
+      <p>Blue LEDs line the ceiling and walls so light reaches every nail.</p>
+    </div>
+    <div class="cap" data-from=".66" data-to="1.01">
+      <h2>Every part, laid bare.</h2>
+      <p>Shell, circuit board, LED beads, power port and buttons, all in one clean build.</p>
+    </div>
+    <div class="bar"><i id="fill"></i></div>
+  </div>
+</div>
+
+<section class="block">
+  <h3>Built for fast, even curing.</h3>
+  <div class="grid">
+    <div><h4>Even light</h4><p>LED beads on the ceiling and walls cover all five fingers.</p></div>
+    <div><h4>Open front</h4><p>Slide your hand in and out with no lid to lift.</p></div>
+    <div><h4>Simple controls</h4><p>Buttons on top start and stop a cure in one press.</p></div>
+    <div><h4>USB-ready</h4><p>A power port on the back keeps the cord out of your way.</p></div>
+  </div>
+</section>
+
+<section class="parts">
+  <div class="block">
+    <h3>What's inside.</h3>
+    <ul>
+      <li>Pink outer shell</li>
+      <li>Inner circuit board</li>
+      <li>Blue LED beads</li>
+      <li>Reflective chamber</li>
+      <li>Power cord port</li>
+      <li>Top control buttons</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cta" id="buy">
+  <div class="block">
+    <h3>Ready for salon nails?</h3>
+    <a href="#buy">Order the Lumi lamp</a>
+  </div>
+</section>
+
+<footer>© 2026 Lumi. All rights reserved.</footer>
+
+<script>
+(function(){
+  var v=document.getElementById('v'),
+      cv=document.getElementById('c'),
+      ctx=cv.getContext('2d'),
+      wrap=document.getElementById('scroll'),
+      fill=document.getElementById('fill'),
+      hint=document.getElementById('hint'),
+      caps=[].slice.call(document.querySelectorAll('.cap'));
+  v.muted=true;
+
+  var N=90,frames=[],ready=false,cur=0;
+
+  function progress(){
+    var r=wrap.getBoundingClientRect();
+    var total=wrap.offsetHeight-window.innerHeight;
+    return Math.min(1,Math.max(0,-r.top/total));
+  }
+
+  function seek(t){
+    return new Promise(function(res){
+      var done=false;
+      function f(){ if(done)return; done=true; v.removeEventListener('seeked',f); res(); }
+      v.addEventListener('seeked',f);
+      setTimeout(f,1500);
+      v.currentTime=t;
+    });
+  }
+
+  // Pre-extract frames once, so scrolling is just drawing images (no video seeking)
+  async function build(){
+    var dur=v.duration||4;
+    var w=Math.min(v.videoWidth||854,854);
+    var h=Math.round(w*(v.videoHeight||480)/(v.videoWidth||854));
+    cv.width=w; cv.height=h;
+    for(var i=0;i<N;i++){
+      await seek(Math.max(0.001,Math.min(dur-0.04,i/(N-1)*dur)));
+      var o=document.createElement('canvas'); o.width=w; o.height=h;
+      o.getContext('2d').drawImage(v,0,0,w,h);
+      frames.push(o);
+      if(i===0) ctx.drawImage(o,0,0);
+    }
+    ready=true;
+  }
+
+  function draw(p){
+    if(!frames.length) return;
+    var last=frames.length-1;
+    var pos=p*(N-1),a=Math.min(last,Math.floor(pos)),b=Math.min(last,a+1),f=pos-Math.floor(pos);
+    ctx.globalAlpha=1; ctx.drawImage(frames[a],0,0);
+    if(f>0.02&&b!==a){ ctx.globalAlpha=f; ctx.drawImage(frames[b],0,0); ctx.globalAlpha=1; }
+  }
+
+  function tick(){
+    var p=progress();
+    cur+=(p-cur)*0.12;                       // smooth easing
+    draw(cur);
+    fill.style.width=(p*100)+'%';
+    hint.style.opacity=p>0.03?0:1;
+    caps.forEach(function(c){
+      var f=parseFloat(c.dataset.from),t=parseFloat(c.dataset.to);
+      c.classList.toggle('on',p>=f&&p<=t);
+    });
+    requestAnimationFrame(tick);
+  }
+
+  function start(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      cv.style.display='none';
+      v.style.opacity=1; v.loop=true; v.play(); wrap.style.height='100vh';
+      caps[0].classList.add('on'); return;
+    }
+    build(); requestAnimationFrame(tick);
+  }
+  if(v.readyState>=2) start(); else v.addEventListener('loadeddata',start);
+})();
+</script>
+</body>
+</html>

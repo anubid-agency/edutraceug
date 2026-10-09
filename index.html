@@ -1,0 +1,538 @@
+ <!DOCTYPE html>
+<html lang="en-UG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3570BC">
+<title>Edutrace — School Management System Uganda</title>
+<meta name="description" content="Edutrace is a school management system for Ugandan schools. Record marks, generate CBC report cards, manage rosters and publish term results.">
+<link rel="canonical" href="https://edutraceug.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Edutrace">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Edutrace — School Management System Uganda">
+<meta property="og:description" content="Record marks, generate CBC report cards, manage rosters, and publish term results — all from one platform.">
+<meta property="og:image" content="https://edutraceug.com/open.png">
+<meta property="og:image:alt" content="Edutrace school management system for Uganda">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://edutraceug.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Edutrace — School Management System Uganda">
+<meta name="twitter:description" content="Record marks, generate CBC report cards, manage rosters, and publish term results.">
+<meta name="twitter:image" content="https://edutraceug.com/open.png">
+<link rel="icon" type="image/jpeg" href="/edutrace-favicon.jpg">
+<link rel="apple-touch-icon" href="/edutrace-favicon.jpg">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Edutrace","url":"https://edutraceug.com/","applicationCategory":"EducationalApplication","operatingSystem":"Web","description":"School management system for Ugandan schools: marks, CBC report cards, rosters and parent access.","areaServed":"UG"}
+</script>
+<style>
+:root{--blue:#3570BC;--green:#008E34;--yellow:#F9B515;--red:#D7040A;--dark:#1A1A1A;--muted:#555;--border:#E5E5E5;--light:#F8F9FA;--font:'Plus Jakarta Sans',Arial,sans-serif;--hh:64px}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--font);color:var(--dark);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;background:#fff}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.container{width:92%;max-width:1200px;margin:0 auto}
+.noscript-bar{background:var(--red);color:#fff;padding:12px 16px;text-align:center;font-weight:600;font-size:.9rem}
+
+/* cookie strip */
+.cookie{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;z-index:9999;display:none;border-top:3px solid var(--blue)}
+.cookie.show{display:block}
+.cookie-in{width:92%;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 0}
+.cookie-text{flex:1;font-size:.78rem;line-height:1.4;display:flex;align-items:center;gap:10px}
+.cookie-img{width:100px;height:auto;object-fit:contain;flex:none}
+.cookie-text a{color:var(--yellow);text-decoration:underline;font-weight:600}
+.cookie-btn{padding:8px 14px;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.cookie-btn.allow{background:var(--green);color:#fff}
+.cookie-btn.reject{border:2px solid #fff;color:#fff}
+
+/* header */
+header{background:#fff;position:sticky;top:0;z-index:1000;border-bottom:1px solid var(--border)}
+.navbar{display:flex;align-items:center;gap:8px;height:var(--hh)}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand img{height:44px;width:auto;object-fit:contain}
+.nav-links{display:flex;align-items:center;gap:26px;margin-right:12px}
+.nav-links a{font-weight:600;font-size:.9rem}
+.nav-links a:hover{color:var(--blue)}
+.nav-links .call{display:none}
+.icon-btn{width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.icon-btn:hover{background:var(--light)}
+.nav-cta{background:var(--blue);color:#fff;padding:11px 16px;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.nav-cta:hover{background:var(--dark)}
+.hamburger{display:none}
+
+/* search panel */
+.search-panel{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-bottom:3px solid var(--blue);box-shadow:0 12px 24px rgba(0,0,0,.12);padding:14px 0 16px}
+.search-panel.open{display:block}
+.search-wrap{position:relative;max-width:640px;margin:0 auto}
+.search-wrap>i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+#schoolInput{width:100%;padding:15px 14px 15px 42px;font:500 1rem var(--font);border:2px solid var(--border);color:var(--dark)}
+#schoolInput:focus{outline:none;border-color:var(--blue)}
+.results{max-width:640px;margin:8px auto 0;max-height:min(50vh,320px);overflow-y:auto;border:2px solid var(--border);display:none}
+.results.show{display:block}
+.row{padding:14px;border-bottom:1px solid var(--border);cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--light);color:var(--blue)}
+.row i{color:var(--blue);font-size:.8rem}
+.empty,.err{padding:16px;font-size:.9rem;text-align:center;color:var(--muted)}
+.empty a{color:var(--blue);font-weight:700;text-decoration:underline}
+.err{color:var(--red);font-weight:600;background:#fef2f2}
+.sk{height:50px;border-bottom:1px solid var(--border);background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sh 1.4s infinite}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* hero */
+.hero{position:relative;color:#fff;background:#12294a url('hero-1.jpg') center/cover no-repeat;min-height:min(72vh,620px);display:flex;align-items:center;padding:70px 0}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,22,40,.92) 0%,rgba(10,22,40,.72) 55%,rgba(10,22,40,.45) 100%)}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--blue) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.hero .container{position:relative;z-index:1}
+.hero h1{font-size:3.2rem;font-weight:800;line-height:1.08;letter-spacing:-1px;max-width:700px;margin-bottom:16px}
+.hero p{font-size:1.1rem;max-width:520px;margin-bottom:28px;opacity:.92}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 28px;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:.5px;background:var(--green);color:#fff;border:2px solid var(--green);transition:background .2s}
+.btn:hover{background:#fff;color:var(--green)}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.btn.ghost{background:transparent;color:#fff;border:3px solid;border-image:linear-gradient(90deg,var(--blue),var(--green),var(--yellow),var(--red)) 1}
+.btn.ghost:hover{background:rgba(255,255,255,.15);color:#fff}
+
+/* hero illustration (colorful framed image) */
+.hero-image-wrap {
+  position: relative;
+  padding: 20px;
+  max-width: 900px;
+  margin: 40px auto 0;
+}
+.hero-image-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  background: var(--yellow);
+  z-index: 0;
+}
+.hero-image-wrap::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  background: var(--green);
+  z-index: 0;
+}
+.hero-image-wrap img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* sections */
+.block{padding:72px 0}
+.alt{background:var(--light)}
+.head{margin-bottom:36px;max-width:640px}
+.head h2{font-size:2rem;font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-bottom:10px}
+.head p{color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-bottom:40px;border:1px solid var(--border);background:#fff}
+.step{padding:22px;border-right:1px solid var(--border);border-top:5px solid var(--blue)}
+.step:last-child{border-right:none}
+.step:nth-child(2){border-top-color:var(--green)}
+.step:nth-child(3){border-top-color:var(--yellow)}
+.step h3{font-size:1rem;font-weight:800;margin-bottom:4px}
+.step p{font-size:.88rem;color:var(--muted)}
+
+/* features */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:#fff;border:1px solid var(--border);padding:26px 22px;display:flex;flex-direction:column}
+.ico{width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;margin-bottom:16px}
+.blue .ico{background:var(--blue)}.green .ico{background:var(--green)}.yellow .ico{background:var(--yellow);color:var(--dark)}.red .ico{background:var(--red)}
+.card h3{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.card p{color:var(--muted);font-size:.9rem;margin-bottom:16px;flex:1}
+.card img{width:100%;max-height:150px;object-fit:contain;margin-top:auto}
+
+/* tabs */
+.tabs{display:flex;border:2px solid var(--dark);width:max-content;max-width:100%;margin-bottom:24px}
+.tab{padding:13px 22px;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px}
+.tab[aria-selected="true"]{background:var(--dark);color:#fff}
+.panel{display:none;background:#fff;border:1px solid var(--border);padding:32px}
+.panel.on{display:block}
+.panel.pct{border-top:6px solid var(--blue)}
+.panel.cbc{border-top:6px solid var(--green)}
+.panel h3{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+.panel>p{color:var(--muted);margin-bottom:16px;max-width:640px}
+.list{display:grid;grid-template-columns:1fr 1fr;column-gap:30px}
+.list li{padding:10px 0;border-bottom:1px solid var(--border);font-size:.9rem;display:flex;gap:10px;align-items:center}
+.pct .list i{color:var(--blue)}.cbc .list i{color:var(--green)}
+
+/* roles */
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.role{background:#fff;border:1px solid var(--border);padding:24px 20px}
+.role .ico{margin-bottom:14px}
+.role h3{font-size:1rem;font-weight:800;margin-bottom:6px}
+.role p{font-size:.85rem;color:var(--muted)}
+
+/* cta */
+.cta{background:var(--blue);color:#fff;padding:64px 0;position:relative}
+.cta::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red))}
+.cta-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+.cta h2{font-size:2.1rem;font-weight:800;line-height:1.15;margin-bottom:12px;letter-spacing:-.5px}
+.cta p{margin-bottom:24px;opacity:.95}
+.cta .btn{background:#fff;color:var(--blue);border-color:#fff}
+.cta .btn:hover{background:var(--dark);color:#fff;border-color:var(--dark)}
+.cta img{max-height:240px;margin:0 auto}
+
+/* footer */
+footer{background:#111;color:#bbb;padding-top:56px;border-top:5px solid var(--blue)}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding-bottom:40px}
+.fgrid img{width:42px;height:42px;margin-bottom:12px}
+.fgrid h4{color:#fff;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+.fgrid .name{color:#fff;font-size:1.15rem;font-weight:800;margin-bottom:8px;text-transform:none;letter-spacing:0}
+.fgrid p,.fgrid a{font-size:.88rem}
+.fgrid li{margin-bottom:10px}
+.fgrid a:hover{color:var(--yellow)}
+.fgrid .c{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
+.fgrid .c i{color:var(--yellow);margin-top:4px}
+.fbot{background:#080808;padding:20px 0;text-align:center;font-size:.8rem}
+.fbot .credit{color:#777;font-size:.76rem;margin-top:4px}
+.fbot .credit a{color:#999;text-decoration:underline}
+
+@media(max-width:900px){
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;gap:0;padding:8px 4%;margin:0;border-bottom:3px solid var(--blue);box-shadow:0 12px 24px rgba(0,0,0,.12)}
+  .nav-links.open{display:flex}
+  .nav-links a{padding:15px 4px;border-bottom:1px solid var(--border)}
+  .nav-links a:last-child{border-bottom:none}
+  .nav-links .call{display:block;color:var(--green);font-weight:700}
+  .hamburger{display:flex}
+  .hero{min-height:auto;padding:56px 0 64px}
+  .hero h1{font-size:2.1rem}
+  .hero p{font-size:1rem}
+  .block{padding:52px 0}
+  .head h2,.cta h2{font-size:1.55rem}
+  .steps{grid-template-columns:1fr}
+  .step{border-right:none;border-bottom:1px solid var(--border)}
+  .step:last-child{border-bottom:none}
+  .grid3{grid-template-columns:1fr}
+  .roles{grid-template-columns:1fr 1fr}
+  .list{grid-template-columns:1fr}
+  .panel{padding:22px}
+  .cta-grid{grid-template-columns:1fr;text-align:center}
+  .cta img{max-height:180px}
+  .fgrid{grid-template-columns:1fr;gap:28px}
+}
+@media(max-width:520px){
+  :root{--hh:58px}
+  .brand img{height:38px;width:auto}
+  .nav-cta{padding:10px 12px;font-size:.7rem}
+  .icon-btn{width:38px}
+  .hero .btn{width:100%}
+  .hero-actions{align-items:stretch}
+  .tabs{width:100%}.tab{flex:1;padding:13px 8px}
+  .roles{grid-template-columns:1fr}
+  .cookie-in{flex-wrap:wrap}
+  .cookie-text{flex-basis:100%}
+  .cookie-btn{flex:1}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sk{animation:none}}
+</style>
+</head>
+<body>
+
+<noscript><div class="noscript-bar">JavaScript is required to use Edutrace. Please enable it in your browser settings.</div></noscript>
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-in">
+    <div class="cookie-text"><img class="cookie-img" src="cookied.png" alt="" width="38" height="38"><span>We use cookies to improve your experience and analyse traffic. <a href="terms-policy.html">Terms &amp; Policies</a></span></div>
+    <button class="cookie-btn reject" id="cookieReject" type="button">Reject</button>
+    <button class="cookie-btn allow" id="cookieAllow" type="button">Allow</button>
+  </div>
+</div>
+
+<header>
+  <div class="container">
+    <nav class="navbar">
+      <a href="/" class="brand" aria-label="Edutrace home">
+        <img src="/logo.png" alt="Edutrace logo">
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#features">Features</a>
+        <a href="#scoring">Scoring</a>
+        <a href="#roles">Roles</a>
+        <a href="#contact">Contact</a>
+        <a href="tel:+256742228675" class="call"><i class="fa-solid fa-phone"></i> Call +256 742 228 675</a>
+      </div>
+      <button class="icon-btn" id="searchBtn" type="button" aria-label="Find your school" aria-expanded="false"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <a href="register.html" class="nav-cta">Register</a>
+      <button class="icon-btn hamburger" id="hamburger" type="button" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+    </nav>
+  </div>
+  <div class="search-panel" id="searchPanel">
+    <div class="container">
+      <div class="search-wrap">
+        <i class="fa-solid fa-school"></i>
+        <input type="text" id="schoolInput" placeholder="Find your school" autocomplete="off" spellcheck="false" aria-label="Find your school">
+      </div>
+      <div class="results" id="results" role="listbox"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>Marks, report cards and results for Ugandan schools.</h1>
+      <p>Built for CBC and percentage grading. Parents see results on their phones.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn" id="heroSearch">Search your school</button>
+        <a href="register.html" class="btn ghost">Register your school</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="hero-image-wrap">
+      <img src="online-learning.jpg" alt="Student learning with Edutrace">
+    </div>
+  </div>
+
+  <section class="block" id="features">
+    <div class="container">
+      <div class="head">
+        <h2>From the first mark to the final report card</h2>
+        <p>If your staff can use Excel, they can use Edutrace.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step"><h3>1. Upload your roster</h3><p>Students and teachers from one Excel file.</p></div>
+        <div class="step"><h3>2. Enter or upload marks</h3><p>On screen or from a template. Unclear rows are flagged.</p></div>
+        <div class="step"><h3>3. Publish report cards</h3><p>Print them or let parents view on their phones.</p></div>
+      </div>
+
+      <div class="grid3">
+        <div class="card blue">
+          <div class="ico"><i class="fa-solid fa-pen-to-square"></i></div>
+          <h3>Marks Entry</h3>
+          <p>Enter marks per class, stream, subject and assessment type. Or upload them in bulk via Excel.</p>
+          <img src="Grades.svg" alt="Grades illustration" loading="lazy">
+        </div>
+        <div class="card green">
+          <div class="ico"><i class="fa-solid fa-file-lines"></i></div>
+          <h3>Report Cards</h3>
+          <p>Printable term report cards for every student, in percentage or CBC mode.</p>
+          <img src="Certification.svg" alt="Report card illustration" loading="lazy">
+        </div>
+        <div class="card yellow">
+          <div class="ico"><i class="fa-solid fa-file-excel"></i></div>
+          <h3>Roster Upload</h3>
+          <p>Upload student and teacher rosters as Excel or CSV. Duplicates are flagged for you.</p>
+          <img src="upload.svg" alt="Excel analysis illustration" loading="lazy">
+        </div>
+        <div class="card red">
+          <div class="ico"><i class="fa-solid fa-users"></i></div>
+          <h3>Parent Portal</h3>
+          <p>Parents view their child's term results on any phone. No app to install.</p>
+          <img src="Parents.svg" alt="Parents illustration" loading="lazy">
+        </div>
+        <div class="card blue">
+          <div class="ico"><i class="fa-solid fa-chart-simple"></i></div>
+          <h3>Two Scoring Modes</h3>
+          <p>Weighted percentages or CBC competency levels. One switch changes everything.</p>
+          <img src="Team-work.svg" alt="Teamwork illustration" loading="lazy">
+        </div>
+        <div class="card green">
+          <div class="ico"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3>Secure &amp; Audited</h3>
+          <p>Firebase authentication, role-based access, and an audit log of every mark and roster change.</p>
+          <img src="security.svg" alt="Certification illustration" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt" id="scoring">
+    <div class="container">
+      <div class="head">
+        <h2>Percentage or CBC. Your choice.</h2>
+        <p>Both scoring modes are built in. Switch any time.</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="t1" aria-selected="true" aria-controls="p1" type="button">Percentage</button>
+        <button class="tab" role="tab" id="t2" aria-selected="false" aria-controls="p2" type="button">CBC</button>
+      </div>
+      <div class="panel pct on" id="p1" role="tabpanel" aria-labelledby="t1">
+        <h3>Weighted assessments</h3>
+        <p>Ideal for O-Level and schools using weighted continuous assessment. Give each assessment a weight and Edutrace computes the term total.</p>
+        <ul class="list">
+          <li><i class="fa-solid fa-circle-check"></i> <strong>BOT</strong> Beginning of Term</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>CA</strong> Continuous Assessment</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>AOI</strong> Activity of integration</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>COURSEWORK</strong> Projects</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>MIDTERM</strong> and <strong>ENDTERM</strong></li>
+        </ul>
+      </div>
+      <div class="panel cbc" id="p2" role="tabpanel" aria-labelledby="t2">
+        <h3>Competency-based levels</h3>
+        <p>Matches the NCDC competency-based curriculum. No percentages or averages, just clear levels for what each learner has achieved.</p>
+        <ul class="list">
+          <li><i class="fa-solid fa-circle-check"></i> <strong>Level 1</strong> Beginning</li>
+          <li><i class="fa-solid fa-circle-check"></i> <strong>Level 2</strong> Developing</li>
+          <li><i class="fa-solid fa-check-double"></i> <strong>Level 3</strong> Achieved</li>
+          <li><i class="fa-solid fa-circle-check"></i> Levels roll up per subject</li>
+          <li><i class="fa-solid fa-circle-check"></i> Custom levels supported</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="roles">
+    <div class="container">
+      <div class="head">
+        <h2>A dashboard for every role</h2>
+        <p>Nobody sees more than they need to.</p>
+      </div>
+      <div class="roles">
+        <div class="role blue"><div class="ico"><i class="fa-solid fa-user-tie"></i></div><h3>School Admin</h3><p>Manage rosters, teachers, terms, assessment types and marks.</p></div>
+        <div class="role green"><div class="ico"><i class="fa-solid fa-chalkboard-user"></i></div><h3>Teacher</h3><p>Enter marks for your classes and subjects. Submit sheets for review.</p></div>
+        <div class="role yellow"><div class="ico"><i class="fa-solid fa-user-graduate"></i></div><h3>Student</h3><p>View your marks and download your term report card.</p></div>
+        <div class="role red"><div class="ico"><i class="fa-solid fa-people-roof"></i></div><h3>Parent</h3><p>See your child's results the moment the school publishes them.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <div class="cta-grid">
+        <div>
+          <h2>Ready to digitise your school?</h2>
+          <p>Register in minutes. We guide you through onboarding and set up your first term.</p>
+          <a href="register.html" class="btn">Register your school</a>
+        </div>
+        <div><img src="Team-work.svg" alt="Teamwork illustration" loading="lazy"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="container">
+    <div class="fgrid">
+      <div>
+        <img src="/logo.png" alt="Edutrace logo">
+        <h4 class="name">Edutrace</h4>
+        <p>School management system built for Ugandan secondary schools. Marks, report cards, rosters and parent access in one place.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="register.html">Register your school</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#scoring">Scoring</a></li>
+          <li><a href="#roles">Roles</a></li>
+          <li><a href="terms-policy.html">Terms &amp; Policies</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a class="c" href="tel:+256742228675"><i class="fa-solid fa-phone"></i> +256 742 228 675</a>
+        <a class="c" href="mailto:schools@edutraceug.com"><i class="fa-solid fa-envelope"></i> schools@edutraceug.com</a>
+        <a class="c" href="mailto:support@edutraceug.com"><i class="fa-solid fa-headset"></i> support@edutraceug.com</a>
+      </div>
+    </div>
+  </div>
+  <div class="fbot">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Edutrace. All rights reserved.</p>
+      <p class="credit">Illustrations by <a href="https://storyset.com" target="_blank" rel="noopener">Storyset</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+
+/* menu + search toggles */
+(function(){
+  var nav=document.getElementById('navLinks'),ham=document.getElementById('hamburger');
+  var sBtn=document.getElementById('searchBtn'),sPanel=document.getElementById('searchPanel');
+  var input=document.getElementById('schoolInput'),results=document.getElementById('results');
+  function closeNav(){nav.classList.remove('open');ham.setAttribute('aria-expanded','false')}
+  function closeSearch(){sPanel.classList.remove('open');sBtn.setAttribute('aria-expanded','false');results.classList.remove('show')}
+  ham.addEventListener('click',function(){var o=nav.classList.toggle('open');ham.setAttribute('aria-expanded',o);closeSearch()});
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeNav)});
+  sBtn.addEventListener('click',function(){
+    var o=sPanel.classList.toggle('open');sBtn.setAttribute('aria-expanded',o);closeNav();
+    if(o){input.focus();fetchSchools(input.value.trim())}else results.classList.remove('show');
+  });
+  document.addEventListener('click',function(e){if(!e.target.closest('header')){closeNav();closeSearch()}});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeNav();closeSearch()}});
+
+  /* school search */
+  var API='https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev/schools';
+  var timer=null,last=null;
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function show(html){results.innerHTML=html;results.classList.add('show')}
+  function fetchSchools(q){
+    if(q===last)return;last=q;
+    show('<div class="sk"></div><div class="sk"></div><div class="sk"></div>');
+    var url=API+'?limit=20'+(q?'&q='+encodeURIComponent(q):'');
+    fetch(url,{headers:{'Accept':'application/json'}})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+      .then(function(d){
+        if(last!==q)return;
+        var list=Array.isArray(d.schools)?d.schools:[];
+        if(!list.length){show('<div class="empty">No schools match &ldquo;'+esc(q)+'&rdquo;.<br><a href="register.html">Register your school</a></div>');return}
+        show(list.map(function(s){
+          return '<div class="row" role="option" data-url="https://'+esc(encodeURIComponent(s.slug))+'.edutraceug.com/"><span>'+esc(s.name)+'</span><i class="fa-solid fa-arrow-right"></i></div>';
+        }).join(''));
+      })
+      .catch(function(){if(last!==q)return;last=null;show('<div class="err">Could not load schools. Check your connection and try again.</div>')});
+  }
+  results.addEventListener('click',function(e){var r=e.target.closest('.row');if(r)location.href=r.getAttribute('data-url')});
+  input.addEventListener('input',function(){clearTimeout(timer);var q=input.value.trim();timer=setTimeout(function(){fetchSchools(q)},250)});
+})();
+
+/* tabs */
+(function(){
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){
+        var on=x===t;x.setAttribute('aria-selected',on);
+        document.getElementById(x.getAttribute('aria-controls')).classList.toggle('on',on);
+      });
+    });
+  });
+})();
+
+/* cookie consent */
+(function(){
+  var KEY='edutrace_cookie_consent_v1',b=document.getElementById('cookie'),v=null;
+  try{v=localStorage.getItem(KEY)}catch(e){}
+  if(!v)b.classList.add('show');
+  function set(x){
+    try{localStorage.setItem(KEY,x)}catch(e){}
+    b.classList.remove('show');
+    if(x==='allow'&&typeof window.__edutraceAnalytics==='function')window.__edutraceAnalytics();
+  }
+  document.getElementById('cookieAllow').addEventListener('click',function(){set('allow')});
+  document.getElementById('cookieReject').addEventListener('click',function(){set('reject')});
+})();
+
+/* hero search button opens the header search */
+document.getElementById('heroSearch').addEventListener('click',function(e){
+  e.stopPropagation();
+  if(document.getElementById('searchPanel').classList.contains('open')){document.getElementById('schoolInput').focus()}
+  else{document.getElementById('searchBtn').click()}
+});
+</script>
+</body>
+</html>

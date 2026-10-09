@@ -1,0 +1,1267 @@
+ <!DOCTYPE html>
+<html lang="en-UG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3570BC">
+<title>Sign in | Edutrace</title>
+<meta name="description" content="Sign in to your Edutrace account to access marks, report cards and results.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="apple-touch-icon" href="/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --blue:#3570BC;--green:#008E34;--yellow:#F9B515;--red:#D7040A;
+  --dark:#1A1A1A;--muted:#555;--border:#E5E5E5;--light:#F8F9FA;
+  --font:'Plus Jakarta Sans',Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--dark);line-height:1.5;background:var(--light);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:1rem}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.container{width:92%;max-width:480px;margin:0 auto}
+
+/* noscript */
+.noscript-bar{background:var(--red);color:#fff;padding:12px 16px;text-align:center;font-weight:600;font-size:.9rem}
+
+/* cookie */
+.cookie{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;z-index:9999;display:none;border-top:3px solid var(--blue)}
+.cookie.show{display:block}
+.cookie-in{width:92%;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.cookie-text{flex:1;font-size:.78rem;line-height:1.4;min-width:200px}
+.cookie-text a{color:var(--yellow);text-decoration:underline;font-weight:600}
+.cookie-btn{padding:8px 14px;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.cookie-btn.allow{background:var(--green);color:#fff}
+.cookie-btn.reject{border:2px solid #fff;color:#fff}
+
+/* top strip */
+.strip{height:6px;background:linear-gradient(90deg,var(--blue) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%);flex-shrink:0}
+
+/* header */
+.header{background:#fff;border-bottom:1px solid var(--border);padding:16px 0;flex-shrink:0}
+.header .container{display:flex;align-items:center;gap:12px;max-width:960px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{height:40px;width:auto}
+.brand-text{font-weight:800;font-size:1.15rem;letter-spacing:-.3px}
+.header .back{margin-left:auto;font-size:.85rem;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.header .back:hover{color:var(--blue)}
+
+/* main */
+main{flex:1;padding:40px 0 60px;padding-bottom:90px}
+.card{background:#fff;border:1px solid var(--border);padding:32px 28px}
+.card-head{text-align:center;margin-bottom:26px}
+.card-head .school-name{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}
+.card-head h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:6px}
+.card-head p{color:var(--muted);font-size:.92rem}
+
+/* tabs */
+.tabs{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--dark);margin-bottom:24px}
+.tab{padding:12px 8px;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;color:var(--dark)}
+.tab[aria-selected="true"]{background:var(--dark);color:#fff}
+.tabs.hidden{display:none}
+
+/* form */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+.field .hint{font-size:.72rem;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
+.input-wrap{position:relative}
+.input-wrap i.lead{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.input-wrap input,.input-wrap select{padding-left:42px}
+.input-wrap input.no-icon,.input-wrap select.no-icon{padding-left:14px}
+.input-wrap input[type="password"],.input-wrap input[type="text"][id$="Password"]{padding-right:46px}
+.field input,.field select{width:100%;padding:13px 14px 13px 42px;border:2px solid var(--border);background:#fff;color:var(--dark);font-size:16px;font-weight:500;transition:border-color .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+.field input.error,.field select.error{border-color:var(--red)}
+.field .err-msg{color:var(--red);font-size:.78rem;font-weight:600;margin-top:5px;display:none}
+.field.has-error .err-msg{display:block}
+.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;padding:0;color:var(--muted);font-size:.9rem}
+.pw-toggle:hover{color:var(--blue)}
+.pw-strength{height:4px;background:var(--border);margin-top:6px;position:relative;overflow:hidden}
+.pw-strength i{position:absolute;top:0;left:0;height:100%;width:0;transition:width .25s, background .25s}
+
+/* checkbox */
+.check{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;font-size:.85rem;line-height:1.5;color:var(--muted)}
+.check input{width:auto;margin-top:3px;flex-shrink:0;accent-color:var(--blue)}
+.check a{color:var(--blue);font-weight:700;text-decoration:underline}
+
+/* button */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px 20px;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:.5px;transition:background .15s,color .15s;border:2px solid transparent}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover:not(:disabled){background:var(--dark);border-color:var(--dark)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover:not(:disabled){background:var(--dark);border-color:var(--dark)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite}
+.btn.loading .spinner{display:inline-block}
+.btn.loading .btn-label{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* banner errors */
+.banner{padding:12px 14px;font-size:.85rem;font-weight:600;margin-bottom:16px;display:none;align-items:flex-start;gap:10px;line-height:1.4}
+.banner.show{display:flex}
+.banner.err{background:#fef2f2;color:var(--red);border-left:4px solid var(--red)}
+.banner.ok{background:#f0fdf4;color:var(--green);border-left:4px solid var(--green)}
+.banner i{flex-shrink:0;margin-top:2px}
+
+/* links row */
+.aux{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:.82rem;flex-wrap:wrap;gap:8px}
+.aux a{color:var(--blue);font-weight:700}
+.aux a:hover{text-decoration:underline}
+
+/* role selector */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.role-opt{position:relative;border:2px solid var(--border);padding:14px 8px;text-align:center;cursor:pointer;transition:all .15s;font-weight:600;font-size:.82rem}
+.role-opt input{position:absolute;opacity:0;pointer-events:none}
+.role-opt i{display:block;font-size:1.3rem;color:var(--muted);margin-bottom:6px}
+.role-opt:hover{border-color:var(--blue)}
+.role-opt.selected{border-color:var(--blue);background:#EBF1FB;color:var(--blue)}
+.role-opt.selected i{color:var(--blue)}
+
+/* multi-match */
+.match-card{border:2px solid var(--yellow);background:#FFFDF5;padding:20px;margin-bottom:16px}
+.match-card h3{font-size:1rem;font-weight:800;margin-bottom:6px}
+.match-card p{font-size:.85rem;color:var(--muted);margin-bottom:14px}
+.match-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.match-opt{display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid var(--border);background:#fff;cursor:pointer;transition:all .15s;font-weight:600;font-size:.88rem}
+.match-opt:hover{border-color:var(--blue)}
+.match-opt.selected{border-color:var(--blue);background:#EBF1FB}
+.match-opt input{accent-color:var(--blue)}
+.match-opt .detail{color:var(--muted);font-weight:500;font-size:.8rem;margin-left:auto;text-align:right}
+
+/* success */
+.success-wrap{text-align:center;padding:20px 0}
+.success-wrap .check-icon{width:70px;height:70px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 20px}
+.success-wrap h2{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+.success-wrap p{color:var(--muted);font-size:.92rem;margin-bottom:20px}
+
+/* skeleton */
+.skel-card{background:#fff;border:1px solid var(--border);padding:32px 28px}
+.skel{height:16px;background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:14px}
+.skel.h24{height:24px;width:60%;margin:0 auto 24px}
+.skel.h40{height:44px;margin-bottom:16px}
+.skel.h48{height:48px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* footer */
+footer{background:#111;color:#bbb;padding:24px 0;flex-shrink:0;border-top:4px solid var(--blue)}
+footer .container{max-width:960px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+footer p{font-size:.8rem}
+footer a{color:var(--yellow);font-weight:600}
+footer a:hover{text-decoration:underline}
+footer .credit{color:#777;font-size:.75rem}
+footer .credit a{color:#999;text-decoration:underline}
+
+/* responsive */
+@media(max-width:640px){
+  main{padding:24px 0 40px;padding-bottom:90px}
+  .card,.skel-card{padding:24px 20px}
+  .card-head h1{font-size:1.35rem}
+  .header .container{max-width:480px}
+  .brand-text{font-size:1rem}
+  .brand img{height:34px}
+  .header .back span{display:none}
+  footer .container{justify-content:center;text-align:center}
+  .roles{grid-template-columns:repeat(3,1fr)}
+  .role-opt{padding:12px 4px}
+}
+@media(prefers-reduced-motion:reduce){
+  .skel{animation:none}
+  .btn .spinner{animation:none;border-color:#fff}
+}
+</style>
+</head>
+<body>
+
+<div class="strip"></div>
+
+<noscript>
+  <div class="noscript-bar">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    JavaScript is required to sign in. Please enable it in your browser settings.
+  </div>
+</noscript>
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-in">
+    <div class="cookie-text">We use cookies to keep you signed in and improve your experience. <a href="terms-policy.html">Terms &amp; Policies</a></div>
+    <button class="cookie-btn reject" id="cookieReject" type="button">Reject</button>
+    <button class="cookie-btn allow" id="cookieAllow" type="button">Allow</button>
+  </div>
+</div>
+
+<header class="header">
+  <div class="container">
+    <a href="/" class="brand" aria-label="Edutrace home">
+      <img src="/logo.png" alt="Edutrace">
+      <span class="brand-text">Edutrace</span>
+    </a>
+    <a href="/" class="back">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Back</span>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- skeleton -->
+    <div class="skel-card" id="skeleton">
+      <div class="skel h24"></div>
+      <div class="skel h40"></div>
+      <div class="skel h40"></div>
+      <div class="skel h48"></div>
+    </div>
+
+    <!-- main card -->
+    <div class="card" id="card" style="display:none">
+
+      <div class="card-head">
+        <div class="school-name" id="schoolLabel" style="display:none"></div>
+        <h1 id="pageTitle">Sign in</h1>
+        <p id="pageSub">Welcome back. Enter your details to continue.</p>
+      </div>
+
+      <div class="tabs" id="tabs" role="tablist">
+        <button class="tab" role="tab" id="tabLogin" aria-selected="true" type="button">Login</button>
+        <button class="tab" role="tab" id="tabSignup" aria-selected="false" type="button">Sign up</button>
+      </div>
+
+      <!-- global banner -->
+      <div class="banner err" id="banner" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="bannerText"></span>
+      </div>
+
+      <!-- ========== LOGIN ========== -->
+      <form id="loginForm" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="loginEmail">Email</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope lead"></i>
+            <input type="email" id="loginEmail" name="email" autocomplete="email" required>
+          </div>
+          <div class="err-msg"></div>
+        </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock lead"></i>
+            <input type="password" id="loginPassword" name="password" autocomplete="current-password" required>
+            <button type="button" class="pw-toggle" data-for="loginPassword" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="err-msg"></div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">
+          <span class="spinner"></span>
+          <span class="btn-label">Sign in</span>
+        </button>
+        <div class="aux">
+          <a href="#" id="forgotLink">Forgot password?</a>
+        </div>
+      </form>
+
+      <!-- ========== SIGNUP ========== -->
+      <form id="signupForm" autocomplete="on" novalidate style="display:none">
+        <div class="field">
+          <label>I am a</label>
+          <div class="roles" id="roles">
+            <label class="role-opt" data-role="student">
+              <input type="radio" name="role" value="student" checked>
+              <i class="fa-solid fa-user-graduate"></i>
+              <span>Student</span>
+            </label>
+            <label class="role-opt" data-role="teacher">
+              <input type="radio" name="role" value="teacher">
+              <i class="fa-solid fa-chalkboard-user"></i>
+              <span>Teacher</span>
+            </label>
+            <label class="role-opt" data-role="parent">
+              <input type="radio" name="role" value="parent">
+              <i class="fa-solid fa-people-roof"></i>
+              <span>Parent</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- common fields -->
+        <div class="field">
+          <label for="suEmail">Email</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope lead"></i>
+            <input type="email" id="suEmail" name="email" autocomplete="email" required>
+          </div>
+          <div class="err-msg"></div>
+        </div>
+        <div class="field">
+          <label for="suPassword">Password <span class="hint">6+ characters</span></label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock lead"></i>
+            <input type="password" id="suPassword" name="password" autocomplete="new-password" required minlength="6">
+            <button type="button" class="pw-toggle" data-for="suPassword" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="pw-strength"><i id="pwStrength"></i></div>
+          <div class="err-msg"></div>
+        </div>
+        <div class="field">
+          <label for="suPassword2">Confirm password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock lead"></i>
+            <input type="password" id="suPassword2" autocomplete="new-password" required>
+          </div>
+          <div class="err-msg"></div>
+        </div>
+
+        <!-- student fields -->
+        <div class="role-fields" data-role="student">
+          <div class="field">
+            <label for="stFirstName">First name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user lead"></i>
+              <input type="text" id="stFirstName" autocomplete="given-name">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="stLastName">Last name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user lead"></i>
+              <input type="text" id="stLastName" autocomplete="family-name">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="stClass">Class</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-chalkboard lead"></i>
+              <select id="stClass">
+                <option value="">Select class…</option>
+                <option value="Senior 1">Senior 1</option>
+                <option value="Senior 2">Senior 2</option>
+                <option value="Senior 3">Senior 3</option>
+                <option value="Senior 4">Senior 4</option>
+                <option value="Senior 5">Senior 5</option>
+                <option value="Senior 6">Senior 6</option>
+              </select>
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="stStream">Stream <span class="hint">optional</span></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-users-rectangle lead"></i>
+              <input type="text" id="stStream" placeholder="e.g. Blue">
+            </div>
+          </div>
+        </div>
+
+        <!-- teacher fields -->
+        <div class="role-fields" data-role="teacher" style="display:none">
+          <div class="field">
+            <label for="teFirstName">First name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user lead"></i>
+              <input type="text" id="teFirstName" autocomplete="given-name">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="teLastName">Last name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user lead"></i>
+              <input type="text" id="teLastName" autocomplete="family-name">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="teSubjects">Subjects <span class="hint">comma-separated</span></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-book lead"></i>
+              <input type="text" id="teSubjects" placeholder="Mathematics, Physics">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="teClasses">Classes <span class="hint">comma-separated</span></label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-chalkboard lead"></i>
+              <input type="text" id="teClasses" placeholder="Senior 1, Senior 2">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+        </div>
+
+        <!-- parent fields -->
+        <div class="role-fields" data-role="parent" style="display:none">
+          <div class="field">
+            <label for="paRelationship">Relationship</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-people-roof lead"></i>
+              <select id="paRelationship">
+                <option value="">Select…</option>
+                <option value="mother">Mother</option>
+                <option value="father">Father</option>
+                <option value="guardian">Guardian</option>
+              </select>
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="paChildFirstName">Child's first name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-child lead"></i>
+              <input type="text" id="paChildFirstName">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="paChildLastName">Child's last name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-child lead"></i>
+              <input type="text" id="paChildLastName">
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <div class="field">
+            <label for="paChildClass">Child's class</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-chalkboard lead"></i>
+              <select id="paChildClass">
+                <option value="">Select class…</option>
+                <option value="Senior 1">Senior 1</option>
+                <option value="Senior 2">Senior 2</option>
+                <option value="Senior 3">Senior 3</option>
+                <option value="Senior 4">Senior 4</option>
+                <option value="Senior 5">Senior 5</option>
+                <option value="Senior 6">Senior 6</option>
+              </select>
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <label class="check">
+            <input type="checkbox" id="paConsent">
+            <span>I consent to Edutrace processing my child's data as described in the <a href="terms-policy.html" target="_blank">Terms &amp; Policies</a>.</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-green" id="signupBtn">
+          <span class="spinner"></span>
+          <span class="btn-label">Create account</span>
+        </button>
+      </form>
+
+      <!-- ========== PASSWORD RESET ========== -->
+      <form id="resetForm" autocomplete="on" novalidate style="display:none">
+        <div class="field">
+          <label for="resetEmail">Email</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope lead"></i>
+            <input type="email" id="resetEmail" autocomplete="email" required>
+          </div>
+          <div class="err-msg"></div>
+        </div>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">
+          We'll send a password reset link to this email if an account exists.
+        </p>
+        <button type="submit" class="btn btn-primary" id="resetBtn">
+          <span class="spinner"></span>
+          <span class="btn-label">Send reset link</span>
+        </button>
+        <div class="aux">
+          <a href="#" id="backToLogin">Back to login</a>
+        </div>
+      </form>
+
+      <!-- ========== MULTI-MATCH CONFIRM ========== -->
+      <div id="matchWrap" style="display:none">
+        <div class="match-card">
+          <h3><i class="fa-solid fa-circle-question"></i> Which one is you?</h3>
+          <p>We found more than one match. Please pick the record that belongs to you.</p>
+          <div class="match-list" id="matchList"></div>
+          <div class="field">
+            <label for="matchPassword">Re-enter your password</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-lock lead"></i>
+              <input type="password" id="matchPassword" autocomplete="new-password">
+              <button type="button" class="pw-toggle" data-for="matchPassword" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+            </div>
+            <div class="err-msg"></div>
+          </div>
+          <button type="button" class="btn btn-green" id="matchBtn" style="margin-bottom:10px">
+            <span class="spinner"></span>
+            <span class="btn-label">Confirm and create account</span>
+          </button>
+          <button type="button" class="btn btn-primary" id="matchCancel" style="background:#fff;color:var(--dark);border-color:var(--border)">
+            Start over
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== SUCCESS ========== -->
+      <div id="successWrap" class="success-wrap" style="display:none">
+        <div class="check-icon"><i class="fa-solid fa-check"></i></div>
+        <h2 id="successTitle">Account created</h2>
+        <p id="successMsg">Redirecting to your dashboard…</p>
+      </div>
+
+      <!-- no-school notice -->
+      <div id="noSchool" style="display:none;text-align:center;padding:12px 0">
+        <p style="font-size:.9rem;color:var(--muted);margin-bottom:14px">
+          We couldn't detect your school. Visit your school's page to sign in.
+        </p>
+        <a href="https://edutraceug.com" class="btn btn-primary" style="display:inline-flex;width:auto;padding:13px 22px">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="btn-label">Find your school</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; <span id="year"></span> Edutrace. <a href="terms-policy.html">Terms &amp; Policies</a></p>
+    <p class="credit">Illustrations by <a href="https://storyset.com" target="_blank" rel="noopener">Storyset</a></p>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* ------------------------------------------------------------------ *
+ * CONFIG
+ * ------------------------------------------------------------------ */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAR1NEHhZwUujpGEjb-IvTV2A04PTQuYLE",
+  authDomain: "edutrace-ug.firebaseapp.com",
+  projectId: "edutrace-ug",
+  storageBucket: "edutrace-ug.firebasestorage.app",
+  messagingSenderId: "219055117140",
+  appId: "1:219055117140:web:97ec99de8e25b6f9266ec1",
+  measurementId: "G-SVDHX49YR3"
+};
+
+const AUTH_WORKER = "https://edutraceug-auth-worker.anubisdigital114-9df.workers.dev";
+const PROFILE_WORKER = "https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev";
+const HOST_SUFFIX = ".edutraceug.com";
+
+const ROLE_ROUTES = {
+  schoolAdmin: "/school-admin.html",
+  teacher: "/teacher.html",
+  student: "/student.html",
+  parent: "/parent.html"
+};
+
+/* ------------------------------------------------------------------ *
+ * Boot
+ * ------------------------------------------------------------------ */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* ------------------------------------------------------------------ *
+ * DOM refs
+ * ------------------------------------------------------------------ */
+
+const $ = (id) => document.getElementById(id);
+
+const skeleton = $("skeleton");
+const card = $("card");
+const schoolLabel = $("schoolLabel");
+const pageTitle = $("pageTitle");
+const pageSub = $("pageSub");
+const tabs = $("tabs");
+const tabLogin = $("tabLogin");
+const tabSignup = $("tabSignup");
+const banner = $("banner");
+const bannerText = $("bannerText");
+
+const loginForm = $("loginForm");
+const signupForm = $("signupForm");
+const resetForm = $("resetForm");
+const matchWrap = $("matchWrap");
+const matchList = $("matchList");
+const matchBtn = $("matchBtn");
+const matchCancel = $("matchCancel");
+const matchPassword = $("matchPassword");
+const successWrap = $("successWrap");
+const noSchool = $("noSchool");
+
+const loginBtn = $("loginBtn");
+const signupBtn = $("signupBtn");
+const resetBtn = $("resetBtn");
+
+/* ------------------------------------------------------------------ *
+ * State
+ * ------------------------------------------------------------------ */
+
+let resolvedSchool = null;
+let pendingState = null;       // multi-match state token
+let pendingRole = null;         // role from the original signup
+let pendingEmail = null;
+
+/* ------------------------------------------------------------------ *
+ * Helpers
+ * ------------------------------------------------------------------ */
+
+function show(el) { el && (el.style.display = ""); }
+function hide(el) { el && (el.style.display = "none"); }
+
+function showBanner(text, kind = "err") {
+  bannerText.textContent = text;
+  banner.classList.remove("err", "ok");
+  banner.classList.add(kind === "ok" ? "ok" : "err", "show");
+  banner.querySelector("i").className = kind === "ok"
+    ? "fa-solid fa-circle-check"
+    : "fa-solid fa-circle-exclamation";
+}
+function hideBanner() { banner.classList.remove("show"); }
+
+function setLoading(btn, on) {
+  if (!btn) return;
+  btn.classList.toggle("loading", on);
+  btn.disabled = on;
+}
+
+function fieldError(input, msg) {
+  const field = input.closest(".field");
+  if (!field) return;
+  field.classList.toggle("has-error", !!msg);
+  const err = field.querySelector(".err-msg");
+  if (err) err.textContent = msg || "";
+}
+
+function clearErrors(form) {
+  form.querySelectorAll(".field.has-error").forEach((f) => f.classList.remove("has-error"));
+  form.querySelectorAll(".err-msg").forEach((e) => (e.textContent = ""));
+}
+
+function validEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || "").trim()); }
+
+function firebaseErrorMessage(err) {
+  const code = err && err.code ? err.code : "";
+  switch (code) {
+    case "auth/user-not-found":
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+      return "Incorrect email or password.";
+    case "auth/invalid-email":
+      return "That email address is not valid.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Try again in a few minutes.";
+    case "auth/user-disabled":
+      return "This account has been disabled. Contact your school.";
+    case "auth/email-already-in-use":
+      return "An account with this email already exists. Try logging in.";
+    case "auth/weak-password":
+      return "Password is too weak. Use at least 6 characters.";
+    case "auth/network-request-failed":
+      return "Couldn't reach the server. Check your connection.";
+    case "auth/operation-not-allowed":
+      return "Email sign-in is not enabled. Contact support.";
+    default:
+      return (err && err.message) || "Something went wrong. Please try again.";
+  }
+}
+
+async function readErrorBody(res) {
+  try {
+    const data = await res.json();
+    return data && data.error ? data.error : `Request failed (${res.status})`;
+  } catch {
+    return `Request failed (${res.status})`;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * School resolution
+ * ------------------------------------------------------------------ */
+
+function slugFromHostname() {
+  const h = location.hostname.toLowerCase();
+  if (!h.endsWith(HOST_SUFFIX)) return null;
+  const label = h.slice(0, -HOST_SUFFIX.length).split(".")[0];
+  if (!label || label === "www") return null;
+  return label;
+}
+
+async function resolveSchool() {
+  const params = new URLSearchParams(location.search);
+  const slugFromQuery = params.get("school");
+  const slug = slugFromQuery || slugFromHostname();
+  if (!slug) return null;
+
+  try {
+    const res = await fetch(`${PROFILE_WORKER}/school/${encodeURIComponent(slug)}`, {
+      headers: { Accept: "application/json" }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || !data.id) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Redirect helper
+ * ------------------------------------------------------------------ */
+
+async function redirectByRole(user, schoolId, { allowMismatch = false } = {}) {
+  let tokenResult;
+  try {
+    tokenResult = await user.getIdTokenResult(true);
+  } catch {
+    tokenResult = await user.getIdTokenResult();
+  }
+  const claims = tokenResult.claims || {};
+  const role = claims.role;
+  const claimSchoolId = claims.schoolId;
+
+  if (!role || !ROLE_ROUTES[role]) {
+    await signOut(auth);
+    showBanner("Your account is not fully set up. Contact your school.", "err");
+    return false;
+  }
+
+  if (!allowMismatch && schoolId && String(claimSchoolId) !== String(schoolId)) {
+    await signOut(auth);
+    showBanner("This account belongs to a different school.", "err");
+    return false;
+  }
+
+  location.replace(ROLE_ROUTES[role]);
+  return true;
+}
+
+/* ------------------------------------------------------------------ *
+ * View switching
+ * ------------------------------------------------------------------ */
+
+function showLogin() {
+  hideBanner();
+  tabs.classList.remove("hidden");
+  tabLogin.setAttribute("aria-selected", "true");
+  tabSignup.setAttribute("aria-selected", "false");
+  pageTitle.textContent = "Sign in";
+  pageSub.textContent = "Welcome back. Enter your details to continue.";
+  show(loginForm); hide(signupForm); hide(resetForm); hide(matchWrap); hide(successWrap);
+  hide(noSchool);
+}
+
+function showSignup() {
+  hideBanner();
+  tabs.classList.remove("hidden");
+  tabLogin.setAttribute("aria-selected", "false");
+  tabSignup.setAttribute("aria-selected", "true");
+  pageTitle.textContent = "Create account";
+  pageSub.textContent = "Join " + (resolvedSchool && resolvedSchool.name ? resolvedSchool.name : "your school") + " on Edutrace.";
+  hide(loginForm); show(signupForm); hide(resetForm); hide(matchWrap); hide(successWrap);
+  hide(noSchool);
+  updateRoleFields();
+}
+
+function showReset() {
+  hideBanner();
+  tabs.classList.add("hidden");
+  pageTitle.textContent = "Reset password";
+  pageSub.textContent = "Enter the email linked to your account.";
+  hide(loginForm); hide(signupForm); show(resetForm); hide(matchWrap); hide(successWrap);
+  hide(noSchool);
+}
+
+function showMatch() {
+  hideBanner();
+  tabs.classList.add("hidden");
+  pageTitle.textContent = "Confirm your record";
+  pageSub.textContent = "Multiple matches were found.";
+  hide(loginForm); hide(signupForm); hide(resetForm); show(matchWrap); hide(successWrap);
+  hide(noSchool);
+}
+
+function showSuccess(msg) {
+  hideBanner();
+  hide(loginForm); hide(signupForm); hide(resetForm); hide(matchWrap);
+  $("successTitle").textContent = "Account created";
+  $("successMsg").textContent = msg || "Redirecting to your dashboard…";
+  show(successWrap);
+  tabs.classList.add("hidden");
+}
+
+function showNoSchool() {
+  hideBanner();
+  hide(loginForm); hide(signupForm); hide(resetForm); hide(matchWrap); hide(successWrap);
+  show(noSchool);
+  tabs.classList.add("hidden");
+  pageTitle.textContent = "Find your school";
+  pageSub.textContent = "Visit your school's page to sign in.";
+}
+
+/* ------------------------------------------------------------------ *
+ * Role fields (signup)
+ * ------------------------------------------------------------------ */
+
+function currentRole() {
+  const checked = signupForm.querySelector('input[name="role"]:checked');
+  return checked ? checked.value : "student";
+}
+
+function updateRoleFields() {
+  const role = currentRole();
+  signupForm.querySelectorAll(".role-opt").forEach((el) => {
+    el.classList.toggle("selected", el.dataset.role === role);
+  });
+  signupForm.querySelectorAll(".role-fields").forEach((el) => {
+    el.style.display = el.dataset.role === role ? "" : "none";
+  });
+}
+
+signupForm.querySelectorAll('input[name="role"]').forEach((radio) => {
+  radio.addEventListener("change", updateRoleFields);
+});
+
+/* ------------------------------------------------------------------ *
+ * Password visibility toggles + strength
+ * ------------------------------------------------------------------ */
+
+document.querySelectorAll(".pw-toggle").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const input = $(btn.dataset.for);
+    if (!input) return;
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    btn.querySelector("i").className = showing ? "fa-solid fa-eye" : "fa-solid fa-eye-slash";
+  });
+});
+
+const pwStrength = $("pwStrength");
+$("suPassword").addEventListener("input", (e) => {
+  const v = e.target.value;
+  let score = 0;
+  if (v.length >= 6) score++;
+  if (v.length >= 10) score++;
+  if (/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+  if (/\d/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const pct = Math.min(100, score * 20);
+  const colors = ["#E5E5E5", "#D7040A", "#F9B515", "#F9B515", "#008E34", "#008E34"];
+  pwStrength.style.width = pct + "%";
+  pwStrength.style.background = colors[score];
+});
+
+/* ------------------------------------------------------------------ *
+ * Tabs
+ * ------------------------------------------------------------------ */
+
+tabLogin.addEventListener("click", showLogin);
+tabSignup.addEventListener("click", showSignup);
+
+/* ------------------------------------------------------------------ *
+ * Login
+ * ------------------------------------------------------------------ */
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  hideBanner();
+  clearErrors(loginForm);
+
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPassword").value;
+
+  let bad = false;
+  if (!validEmail(email)) { fieldError($("loginEmail"), "Enter a valid email."); bad = true; }
+  if (!password) { fieldError($("loginPassword"), "Enter your password."); bad = true; }
+  if (bad) return;
+
+  setLoading(loginBtn, true);
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const ok = await redirectByRole(cred.user, resolvedSchool ? resolvedSchool.id : null);
+    if (!ok) setLoading(loginBtn, false);
+  } catch (err) {
+    setLoading(loginBtn, false);
+    showBanner(firebaseErrorMessage(err), "err");
+  }
+});
+
+/* ------------------------------------------------------------------ *
+ * Password reset
+ * ------------------------------------------------------------------ */
+
+$("forgotLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  showReset();
+});
+
+$("backToLogin").addEventListener("click", (e) => {
+  e.preventDefault();
+  showLogin();
+});
+
+resetForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  hideBanner();
+  clearErrors(resetForm);
+
+  const email = $("resetEmail").value.trim();
+  if (!validEmail(email)) { fieldError($("resetEmail"), "Enter a valid email."); return; }
+
+  setLoading(resetBtn, true);
+  try {
+    const res = await fetch(`${AUTH_WORKER}/password-reset`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    if (!res.ok) {
+      const msg = await readErrorBody(res);
+      showBanner(msg, "err");
+    } else {
+      showBanner("If an account exists for that email, a reset link has been sent.", "ok");
+      resetForm.reset();
+    }
+  } catch {
+    showBanner("Couldn't reach the server. Check your connection.", "err");
+  } finally {
+    setLoading(resetBtn, false);
+  }
+});
+
+/* ------------------------------------------------------------------ *
+ * Signup
+ * ------------------------------------------------------------------ */
+
+function collectRoleFields(role) {
+  if (role === "student") {
+    return {
+      firstName: $("stFirstName").value.trim(),
+      lastName: $("stLastName").value.trim(),
+      class: $("stClass").value.trim(),
+      stream: $("stStream").value.trim()
+    };
+  }
+  if (role === "teacher") {
+    const subjects = $("teSubjects").value.split(",").map((s) => s.trim()).filter(Boolean);
+    const classes = $("teClasses").value.split(",").map((s) => s.trim()).filter(Boolean);
+    return {
+      firstName: $("teFirstName").value.trim(),
+      lastName: $("teLastName").value.trim(),
+      subjects,
+      classes
+    };
+  }
+  if (role === "parent") {
+    return {
+      relationship: $("paRelationship").value,
+      childFirstName: $("paChildFirstName").value.trim(),
+      childLastName: $("paChildLastName").value.trim(),
+      childClass: $("paChildClass").value.trim(),
+      consent: $("paConsent").checked
+    };
+  }
+  return {};
+}
+
+function validateRoleFields(role, rf) {
+  const errs = [];
+  if (role === "student") {
+    if (!rf.firstName) errs.push(["stFirstName", "First name is required."]);
+    if (!rf.lastName) errs.push(["stLastName", "Last name is required."]);
+    if (!rf.class) errs.push(["stClass", "Select your class."]);
+  } else if (role === "teacher") {
+    if (!rf.firstName) errs.push(["teFirstName", "First name is required."]);
+    if (!rf.lastName) errs.push(["teLastName", "Last name is required."]);
+    if (!rf.subjects.length) errs.push(["teSubjects", "Enter at least one subject."]);
+    if (!rf.classes.length) errs.push(["teClasses", "Enter at least one class."]);
+  } else if (role === "parent") {
+    if (!rf.relationship) errs.push(["paRelationship", "Select a relationship."]);
+    if (!rf.childFirstName) errs.push(["paChildFirstName", "Child's first name is required."]);
+    if (!rf.childLastName) errs.push(["paChildLastName", "Child's last name is required."]);
+    if (!rf.childClass) errs.push(["paChildClass", "Select your child's class."]);
+    if (!rf.consent) errs.push(["paConsent", "You must give consent to continue."]);
+  }
+  return errs;
+}
+
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  hideBanner();
+  clearErrors(signupForm);
+
+  if (!resolvedSchool) { showBanner("We couldn't detect your school. Please visit your school's page.", "err"); return; }
+
+  const role = currentRole();
+  const email = $("suEmail").value.trim();
+  const password = $("suPassword").value;
+  const password2 = $("suPassword2").value;
+
+  let bad = false;
+  if (!validEmail(email)) { fieldError($("suEmail"), "Enter a valid email."); bad = true; }
+  if (password.length < 6) { fieldError($("suPassword"), "Password must be at least 6 characters."); bad = true; }
+  if (password !== password2) { fieldError($("suPassword2"), "Passwords do not match."); bad = true; }
+
+  const roleFields = collectRoleFields(role);
+  const roleErrors = validateRoleFields(role, roleFields);
+  for (const [id, msg] of roleErrors) {
+    const el = $(id);
+    if (el && el.closest(".field")) fieldError(el, msg);
+    else if (el && el.closest(".check")) showBanner(msg, "err");
+    bad = true;
+  }
+
+  if (bad) return;
+
+  setLoading(signupBtn, true);
+  try {
+    const res = await fetch(`${AUTH_WORKER}/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        role,
+        email,
+        password,
+        schoolId: resolvedSchool.id,
+        roleFields
+      })
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      showBanner(data.error || `Signup failed (${res.status})`, "err");
+      setLoading(signupBtn, false);
+      return;
+    }
+
+    if (data.status === "multiple_matches") {
+      pendingState = data.state;
+      pendingRole = role;
+      pendingEmail = email;
+      renderMatches(data.candidates || []);
+      showMatch();
+      setLoading(signupBtn, false);
+      return;
+    }
+
+    if (data.status === "created") {
+      // account created — sign in automatically
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        showSuccess("Taking you to your dashboard…");
+        await new Promise((r) => setTimeout(r, 500));
+        const ok = await redirectByRole(cred.user, resolvedSchool.id);
+        if (!ok) setLoading(signupBtn, false);
+      } catch {
+        // Auth is disabled or login failed — fall back to login form
+        showBanner("Account created. Please sign in.", "ok");
+        showLogin();
+        setLoading(signupBtn, false);
+      }
+      return;
+    }
+
+    showBanner("Unexpected response from server.", "err");
+    setLoading(signupBtn, false);
+  } catch {
+    showBanner("Couldn't reach the server. Check your connection.", "err");
+    setLoading(signupBtn, false);
+  }
+});
+
+/* ------------------------------------------------------------------ *
+ * Multi-match confirm
+ * ------------------------------------------------------------------ */
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderMatches(candidates) {
+  matchList.innerHTML = candidates.map((c) => `
+    <label class="match-opt">
+      <input type="radio" name="match" value="${escapeHtml(c.id)}">
+      <span>${escapeHtml(c.extraDetail || c.id)}</span>
+      <span class="detail">${escapeHtml(c.id.slice(0, 6))}…</span>
+    </label>
+  `).join("");
+
+  matchList.querySelectorAll(".match-opt").forEach((el) => {
+    el.addEventListener("click", () => {
+      matchList.querySelectorAll(".match-opt").forEach((x) => x.classList.remove("selected"));
+      el.classList.add("selected");
+    });
+  });
+}
+
+matchCancel.addEventListener("click", () => {
+  pendingState = null;
+  pendingRole = null;
+  pendingEmail = null;
+  showSignup();
+});
+
+matchBtn.addEventListener("click", async () => {
+  hideBanner();
+  matchPassword.closest(".field").classList.remove("has-error");
+
+  const chosen = matchList.querySelector('input[name="match"]:checked');
+  if (!chosen) { showBanner("Please pick your record.", "err"); return; }
+
+  const password = matchPassword.value;
+  if (password.length < 6) {
+    fieldError(matchPassword, "Password must be at least 6 characters.");
+    return;
+  }
+
+  setLoading(matchBtn, true);
+  try {
+    const res = await fetch(`${AUTH_WORKER}/signup/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        state: pendingState,
+        chosenRecordId: chosen.value,
+        password
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      showBanner(data.error || `Confirmation failed (${res.status})`, "err");
+      setLoading(matchBtn, false);
+      return;
+    }
+
+    if (data.status === "created") {
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        const cred = await signInWithEmailAndPassword(auth, pendingEmail, password);
+        showSuccess("Taking you to your dashboard…");
+        await new Promise((r) => setTimeout(r, 500));
+        const ok = await redirectByRole(cred.user, resolvedSchool ? resolvedSchool.id : null);
+        if (!ok) setLoading(matchBtn, false);
+      } catch {
+        showBanner("Account created. Please sign in.", "ok");
+        showLogin();
+        setLoading(matchBtn, false);
+      }
+      return;
+    }
+
+    showBanner("Unexpected response from server.", "err");
+    setLoading(matchBtn, false);
+  } catch {
+    showBanner("Couldn't reach the server. Check your connection.", "err");
+    setLoading(matchBtn, false);
+  }
+});
+
+/* ------------------------------------------------------------------ *
+ * Cookie consent
+ * ------------------------------------------------------------------ */
+
+(function () {
+  const KEY = "edutrace_cookie_consent_v1";
+  const b = $("cookie");
+  let v = null;
+  try { v = localStorage.getItem(KEY); } catch {}
+  if (!v) b.classList.add("show");
+
+  function set(x) {
+    try { localStorage.setItem(KEY, x); } catch {}
+    b.classList.remove("show");
+    if (x === "allow" && typeof window.__edutraceAnalytics === "function") {
+      window.__edutraceAnalytics();
+    }
+  }
+  $("cookieAllow").addEventListener("click", () => set("allow"));
+  $("cookieReject").addEventListener("click", () => set("reject"));
+})();
+
+/* ------------------------------------------------------------------ *
+ * Year
+ * ------------------------------------------------------------------ */
+
+$("year").textContent = new Date().getFullYear();
+
+/* ------------------------------------------------------------------ *
+ * Boot sequence
+ * ------------------------------------------------------------------ */
+
+(async function boot() {
+  // 1. check existing session
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // already signed in — redirect by role
+      const ok = await redirectByRole(user, resolvedSchool ? resolvedSchool.id : null, { allowMismatch: false });
+      if (!ok) {
+        hide(skeleton); show(card);
+        showLogin();
+      }
+    }
+  });
+
+  // 2. resolve school
+  resolvedSchool = await resolveSchool();
+
+  // 3. show appropriate view
+  hide(skeleton);
+  show(card);
+
+  if (resolvedSchool && resolvedSchool.name) {
+    schoolLabel.textContent = resolvedSchool.name;
+    schoolLabel.style.display = "";
+  }
+
+  const params = new URLSearchParams(location.search);
+  const mode = params.get("mode");
+
+  if (!resolvedSchool) {
+    // Allow login even without a school context — but signup needs one
+    showLogin();
+    // If they explicitly came to signup, they still need a school
+    if (mode === "signup") {
+      showNoSchool();
+    } else {
+      // Hide the signup tab — can't sign up without knowing the school
+      tabSignup.addEventListener("click", (e) => {
+        e.preventDefault();
+        showNoSchool();
+      });
+    }
+    return;
+  }
+
+  if (mode === "signup") showSignup();
+  else showLogin();
+})();
+</script>
+
+</body>
+</html>

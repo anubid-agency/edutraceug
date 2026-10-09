@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Live Spreadsheet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;color:#222;background:#fff}
+  #app{display:flex;flex-direction:column;height:100%}
+
+  /* top file bar */
+  #filebar{display:flex;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid #ddd;flex-wrap:wrap;font-size:14px}
+  #filebar button,#filebar label.btn{background:#efefef;border:1px solid #767676;border-radius:3px;padding:4px 10px;font-size:14px;cursor:pointer}
+  #fileName{color:#333;font-size:14px}
+
+  /* toolbar */
+  #toolbar{display:flex;align-items:center;gap:4px;padding:4px 8px;background:#f7f7f7;border-bottom:1px solid #ddd;overflow-x:auto;white-space:nowrap}
+  .tb{background:none;border:0;font-size:18px;padding:6px 10px;border-radius:4px;cursor:pointer;color:#444}
+  .tb:active{background:#ddd}
+  .tb:disabled{opacity:.35}
+  .sep{width:1px;height:22px;background:#ddd;margin:0 4px}
+
+  /* search */
+  #searchbar{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid #ddd;background:#fff}
+  #searchInput{flex:1;min-width:80px;padding:6px 8px;border:1px solid #bbb;border-radius:4px;font-size:15px}
+  #searchInfo{font-size:12px;color:#666;min-width:54px;text-align:center}
+  #searchbar label{font-size:12px;color:#444;display:flex;align-items:center;gap:3px;white-space:nowrap}
+
+  /* formula bar */
+  #formulabar{display:flex;align-items:center;border-bottom:1px solid #ddd;background:#fff}
+  #nameBox{width:90px;padding:10px 8px;border-right:1px solid #ddd;font-size:15px;color:#333}
+  #fx{padding:0 10px;font-style:italic;font-family:serif;font-size:18px;color:#555}
+  #formulaInput{flex:1;border:0;outline:0;padding:10px 6px;font-size:15px;min-width:0}
+
+  /* grid */
+  #gridWrap{flex:1;overflow:auto;position:relative;background:#fff;-webkit-overflow-scrolling:touch}
+  table{border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:14px}
+  th,td{border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;height:30px;padding:0 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  thead th{position:sticky;top:0;z-index:3;background:#f5f5f5;font-weight:normal;text-align:center;color:#333}
+  tbody th{position:sticky;left:0;z-index:2;background:#f5f5f5;font-weight:normal;text-align:center;color:#333;width:46px;min-width:46px}
+  thead th:first-child{left:0;z-index:4;width:46px;min-width:46px}
+  td{min-width:110px;width:110px;cursor:cell;background:#fff}
+  td.sel{outline:2px solid #1a73e8;outline-offset:-2px;z-index:1;position:relative}
+  td.hit{background:#fff3a3}
+  td.cur{background:#ffb74d}
+  td[contenteditable="true"]{text-overflow:clip;outline:2px solid #1a73e8;outline-offset:-2px;background:#fff;user-select:text;-webkit-user-select:text}
+  th.hl{background:#e3edfb;color:#1a73e8}
+  tr.hidden{display:none}
+
+  /* bottom */
+  #sheetbar{display:flex;align-items:center;gap:4px;padding:4px 8px;border-top:1px solid #ddd;background:#f7f7f7;overflow-x:auto;white-space:nowrap}
+  .tab{padding:6px 14px;border:1px solid #ddd;border-bottom:0;background:#eee;font-size:14px;cursor:pointer;border-radius:4px 4px 0 0}
+  .tab.active{background:#fff;font-weight:bold;color:#1a73e8}
+  #status{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;border-top:1px solid #ddd;font-size:12px;color:#555;background:#fff}
+  #zoom{display:flex;align-items:center;gap:6px}
+  #zoom input{width:110px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="filebar">
+    <label class="btn">Choose File<input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden></label>
+    <span id="fileName">No file chosen</span>
+    <button id="exportBtn">Export .xlsx</button>
+  </div>
+
+  <div id="toolbar">
+    <button class="tb" id="undoBtn" title="Undo">&#8630;</button>
+    <button class="tb" id="redoBtn" title="Redo">&#8631;</button>
+    <div class="sep"></div>
+    <button class="tb" id="addRowBtn" title="Add row">+ Row</button>
+    <button class="tb" id="addColBtn" title="Add column">+ Col</button>
+    <button class="tb" id="delRowBtn" title="Clear row">Clear Row</button>
+    <div class="sep"></div>
+    <button class="tb" id="clearBtn" title="Clear cell">Clear Cell</button>
+  </div>
+
+  <div id="searchbar">
+    <input id="searchInput" type="search" placeholder="Search data…" autocomplete="off">
+    <span id="searchInfo"></span>
+    <button class="tb" id="prevBtn">&#9650;</button>
+    <button class="tb" id="nextBtn">&#9660;</button>
+    <label><input type="checkbox" id="filterChk"> Only matches</label>
+  </div>
+
+  <div id="formulabar">
+    <div id="nameBox">A1</div>
+    <div id="fx">fx</div>
+    <input id="formulaInput" autocomplete="off">
+  </div>
+
+  <div id="gridWrap"><table id="grid"></table></div>
+
+  <div id="sheetbar">
+    <button class="tb" id="addSheetBtn">+</button>
+    <div id="tabs" style="display:flex;gap:2px"></div>
+  </div>
+
+  <div id="status">
+    <span id="statusText">Ready</span>
+    <div id="zoom">
+      <span>&minus;</span>
+      <input type="range" id="zoomRange" min="50" max="150" value="100" step="10">
+      <span>+</span>
+      <span id="zoomVal">100%</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const MIN_ROWS = 100, MIN_COLS = 26;
+  let sheets = [{name:'Student Roster', data:[]}];
+  let active = 0;
+  let sel = {r:0,c:0};
+  let undoStack = [], redoStack = [];
+  let hits = [], hitIdx = -1;
+
+  const $ = id => document.getElementById(id);
+  const grid = $('grid'), wrap = $('gridWrap');
+
+  // ---------- helpers ----------
+  function colName(i){let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26);}return s;}
+  function cur(){return sheets[active];}
+  function dims(){
+    const d = cur().data;
+    let maxC = 0;
+    d.forEach(r => { if(r && r.length > maxC) maxC = r.length; });
+    return {rows: Math.max(MIN_ROWS, d.length + 20), cols: Math.max(MIN_COLS, maxC + 2)};
+  }
+  function getVal(r,c){const row=cur().data[r];return row&&row[c]!=null?String(row[c]):'';}
+  function setVal(r,c,v){
+    const d = cur().data;
+    while(d.length<=r) d.push([]);
+    while(d[r].length<=c) d[r].push('');
+    d[r][c]=v;
+  }
+  function status(t){$('statusText').textContent=t;}
+
+  // ---------- render ----------
+  function render(){
+    const {rows,cols} = dims();
+    let h = '<thead><tr><th></th>';
+    for(let c=0;c<cols;c++) h += `<th data-hc="${c}">${colName(c)}</th>`;
+    h += '</tr></thead><tbody>';
+    for(let r=0;r<rows;r++){
+      h += `<tr data-r="${r}"><th data-hr="${r}">${r+1}</th>`;
+      for(let c=0;c<cols;c++){
+        h += `<td data-r="${r}" data-c="${c}">${esc(getVal(r,c))}</td>`;
+      }
+      h += '</tr>';
+    }
+    h += '</tbody>';
+    grid.innerHTML = h;
+    renderTabs();
+    select(sel.r, sel.c, false);
+    runSearch(false);
+  }
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function cell(r,c){return grid.querySelector(`td[data-r="${r}"][data-c="${c}"]`);}
+
+  function renderTabs(){
+    const t = $('tabs'); t.innerHTML='';
+    sheets.forEach((s,i)=>{
+      const d=document.createElement('div');
+      d.className='tab'+(i===active?' active':'');
+      d.textContent=s.name;
+      d.onclick=()=>{ if(i!==active){active=i;sel={r:0,c:0};undoStack=[];redoStack=[];updUndo();render();} };
+      d.ondblclick=()=>{const n=prompt('Rename sheet',s.name); if(n){s.name=n;renderTabs();}};
+      t.appendChild(d);
+    });
+  }
+
+  // ---------- selection / editing ----------
+  function select(r,c,scroll=true){
+    grid.querySelectorAll('td.sel').forEach(e=>e.classList.remove('sel'));
+    grid.querySelectorAll('th.hl').forEach(e=>e.classList.remove('hl'));
+    sel={r,c};
+    const td=cell(r,c);
+    if(!td) return;
+    td.classList.add('sel');
+    const hc=grid.querySelector(`th[data-hc="${c}"]`), hr=grid.querySelector(`th[data-hr="${r}"]`);
+    hc&&hc.classList.add('hl'); hr&&hr.classList.add('hl');
+    $('nameBox').textContent = colName(c)+(r+1);
+    $('formulaInput').value = getVal(r,c);
+    if(scroll) td.scrollIntoView({block:'nearest',inline:'nearest'});
+  }
+
+  function commit(r,c,v,record=true){
+    const old=getVal(r,c);
+    if(old===v) return;
+    if(record){undoStack.push({r,c,old,nw:v,s:active});redoStack=[];updUndo();}
+    setVal(r,c,v);
+    const td=cell(r,c); if(td) td.textContent=v;
+    runSearch(false);
+  }
+
+  function startEdit(td){
+    td.contentEditable='true';
+    td.focus();
+    const range=document.createRange();range.selectNodeContents(td);range.collapse(false);
+    const s=window.getSelection();s.removeAllRanges();s.addRange(range);
+  }
+  function endEdit(td, save=true){
+    if(td.contentEditable!=='true') return;
+    td.contentEditable='false';
+    const r=+td.dataset.r,c=+td.dataset.c;
+    if(save) commit(r,c,td.textContent); else td.textContent=getVal(r,c);
+    $('formulaInput').value=getVal(r,c);
+  }
+
+  grid.addEventListener('click',e=>{
+    const td=e.target.closest('td'); if(!td) return;
+    const r=+td.dataset.r,c=+td.dataset.c;
+    const same = sel.r===r && sel.c===c;
+    if(td.contentEditable==='true') return;
+    grid.querySelectorAll('td[contenteditable="true"]').forEach(t=>endEdit(t));
+    select(r,c,false);
+    if(same) startEdit(td);   // tap again to edit
+  });
+  grid.addEventListener('dblclick',e=>{const td=e.target.closest('td'); if(td&&td.contentEditable!=='true') startEdit(td);});
+  grid.addEventListener('focusout',e=>{const td=e.target.closest&&e.target.closest('td'); if(td) endEdit(td);});
+  grid.addEventListener('keydown',e=>{
+    const td=e.target.closest('td'); if(!td) return;
+    if(e.key==='Enter'){e.preventDefault();endEdit(td);move(1,0);}
+    else if(e.key==='Tab'){e.preventDefault();endEdit(td);move(0,e.shiftKey?-1:1);}
+    else if(e.key==='Escape'){endEdit(td,false);}
+  });
+
+  // keyboard nav when not editing
+  document.addEventListener('keydown',e=>{
+    const a=document.activeElement;
+    if(a && (a.id==='searchInput'||a.id==='formulaInput'||a.isContentEditable)) return;
+    if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='y'){e.preventDefault();redo();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();$('searchInput').focus();return;}
+    const m={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
+    if(m){e.preventDefault();move(m[0],m[1]);return;}
+    if(e.key==='Enter'||e.key==='F2'){const td=cell(sel.r,sel.c);td&&startEdit(td);e.preventDefault();return;}
+    if(e.key==='Delete'||e.key==='Backspace'){commit(sel.r,sel.c,'');select(sel.r,sel.c,false);return;}
+    if(e.key.length===1&&!e.ctrlKey&&!e.metaKey){ // start typing replaces
+      const td=cell(sel.r,sel.c); if(td){td.textContent='';startEdit(td);}
+    }
+  });
+
+  function move(dr,dc){
+    const {rows,cols}=dims();
+    select(Math.max(0,Math.min(rows-1,sel.r+dr)), Math.max(0,Math.min(cols-1,sel.c+dc)));
+  }
+
+  // formula bar edits
+  const fi=$('formulaInput');
+  fi.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){commit(sel.r,sel.c,fi.value);fi.blur();move(1,0);}
+    if(e.key==='Escape'){fi.value=getVal(sel.r,sel.c);fi.blur();}
+  });
+  fi.addEventListener('blur',()=>{commit(sel.r,sel.c,fi.value);});
+
+  // ---------- undo / redo ----------
+  function updUndo(){$('undoBtn').disabled=!undoStack.length;$('redoBtn').disabled=!redoStack.length;}
+  function undo(){
+    const a=undoStack.pop(); if(!a) return;
+    if(a.s!==active){undoStack.push(a);return;}
+    setVal(a.r,a.c,a.old);const td=cell(a.r,a.c);td&&(td.textContent=a.old);
+    redoStack.push(a);updUndo();select(a.r,a.c);runSearch(false);
+  }
+  function redo(){
+    const a=redoStack.pop(); if(!a) return;
+    setVal(a.r,a.c,a.nw);const td=cell(a.r,a.c);td&&(td.textContent=a.nw);
+    undoStack.push(a);updUndo();select(a.r,a.c);runSearch(false);
+  }
+  $('undoBtn').onclick=undo; $('redoBtn').onclick=redo;
+
+  // ---------- toolbar actions ----------
+  $('addRowBtn').onclick=()=>{
+    const d=cur().data; const at=Math.min(sel.r+1,d.length);
+    d.splice(at,0,[]); render(); select(at,sel.c); status('Row added');
+  };
+  $('addColBtn').onclick=()=>{
+    cur().data.forEach(r=>{ if(r) r.splice(sel.c+1,0,''); });
+    render(); select(sel.r,sel.c+1); status('Column added');
+  };
+  $('delRowBtn').onclick=()=>{
+    const d=cur().data; if(sel.r<d.length){d.splice(sel.r,1);render();select(sel.r,sel.c);status('Row removed');}
+  };
+  $('clearBtn').onclick=()=>{commit(sel.r,sel.c,'');select(sel.r,sel.c,false);};
+  $('addSheetBtn').onclick=()=>{
+    sheets.push({name:'Sheet'+(sheets.length+1),data:[]});
+    active=sheets.length-1;sel={r:0,c:0};undoStack=[];redoStack=[];updUndo();render();
+  };
+
+  // ---------- search ----------
+  function runSearch(jump){
+    const q=$('searchInput').value.trim().toLowerCase();
+    grid.querySelectorAll('td.hit,td.cur').forEach(e=>e.classList.remove('hit','cur'));
+    grid.querySelectorAll('tr.hidden').forEach(e=>e.classList.remove('hidden'));
+    hits=[];
+    if(!q){hitIdx=-1;$('searchInfo').textContent='';return;}
+    const d=cur().data, rowSet=new Set();
+    for(let r=0;r<d.length;r++){
+      const row=d[r]; if(!row) continue;
+      for(let c=0;c<row.length;c++){
+        if(row[c]!=null && String(row[c]).toLowerCase().includes(q)){hits.push([r,c]);rowSet.add(r);}
+      }
+    }
+    hits.forEach(([r,c])=>{const td=cell(r,c);td&&td.classList.add('hit');});
+    if($('filterChk').checked){
+      grid.querySelectorAll('tbody tr').forEach(tr=>{ if(!rowSet.has(+tr.dataset.r)) tr.classList.add('hidden'); });
+    }
+    if(!hits.length){hitIdx=-1;$('searchInfo').textContent='0 found';return;}
+    if(hitIdx<0||hitIdx>=hits.length) hitIdx=0;
+    markCurrent(jump);
+  }
+  function markCurrent(jump){
+    grid.querySelectorAll('td.cur').forEach(e=>e.classList.remove('cur'));
+    const [r,c]=hits[hitIdx];
+    const td=cell(r,c); td&&td.classList.add('cur');
+    $('searchInfo').textContent=(hitIdx+1)+' / '+hits.length;
+    if(jump) select(r,c);
+  }
+  function step(d){
+    if(!hits.length) return;
+    hitIdx=(hitIdx+d+hits.length)%hits.length; markCurrent(true);
+  }
+  $('searchInput').addEventListener('input',()=>{hitIdx=-1;runSearch(true);});
+  $('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();step(e.shiftKey?-1:1);}});
+  $('nextBtn').onclick=()=>step(1);
+  $('prevBtn').onclick=()=>step(-1);
+  $('filterChk').onchange=()=>runSearch(true);
+
+  // ---------- file import / export ----------
+  $('fileInput').addEventListener('change',e=>{
+    const f=e.target.files[0]; if(!f) return;
+    $('fileName').textContent=f.name;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+        sheets=wb.SheetNames.map(n=>{
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:'',raw:false});
+          return {name:n,data:rows.map(r=>r.map(v=>v==null?'':String(v)))};
+        });
+        active=0;sel={r:0,c:0};undoStack=[];redoStack=[];updUndo();
+        $('searchInput').value='';
+        render();
+        const n=sheets[0].data.length;
+        status('Loaded '+n+' rows from '+f.name);
+      }catch(err){status('Could not read file');alert('Could not read this file: '+err.message);}
+    };
+    reader.readAsArrayBuffer(f);
+  });
+
+  $('exportBtn').onclick=()=>{
+    const wb=XLSX.utils.book_new();
+    sheets.forEach(s=>XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(s.data.length?s.data:[[]]),s.name.slice(0,31)));
+    XLSX.writeFile(wb,'spreadsheet.xlsx');
+  };
+
+  // ---------- zoom ----------
+  $('zoomRange').oninput=e=>{
+    const z=e.target.value;
+    grid.style.zoom=z/100;
+    $('zoomVal').textContent=z+'%';
+  };
+
+  updUndo();
+  render();
+})();
+</script>
+</body>
+</html>

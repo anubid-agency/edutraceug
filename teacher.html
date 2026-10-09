@@ -1,0 +1,1118 @@
+ <!DOCTYPE html>
+<html lang="en-UG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3570BC">
+<title>Enter Marks | Edutrace</title>
+<meta name="description" content="Enter marks for your classes.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="icon" type="image/jpeg" href="/edutrace-favicon.jpg">
+<link rel="apple-touch-icon" href="/edutrace-favicon.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+:root{
+  --primary:#3570BC;
+  --primary-dark:#2A5A96;
+  --primary-light:#EBF1FB;
+  --green:#008E34;--yellow:#F9B515;--red:#D7040A;
+  --dark:#1A1A1A;--muted:#5c6470;--border:#E3E6EA;--light:#F8F9FA;
+  --bg:#F2F4F7;
+  --font:'Plus Jakarta Sans',Arial,sans-serif;
+  --hh:56px;
+  --bar-h:72px;
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--dark);line-height:1.5;background:var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh;-webkit-text-size-adjust:100%}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:16px;color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+img{max-width:100%;display:block}
+
+.noscript-bar{background:var(--red);color:#fff;padding:12px 16px;text-align:center;font-weight:600;font-size:.9rem}
+
+/* ---------- header ---------- */
+.hdr{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border);height:var(--hh);display:flex;align-items:center;padding:0 12px;gap:10px}
+.hdr::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1;padding-top:4px}
+.brand img{height:32px;width:auto;border:2px solid var(--primary);background:#fff;object-fit:contain;flex-shrink:0}
+.brand span{font-weight:800;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbtn{height:40px;min-width:40px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--border);font-weight:700;font-size:.8rem;margin-top:4px;background:#fff}
+.hbtn:hover{border-color:var(--primary);color:var(--primary)}
+.hbtn.out:hover{border-color:var(--red);color:var(--red)}
+.hbtn .lbl{display:none}
+
+/* ---------- page ---------- */
+.page{max-width:760px;margin:0 auto;padding-bottom:calc(var(--bar-h) + 28px + env(safe-area-inset-bottom))}
+.panel{background:#fff;border-bottom:1px solid var(--border);padding:14px 12px 12px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pick .field.wide{grid-column:1/-1}
+.field label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:4px}
+.field select{width:100%;height:48px;padding:0 10px;border:2px solid var(--border);background:#fff;font-weight:600;font-size:16px;text-overflow:ellipsis}
+.field select:focus{outline:none;border-color:var(--primary)}
+.field select:disabled{background:var(--light);color:var(--muted)}
+
+.banner{margin-top:12px;padding:10px 12px;font-size:.85rem;font-weight:600;display:flex;gap:10px;align-items:flex-start}
+.banner.open{background:#f0fdf4;color:var(--green)}
+.banner.submitted{background:#fff9e6;color:#8a6800}
+.banner.locked{background:#fef2f2;color:var(--red)}
+.banner i{margin-top:3px}
+
+/* ---------- sticky tools ---------- */
+.tools{position:sticky;top:var(--hh);z-index:40;background:#fff;border-bottom:1px solid var(--border);padding:8px 12px}
+.tools-row{display:flex;align-items:center;gap:10px}
+.prog{flex:1;min-width:0}
+.prog .txt{font-size:.82rem;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog .txt strong{color:var(--dark)}
+.prog .txt .unsaved{color:#8a6800;margin-left:6px}
+.prog .bar{height:5px;background:var(--border);margin-top:5px;position:relative;overflow:hidden}
+.prog .bar i{position:absolute;inset:0 auto 0 0;background:var(--green);transition:width .25s}
+.searchbtn{width:44px;height:44px;border:2px solid var(--border);font-size:1rem;flex-shrink:0}
+.searchbtn.on{border-color:var(--primary);color:var(--primary)}
+.searchbox{display:none;margin-top:8px}
+.searchbox.show{display:block}
+.searchbox input{width:100%;height:44px;padding:0 12px;border:2px solid var(--border);font-size:16px}
+.searchbox input:focus{outline:none;border-color:var(--primary)}
+
+/* ---------- marks list ---------- */
+.list-head{display:grid;grid-template-columns:34px 1fr 96px 44px;gap:8px;padding:8px 12px;background:var(--light);border-bottom:1px solid var(--border);font-size:.75rem;font-weight:700;color:var(--muted)}
+.list-head .c{text-align:center}
+.row{display:grid;grid-template-columns:34px 1fr 96px 44px;gap:8px;align-items:center;padding:8px 12px;min-height:62px;background:#fff;border-bottom:1px solid var(--border)}
+.row.dirty{background:#fffdf0;box-shadow:inset 4px 0 0 var(--yellow)}
+.row.hidden{display:none}
+.row .n{font-size:.8rem;color:var(--muted);font-weight:600;text-align:center}
+.row .nm{font-weight:600;line-height:1.3;word-break:break-word}
+.row .nm small{display:block;font-size:.72rem;color:var(--muted);font-weight:500}
+.row input{width:100%;height:46px;text-align:center;font-size:16px;font-weight:700;border:2px solid var(--border);background:#fff;font-variant-numeric:tabular-nums}
+.row input:focus{outline:none;border-color:var(--primary)}
+.row input:disabled{background:var(--light);color:var(--muted);font-weight:600}
+.row input.err{border-color:var(--red);background:#fef2f2}
+.row input::placeholder{color:#b3b8bf;font-weight:600}
+.st{width:44px;height:46px;border:2px solid var(--border);font-size:.62rem;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.st.absent{border-color:var(--red);color:var(--red);background:#fef2f2}
+.st.excused{border-color:var(--yellow);color:#8a6800;background:#fff9e6}
+.st.na{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.st:disabled{opacity:.5;cursor:not-allowed}
+.hint{padding:10px 12px;font-size:.78rem;color:var(--muted)}
+.nomatch{padding:30px 12px;text-align:center;color:var(--muted);display:none}
+
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+.quick div{background:#fff;border:1px solid var(--border);padding:10px;text-align:center}
+.quick b{display:block;font-size:1.15rem;font-weight:800}
+.quick span{font-size:.72rem;color:var(--muted);font-weight:600}
+
+.empty{padding:56px 20px;text-align:center;color:var(--muted)}
+.empty i{font-size:2.2rem;color:#c9cdd3;margin-bottom:12px;display:block}
+.empty h3{font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:6px}
+.empty p{font-size:.9rem}
+
+.skel{background:linear-gradient(90deg,#eee 25%,#f6f6f6 50%,#eee 75%);background-size:200% 100%;animation:sh 1.4s infinite;height:46px;margin:10px 12px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ---------- action bar ---------- */
+.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--border);box-shadow:0 -4px 14px rgba(0,0,0,.06);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.actionbar-in{max-width:760px;margin:0 auto;display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 16px;font-weight:700;font-size:.92rem;border:2px solid transparent;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);border-color:var(--primary-dark)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-outline{background:#fff;border-color:var(--border);color:var(--dark)}
+.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-block{width:100%}
+.btn.grow{flex:1}
+.btn .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%!important;animation:spin .7s linear infinite}
+.btn.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- bottom sheet ---------- */
+.sheet-back{position:fixed;inset:0;background:rgba(10,15,25,.6);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.sheet-back.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column;border-top:4px solid var(--primary)}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.sheet-head h2{font-size:1.05rem;font-weight:800}
+.sheet-head button{width:44px;height:44px;font-size:1.2rem;color:var(--muted)}
+.sheet-body{padding:16px;overflow:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.step{padding:14px 0;border-bottom:1px solid var(--border)}
+.step:first-child{padding-top:0}
+.step:last-child{border-bottom:none}
+.step b{display:block;margin-bottom:4px}
+.step p{font-size:.85rem;color:var(--muted);margin-bottom:12px}
+.result{margin-top:14px;padding:14px;border-left:4px solid var(--green);background:var(--light);font-size:.88rem}
+.result.warn{border-left-color:var(--yellow)}
+.result.err{border-left-color:var(--red)}
+.result h4{font-size:.95rem;margin-bottom:8px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.pill{padding:5px 10px;background:#fff;border:1px solid var(--border);font-size:.8rem;font-weight:600}
+.pill.good{color:var(--green);border-color:var(--green)}
+.pill.bad{color:var(--red);border-color:var(--red)}
+.pill.warn{color:#8a6800;border-color:var(--yellow)}
+.result ul{margin:8px 0 12px 18px;font-size:.82rem;color:var(--muted)}
+
+/* class list */
+.cls-top{display:flex;gap:10px;align-items:end;margin-bottom:12px}
+.cls-top .field{flex:1}
+.cls-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 4px;border-bottom:1px solid var(--border);min-height:60px}
+.cls-row:hover{background:var(--light)}
+.cls-row .pos{width:36px;text-align:center;font-weight:800;color:var(--primary)}
+.cls-row .who{flex:1;font-weight:600;line-height:1.3}
+.cls-row .ov{font-weight:800;font-variant-numeric:tabular-nums;text-align:right}
+.cls-row .ov small{display:block;font-weight:700;color:var(--muted);font-size:.72rem}
+.rc-frame{width:100%;height:68vh;border:1px solid var(--border);background:#fff}
+
+/* ---------- toast + confirm ---------- */
+.toast-wrap{position:fixed;top:calc(var(--hh) + 10px);left:12px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#fff;border-left:4px solid var(--primary);padding:12px 16px;box-shadow:0 8px 24px rgba(0,0,0,.14);width:100%;max-width:420px;pointer-events:auto;font-size:.88rem;font-weight:600;display:flex;gap:10px;align-items:flex-start;animation:tin .2s ease-out}
+.toast i{margin-top:3px}
+.toast.success{border-left-color:var(--green)}.toast.success i{color:var(--green)}
+.toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
+.toast.warn{border-left-color:var(--yellow)}.toast.warn i{color:var(--yellow)}
+@keyframes tin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+.confirm-back{position:fixed;inset:0;background:rgba(10,15,25,.6);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-back.show{display:flex}
+.confirm{background:#fff;max-width:420px;width:100%;padding:22px;border-top:4px solid var(--primary)}
+.confirm h3{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.confirm p{font-size:.92rem;color:var(--muted);margin-bottom:20px}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions .btn{flex:1;height:48px}
+
+/* cookie */
+.cookie{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;z-index:9400;display:none;border-top:3px solid var(--primary)}
+.cookie.show{display:block}
+.cookie-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 12px;flex-wrap:wrap}
+.cookie-text{flex:1;font-size:.78rem;min-width:200px}
+.cookie-text a{color:var(--yellow);text-decoration:underline;font-weight:600}
+.cookie-btn{padding:10px 14px;font-weight:700;font-size:.78rem}
+.cookie-btn.allow{background:var(--green);color:#fff}
+.cookie-btn.reject{border:2px solid #fff}
+
+/* ---------- larger screens ---------- */
+@media(min-width:720px){
+  .hdr{padding:0 24px}
+  .hbtn .lbl{display:inline}
+  .page{margin-top:16px;background:#fff;border:1px solid var(--border);padding-bottom:calc(var(--bar-h) + 28px)}
+  .pick{grid-template-columns:2fr 1.2fr 1.2fr}
+  .pick .field.wide{grid-column:auto}
+  .panel{padding:18px 20px 14px}
+  .tools{padding:10px 20px}
+  .list-head,.row{padding-left:20px;padding-right:20px;grid-template-columns:40px 1fr 120px 48px}
+  .quick{padding:16px 20px}
+  .sheet-back{align-items:center}
+  .sheet{max-height:86vh}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<noscript><div class="noscript-bar">JavaScript is required. Please enable it in your browser settings.</div></noscript>
+
+<header class="hdr">
+  <a href="/" class="brand">
+    <img src="/logo.png" alt="" id="schoolLogo">
+    <span id="schoolName">Loading…</span>
+  </a>
+  <button class="hbtn" id="myClassBtn" type="button" style="display:none" aria-label="My class"><i class="fa-solid fa-users"></i><span class="lbl">My Class</span></button>
+  <button class="hbtn out" id="logoutBtn" type="button" aria-label="Log out"><i class="fa-solid fa-right-from-bracket"></i><span class="lbl">Log out</span></button>
+</header>
+
+<main class="page">
+  <section class="panel">
+    <div class="pick">
+      <div class="field wide">
+        <label for="selAssign">Class and subject</label>
+        <select id="selAssign"></select>
+      </div>
+      <div class="field">
+        <label for="selTerm">Term</label>
+        <select id="selTerm"></select>
+      </div>
+      <div class="field">
+        <label for="selType">Assessment</label>
+        <select id="selType"></select>
+      </div>
+    </div>
+    <div id="banner"></div>
+  </section>
+
+  <div class="tools" id="tools" style="display:none">
+    <div class="tools-row">
+      <div class="prog">
+        <div class="txt" id="progTxt"></div>
+        <div class="bar"><i id="progBar" style="width:0"></i></div>
+      </div>
+      <button class="searchbtn" id="searchToggle" type="button" aria-label="Search student"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <div class="searchbox" id="searchBox">
+      <input type="search" id="searchInput" placeholder="Search student name" autocomplete="off">
+    </div>
+  </div>
+
+  <div id="gridWrap"></div>
+</main>
+
+<div class="actionbar" id="actionbar">
+  <div class="actionbar-in">
+    <button class="btn btn-outline" id="importBtn" type="button"><i class="fa-solid fa-file-excel"></i><span>Import</span></button>
+    <button class="btn btn-primary grow" id="saveBtn" type="button" disabled><span class="spinner"></span><span class="btn-label">Save</span></button>
+    <button class="btn btn-green grow" id="submitBtn" type="button" disabled><i class="fa-solid fa-paper-plane"></i> Submit</button>
+  </div>
+</div>
+
+<div class="sheet-back" id="sheetBack">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head"><h2 id="sheetTitle">Details</h2><button id="sheetClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="confirm-back" id="confirmBack">
+  <div class="confirm">
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmMsg"></p>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" id="confirmNo" type="button">Cancel</button>
+      <button class="btn btn-primary" id="confirmYes" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent">
+  <div class="cookie-in">
+    <div class="cookie-text">We use cookies to keep you signed in. <a href="/terms-policy.html">Terms &amp; Policies</a></div>
+    <button class="cookie-btn reject" id="cookieReject" type="button">Reject</button>
+    <button class="cookie-btn allow" id="cookieAllow" type="button">Allow</button>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAR1NEHhZwUujpGEjb-IvTV2A04PTQuYLE",
+  authDomain: "edutrace-ug.firebaseapp.com",
+  projectId: "edutrace-ug",
+  storageBucket: "edutrace-ug.firebasestorage.app",
+  messagingSenderId: "219055117140",
+  appId: "1:219055117140:web:97ec99de8e25b6f9266ec1"
+};
+
+const WORKERS = {
+  profile: "https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev",
+  teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
+  marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev"
+};
+
+const ROLE_ROUTES = {
+  schoolAdmin: "/school-admin.html",
+  teacher: "/teacher.html",
+  student: "/student.html",
+  parent: "/parent.html"
+};
+
+const state = {
+  user: null, claims: null, schoolId: null, school: null,
+  terms: [], currentTermId: null, config: null, types: [], teacher: null,
+  grid: null,
+  last: { a: "", t: "", y: "" }
+};
+
+const $ = (id) => document.getElementById(id);
+
+/* ------------------------------------------------------------------ helpers */
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function labelOf(a) { return `${a.subject} — ${a.class}${a.stream ? " " + a.stream : ""}`; }
+function setBtnLoading(btn, on) { if (!btn) return; btn.classList.toggle("loading", on); btn.disabled = on; }
+
+function toast(msg, kind = "info", ms = 3500) {
+  const icons = { success: "fa-circle-check", error: "fa-circle-exclamation", warn: "fa-triangle-exclamation", info: "fa-circle-info" };
+  const t = document.createElement("div");
+  t.className = `toast ${kind}`;
+  t.innerHTML = `<i class="fa-solid ${icons[kind] || icons.info}"></i><span>${escapeHtml(msg)}</span>`;
+  $("toastWrap").appendChild(t);
+  setTimeout(() => { t.style.transition = "opacity .3s"; t.style.opacity = "0"; setTimeout(() => t.remove(), 300); }, ms);
+}
+
+function confirmDialog(title, msg, okLabel = "Confirm", danger = false) {
+  return new Promise((resolve) => {
+    $("confirmTitle").textContent = title;
+    $("confirmMsg").textContent = msg;
+    const yes = $("confirmYes");
+    yes.textContent = okLabel;
+    yes.className = "btn " + (danger ? "btn-danger" : "btn-primary");
+    $("confirmBack").classList.add("show");
+    const done = (v) => {
+      $("confirmBack").classList.remove("show");
+      yes.removeEventListener("click", onYes);
+      $("confirmNo").removeEventListener("click", onNo);
+      resolve(v);
+    };
+    const onYes = () => done(true);
+    const onNo = () => done(false);
+    yes.addEventListener("click", onYes);
+    $("confirmNo").addEventListener("click", onNo);
+  });
+}
+
+function openSheet(title, html) {
+  $("sheetTitle").textContent = title;
+  $("sheetBody").innerHTML = html;
+  $("sheetBack").classList.add("show");
+  return $("sheetBody");
+}
+function closeSheet() { $("sheetBack").classList.remove("show"); $("sheetBody").innerHTML = ""; }
+
+function store(key, val) { try { localStorage.setItem(key, val); } catch {} }
+function recall(key) { try { return localStorage.getItem(key); } catch { return null; } }
+
+/* ------------------------------------------------------------------ API */
+class ApiError extends Error {
+  constructor(message, status, body) { super(message); this.status = status; this.body = body; }
+}
+async function idToken() {
+  if (!state.user) throw new Error("Not signed in");
+  return state.user.getIdToken();
+}
+async function safeError(res) {
+  try {
+    const ct = res.headers.get("content-type") || "";
+    if (ct.includes("application/json")) {
+      const d = await res.json();
+      return { message: d.error || `Request failed (${res.status})`, body: d };
+    }
+  } catch {}
+  return { message: `Request failed (${res.status})`, body: null };
+}
+async function parseResponse(res) {
+  const ct = res.headers.get("content-type") || "";
+  return ct.includes("application/json") ? res.json() : res.text();
+}
+async function api(url, options = {}) {
+  const token = await idToken();
+  let res = await fetch(url, { ...options, headers: { Authorization: `Bearer ${token}`, ...(options.headers || {}) } });
+  if (res.status === 401 || res.status === 403) {
+    const fresh = await state.user.getIdToken(true);
+    res = await fetch(url, { ...options, headers: { Authorization: `Bearer ${fresh}`, ...(options.headers || {}) } });
+  }
+  if (!res.ok) { const e = await safeError(res); throw new ApiError(e.message, res.status, e.body); }
+  return parseResponse(res);
+}
+
+/* ------------------------------------------------------------------ boot */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { location.replace("/account.html"); return; }
+  state.user = user;
+
+  let claims;
+  try { claims = (await user.getIdTokenResult(true)).claims; }
+  catch { claims = (await user.getIdTokenResult()).claims; }
+  state.claims = claims;
+
+  if (claims.role !== "teacher") {
+    const route = ROLE_ROUTES[claims.role];
+    if (route) location.replace(route);
+    else { await signOut(auth); location.replace("/account.html"); }
+    return;
+  }
+
+  state.schoolId = claims.schoolId;
+  try {
+    await loadAll();
+    paint();
+    bind();
+    await loadGrid();
+  } catch (err) {
+    console.error(err);
+    toast(err.message || "Failed to load. Please refresh.", "error", 8000);
+  }
+});
+
+async function loadAll() {
+  const sid = encodeURIComponent(state.schoolId);
+  const [school, termsData, configData, teacher] = await Promise.all([
+    api(`${WORKERS.profile}/school/id/${sid}`).catch(() => null),
+    api(`${WORKERS.teachers}/schools/${sid}/terms`),
+    api(`${WORKERS.marks}/schools/${sid}/config`),
+    api(`${WORKERS.teachers}/schools/${sid}/my-assignments`)
+  ]);
+  state.school = school;
+  state.terms = termsData.terms || [];
+  state.config = configData;
+  state.types = configData.assessmentTypes || [];
+  state.teacher = teacher;
+  const cur = state.terms.find((t) => t.isCurrent);
+  state.currentTermId = cur ? cur.id : (state.terms[0] && state.terms[0].id) || null;
+}
+
+/* ------------------------------------------------------------------ paint */
+function darken(hex, a) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const f = (v) => Math.max(0, Math.floor(v * (1 - a))).toString(16).padStart(2, "0");
+  return "#" + f((n >> 16) & 255) + f((n >> 8) & 255) + f(n & 255);
+}
+function lighten(hex, a) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const f = (v) => Math.min(255, Math.floor(v + (255 - v) * a)).toString(16).padStart(2, "0");
+  return "#" + f((n >> 16) & 255) + f((n >> 8) & 255) + f(n & 255);
+}
+
+function paint() {
+  const s = state.school;
+  if (s) {
+    $("schoolName").textContent = s.name || "School";
+    if (s.logoUrl) $("schoolLogo").src = s.logoUrl;
+    if (s.themeColor) {
+      const r = document.documentElement.style;
+      r.setProperty("--primary", s.themeColor);
+      r.setProperty("--primary-dark", darken(s.themeColor, 0.15));
+      r.setProperty("--primary-light", lighten(s.themeColor, 0.9));
+      const m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute("content", s.themeColor);
+    }
+  } else {
+    $("schoolName").textContent = "Edutrace";
+  }
+
+  if (state.teacher.classTeacherOf) $("myClassBtn").style.display = "";
+
+  // assignments
+  const list = state.teacher.assignments || [];
+  const sa = $("selAssign");
+  sa.innerHTML = "";
+  if (!list.length) {
+    sa.innerHTML = `<option value="">No classes assigned</option>`;
+    sa.disabled = true;
+  } else {
+    list.forEach((a, i) => {
+      const o = document.createElement("option");
+      o.value = i; o.textContent = labelOf(a);
+      sa.appendChild(o);
+    });
+    const saved = recall("edutrace_last_assign");
+    const idx = saved ? list.findIndex((a) => labelOf(a) === saved) : -1;
+    sa.value = idx >= 0 ? idx : 0;
+  }
+
+  // terms
+  const st = $("selTerm");
+  st.innerHTML = "";
+  state.terms.forEach((t) => {
+    const o = document.createElement("option");
+    o.value = t.id;
+    o.textContent = `${t.name}${t.year ? ", " + t.year : ""}${t.isCurrent ? " (current)" : ""}`;
+    st.appendChild(o);
+  });
+  if (state.currentTermId) st.value = state.currentTermId;
+
+  // types
+  const ty = $("selType");
+  ty.innerHTML = "";
+  state.types.forEach((t) => {
+    const o = document.createElement("option");
+    o.value = t.id; o.textContent = t.name;
+    ty.appendChild(o);
+  });
+  const savedType = recall("edutrace_last_type");
+  if (savedType && state.types.some((t) => t.id === savedType)) ty.value = savedType;
+
+  state.last = { a: sa.value, t: st.value, y: ty.value };
+}
+
+function selectedAssignment() {
+  const i = parseInt($("selAssign").value, 10);
+  const list = state.teacher.assignments || [];
+  return Number.isInteger(i) && list[i] ? list[i] : null;
+}
+
+/* ------------------------------------------------------------------ events */
+function bind() {
+  const onPick = async (e) => {
+    if (state.grid && state.grid.dirty.size > 0) {
+      const ok = await confirmDialog("Unsaved marks", "You have marks that are not saved. Leave them and continue?", "Discard", true);
+      if (!ok) {
+        $("selAssign").value = state.last.a;
+        $("selTerm").value = state.last.t;
+        $("selType").value = state.last.y;
+        return;
+      }
+    }
+    state.last = { a: $("selAssign").value, t: $("selTerm").value, y: $("selType").value };
+    const a = selectedAssignment();
+    if (a) store("edutrace_last_assign", labelOf(a));
+    store("edutrace_last_type", $("selType").value);
+    loadGrid();
+  };
+  $("selAssign").addEventListener("change", onPick);
+  $("selTerm").addEventListener("change", onPick);
+  $("selType").addEventListener("change", onPick);
+
+  $("saveBtn").addEventListener("click", () => saveGrid());
+  $("submitBtn").addEventListener("click", submitSheet);
+  $("importBtn").addEventListener("click", openImport);
+  $("myClassBtn").addEventListener("click", openMyClass);
+
+  $("logoutBtn").addEventListener("click", async () => {
+    if (state.grid && state.grid.dirty.size > 0) {
+      const ok = await confirmDialog("Unsaved marks", "You have marks that are not saved. Log out anyway?", "Log out", true);
+      if (!ok) return;
+    }
+    await signOut(auth);
+    location.replace("/account.html");
+  });
+
+  $("searchToggle").addEventListener("click", () => {
+    const box = $("searchBox");
+    const on = !box.classList.contains("show");
+    box.classList.toggle("show", on);
+    $("searchToggle").classList.toggle("on", on);
+    if (on) $("searchInput").focus();
+    else { $("searchInput").value = ""; applySearch(); }
+  });
+  $("searchInput").addEventListener("input", applySearch);
+
+  $("sheetClose").addEventListener("click", closeSheet);
+  $("sheetBack").addEventListener("click", (e) => { if (e.target === $("sheetBack")) closeSheet(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+
+  window.addEventListener("beforeunload", (e) => {
+    if (state.grid && state.grid.dirty.size > 0) { e.preventDefault(); e.returnValue = ""; }
+  });
+}
+
+/* ------------------------------------------------------------------ marks grid */
+function canEdit(g) { return !g.sheet || g.sheet.status === "open" || !g.sheet.status; }
+
+async function loadGrid() {
+  const assign = selectedAssignment();
+  const termId = $("selTerm").value;
+  const typeId = $("selType").value;
+  const wrap = $("gridWrap");
+
+  state.grid = null;
+  setBar(false);
+
+  if (!assign) {
+    $("tools").style.display = "none";
+    $("banner").innerHTML = "";
+    wrap.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i><h3>No classes yet</h3><p>Ask your school admin to assign you a class and subject.</p></div>`;
+    return;
+  }
+  if (!termId || !typeId) {
+    $("tools").style.display = "none";
+    wrap.innerHTML = `<div class="empty"><i class="fa-solid fa-circle-info"></i><h3>Pick a term and assessment</h3></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>`;
+
+  const params = new URLSearchParams({ termId, class: assign.class, stream: assign.stream || "", subject: assign.subject, typeId });
+  let data;
+  try {
+    data = await api(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/grid?${params}`);
+  } catch (err) {
+    $("tools").style.display = "none";
+    wrap.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Could not load marks</h3><p>${escapeHtml(err.message)}</p><button class="btn btn-outline" style="margin-top:16px" id="retryBtn" type="button">Try again</button></div>`;
+    $("retryBtn").addEventListener("click", loadGrid);
+    return;
+  }
+
+  state.grid = {
+    assign, termId, typeId,
+    scoringMode: data.scoringMode,
+    cbcLevels: data.cbcLevels || [],
+    sheet: data.sheet || { status: "open" },
+    maxScore: data.maxScore,
+    rows: data.rows || [],
+    dirty: new Map()
+  };
+  renderGrid();
+}
+
+function setBar(on) {
+  const g = state.grid;
+  $("saveBtn").disabled = !on;
+  $("submitBtn").disabled = !on;
+  $("submitBtn").style.display = on && g && canEdit(g) ? "" : (on ? "none" : "");
+  $("importBtn").disabled = !on;
+}
+
+function valueOf(row) {
+  const g = state.grid;
+  const d = g.dirty.get(row.rosterId);
+  if (d) return { status: d.status || "entered", score: d.score, level: d.level, bad: !!d.bad, raw: d.raw };
+  return {
+    status: row.status && row.status !== "missing" ? row.status : "entered",
+    score: row.score, level: row.level, bad: false
+  };
+}
+function isFilled(g, v) {
+  if (v.bad) return false;
+  return v.status !== "entered" || (g.scoringMode === "cbc" ? v.level != null : v.score != null);
+}
+const STATUS_TXT = { entered: "", absent: "ABS", excused: "EXC", na: "N/A" };
+const STATUS_LONG = { absent: "Absent", excused: "Excused", na: "Not applicable" };
+
+function renderGrid() {
+  const g = state.grid;
+  const wrap = $("gridWrap");
+  const sheet = g.sheet;
+  const editable = canEdit(g);
+
+  const bannerHtml = sheet.status === "submitted"
+    ? `<div class="banner submitted"><i class="fa-solid fa-circle-info"></i><span>Submitted. Ask your admin to reopen it if you need to change marks.</span></div>`
+    : sheet.status === "locked"
+      ? `<div class="banner locked"><i class="fa-solid fa-lock"></i><span>Locked. Ask your admin to reopen it.</span></div>`
+      : "";
+  $("banner").innerHTML = bannerHtml;
+
+  if (!g.rows.length) {
+    $("tools").style.display = "none";
+    wrap.innerHTML = `<div class="empty"><i class="fa-solid fa-users-slash"></i><h3>No students</h3><p>This class has no students yet.</p></div>`;
+    setBar(false);
+    return;
+  }
+
+  const cbc = g.scoringMode === "cbc";
+  const head = cbc ? `Level (1-${g.cbcLevels.length || 3})` : `Mark${g.maxScore ? " /" + g.maxScore : ""}`;
+
+  const rows = g.rows.map((r, i) => `
+    <div class="row" data-rid="${escapeHtml(r.rosterId)}" data-name="${escapeHtml((r.lastName + " " + r.firstName).toLowerCase())}">
+      <div class="n">${i + 1}</div>
+      <div class="nm">${escapeHtml(r.lastName)} ${escapeHtml(r.firstName)}${r.gender ? `<small>${escapeHtml(r.gender)}</small>` : ""}</div>
+      <input type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" data-role="val" aria-label="Mark for ${escapeHtml(r.firstName)} ${escapeHtml(r.lastName)}" ${editable ? "" : "disabled"}>
+      <button type="button" class="st" data-role="st" aria-label="Absent, excused or not applicable" ${editable ? "" : "disabled"}></button>
+    </div>`).join("");
+
+  wrap.innerHTML = `
+    <div class="list-head"><div class="c">#</div><div>Student</div><div class="c">${head}</div><div class="c">Status</div></div>
+    <div id="rows">${rows}</div>
+    <div class="nomatch" id="noMatch">No student with that name.</div>
+    ${editable ? `<div class="hint">Tap the box on the right of a student to mark Absent, Excused or N/A.</div>` : ""}
+    <div id="quick"></div>`;
+
+  $("tools").style.display = "";
+  setBar(true);
+  $("saveBtn").disabled = !editable;
+  $("importBtn").disabled = !editable;
+
+  document.querySelectorAll("#rows .row").forEach((tr) => {
+    paintRow(tr, true);
+    wireRow(tr);
+  });
+  applySearch();
+  updateInfo();
+}
+
+function paintRow(tr, setValue) {
+  const g = state.grid;
+  const row = g.rows.find((r) => r.rosterId === tr.dataset.rid);
+  const v = valueOf(row);
+  const input = tr.querySelector('[data-role="val"]');
+  const btn = tr.querySelector('[data-role="st"]');
+  const editable = canEdit(g);
+  const cbc = g.scoringMode === "cbc";
+
+  tr.classList.toggle("dirty", g.dirty.has(row.rosterId));
+  btn.className = "st " + (v.status !== "entered" ? v.status : "");
+  btn.innerHTML = v.status === "entered" ? `<i class="fa-solid fa-ellipsis"></i>` : STATUS_TXT[v.status];
+  btn.title = v.status === "entered" ? "Mark absent, excused or N/A" : STATUS_LONG[v.status];
+
+  input.disabled = !editable || v.status !== "entered";
+  input.classList.toggle("err", v.bad);
+  input.placeholder = v.status !== "entered" ? (STATUS_LONG[v.status] || "") : (cbc ? "1-" + (g.cbcLevels.length || 3) : "—");
+
+  if (setValue) {
+    if (v.status !== "entered") input.value = "";
+    else if (v.bad) input.value = v.raw || "";
+    else input.value = cbc ? (v.level != null ? v.level : "") : (v.score != null ? v.score : "");
+  }
+}
+
+function parseEntry(raw) {
+  const s = String(raw).trim();
+  if (s === "") return { status: "entered", score: null, level: null };
+  if (/^abs(ent)?$/i.test(s)) return { status: "absent", score: null, level: null };
+  if (/^exc(used)?$/i.test(s)) return { status: "excused", score: null, level: null };
+  if (/^n\/?a$/i.test(s)) return { status: "na", score: null, level: null };
+  const g = state.grid;
+  const n = Number(s);
+  const bad = { status: "entered", score: null, level: null, bad: true, raw: s };
+  if (!Number.isFinite(n) || n < 0) return bad;
+  if (g.scoringMode === "cbc") {
+    const max = g.cbcLevels.length || 3;
+    if (!Number.isInteger(n) || n < 1 || n > max) return bad;
+    return { status: "entered", score: null, level: n };
+  }
+  if (g.maxScore != null && n > g.maxScore) return bad;
+  return { status: "entered", score: n, level: null };
+}
+
+function wireRow(tr) {
+  const g = state.grid;
+  const rid = tr.dataset.rid;
+  const input = tr.querySelector('[data-role="val"]');
+  const btn = tr.querySelector('[data-role="st"]');
+
+  input.addEventListener("input", () => {
+    const patch = parseEntry(input.value);
+    g.dirty.set(rid, patch);
+    if (patch.status !== "entered") { paintRow(tr, true); }
+    else paintRow(tr, false);
+    updateInfo();
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const all = [...document.querySelectorAll("#rows .row:not(.hidden) [data-role='val']")].filter((i) => !i.disabled);
+    const next = all[all.indexOf(input) + 1];
+    if (next) { next.focus(); next.select(); }
+    else input.blur();
+  });
+  input.addEventListener("focus", () => setTimeout(() => input.select(), 0));
+
+  btn.addEventListener("click", () => {
+    const order = ["entered", "absent", "excused", "na"];
+    const cur = valueOf(g.rows.find((r) => r.rosterId === rid)).status;
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    g.dirty.set(rid, { status: next, score: null, level: null });
+    paintRow(tr, true);
+    updateInfo();
+    if (next === "entered") input.focus();
+  });
+}
+
+function applySearch() {
+  const q = $("searchInput").value.trim().toLowerCase();
+  const rows = document.querySelectorAll("#rows .row");
+  let shown = 0;
+  rows.forEach((r) => {
+    const hit = !q || r.dataset.name.includes(q);
+    r.classList.toggle("hidden", !hit);
+    if (hit) shown++;
+  });
+  const nm = $("noMatch");
+  if (nm) nm.style.display = rows.length && !shown ? "block" : "none";
+}
+
+function updateInfo() {
+  const g = state.grid;
+  if (!g) return;
+  const total = g.rows.length;
+  let filled = 0;
+  const scores = [];
+  g.rows.forEach((r) => {
+    const v = valueOf(r);
+    if (isFilled(g, v)) filled++;
+    if (g.scoringMode !== "cbc" && v.status === "entered" && !v.bad && v.score != null) scores.push(v.score);
+  });
+  const n = g.dirty.size;
+  $("progTxt").innerHTML = `<strong>${filled}</strong> of ${total} entered${n ? `<span class="unsaved">${n} unsaved</span>` : ""}`;
+  $("progBar").style.width = (total ? Math.round((filled / total) * 100) : 0) + "%";
+
+  const q = $("quick");
+  if (!q) return;
+  if (scores.length) {
+    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+    q.innerHTML = `<div class="quick"><div><b>${avg.toFixed(1)}</b><span>Average</span></div><div><b>${Math.max(...scores)}</b><span>Highest</span></div><div><b>${Math.min(...scores)}</b><span>Lowest</span></div></div>`;
+  } else q.innerHTML = "";
+}
+
+async function saveGrid() {
+  const g = state.grid;
+  if (!g) return false;
+  if (g.dirty.size === 0) { toast("Nothing new to save.", "info", 2000); return true; }
+
+  const entries = [];
+  for (const [rid, p] of g.dirty.entries()) {
+    if (p.bad) {
+      toast("Fix the red boxes first.", "error");
+      const tr = document.querySelector(`#rows .row[data-rid="${CSS.escape(rid)}"]`);
+      if (tr) { tr.scrollIntoView({ block: "center", behavior: "smooth" }); tr.querySelector("input").focus(); }
+      return false;
+    }
+    const status = p.status || "entered";
+    const e = { rosterId: rid, status };
+    if (status === "entered") {
+      if (g.scoringMode === "cbc") { if (p.level == null) continue; e.level = p.level; }
+      else { if (p.score == null) continue; e.score = p.score; }
+    }
+    entries.push(e);
+  }
+  if (!entries.length) { toast("Nothing to save yet.", "warn"); return false; }
+
+  const btn = $("saveBtn");
+  setBtnLoading(btn, true);
+  try {
+    await api(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/grid`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        termId: g.termId, class: g.assign.class, stream: g.assign.stream || "",
+        subject: g.assign.subject, typeId: g.typeId, entries
+      })
+    });
+    toast(`Saved ${entries.length} mark${entries.length === 1 ? "" : "s"}.`, "success");
+    g.dirty.clear();
+    await loadGrid();
+    return true;
+  } catch (err) {
+    toast(err.message || "Save failed. Check your connection and try again.", "error", 6000);
+    return false;
+  } finally {
+    setBtnLoading(btn, false);
+    if (state.grid) $("saveBtn").disabled = !canEdit(state.grid);
+  }
+}
+
+async function submitSheet() {
+  const g = state.grid;
+  if (!g) return;
+  const missing = g.rows.filter((r) => !isFilled(g, valueOf(r))).length;
+  const msg = missing
+    ? `${missing} student${missing === 1 ? " has" : "s have"} no mark yet. After you submit, you cannot edit until an admin reopens the sheet.`
+    : "After you submit, you cannot edit until an admin reopens the sheet.";
+  const ok = await confirmDialog("Submit this sheet?", msg, g.dirty.size ? "Save and submit" : "Submit");
+  if (!ok) return;
+
+  if (g.dirty.size > 0) { const saved = await saveGrid(); if (!saved) return; }
+  const cur = state.grid;
+  const btn = $("submitBtn");
+  btn.disabled = true;
+  try {
+    await api(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/sheets/submit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ termId: cur.termId, class: cur.assign.class, stream: cur.assign.stream || "", subject: cur.assign.subject })
+    });
+    toast("Sheet submitted.", "success");
+    await loadGrid();
+  } catch (err) {
+    toast(err.message || "Submit failed.", "error", 6000);
+    btn.disabled = false;
+  }
+}
+
+/* ------------------------------------------------------------------ Excel import */
+function typeName() {
+  const g = state.grid;
+  const t = state.types.find((x) => x.id === g.typeId);
+  return t ? t.name : "Marks";
+}
+
+function openImport() {
+  const g = state.grid;
+  if (!g || !g.rows.length) { toast("Open a class with students first.", "warn"); return; }
+  if (!canEdit(g)) { toast("This sheet is not open for editing.", "warn"); return; }
+
+  openSheet("Import from Excel", `
+    <div class="step">
+      <b>1. Get the template</b>
+      <p>It already has your students' names. Fill in the ${escapeHtml(typeName())} column.</p>
+      <button class="btn btn-outline btn-block" id="impTpl" type="button"><i class="fa-solid fa-download"></i> Download template</button>
+    </div>
+    <div class="step">
+      <b>2. Choose your filled file</b>
+      <p>The marks appear in the list first. Nothing is saved until you tap Save.</p>
+      <label class="btn btn-primary btn-block" style="cursor:pointer"><i class="fa-solid fa-file-arrow-up"></i> Choose file
+        <input type="file" id="impFile" accept=".xlsx,.xls,.xlsm,.csv" hidden>
+      </label>
+      <div id="impResult"></div>
+    </div>`);
+
+  $("impTpl").addEventListener("click", downloadTemplate);
+  $("impFile").addEventListener("change", (e) => { if (e.target.files[0]) handleImport(e.target.files[0]); });
+}
+
+function downloadTemplate() {
+  const g = state.grid;
+  if (typeof XLSX === "undefined") { toast("Excel tools did not load. Check your connection.", "error"); return; }
+  const data = [["No.", "Last Name", "First Name", typeName()]];
+  g.rows.forEach((r, i) => data.push([i + 1, r.lastName, r.firstName, ""]));
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws["!cols"] = [{ wch: 6 }, { wch: 20 }, { wch: 20 }, { wch: 14 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Marks");
+  const name = `marks_${g.assign.class}${g.assign.stream ? "_" + g.assign.stream : ""}_${g.assign.subject}_${typeName()}.xlsx`.replace(/[^\w.-]+/g, "_");
+  XLSX.writeFile(wb, name);
+}
+
+function nameTokens(s) {
+  return String(s).toLowerCase().replace(/[^a-z0-9\s'-]/g, " ").split(/\s+/).filter(Boolean).sort();
+}
+
+async function handleImport(file) {
+  const g = state.grid;
+  const out = $("impResult");
+  const fail = (msg) => { out.innerHTML = `<div class="result err"><h4>Could not import</h4>${escapeHtml(msg)}</div>`; };
+
+  if (typeof XLSX === "undefined") return fail("Excel tools did not load. Check your connection and try again.");
+  if (!/\.(xlsx|xls|xlsm|csv)$/i.test(file.name)) return fail("Use an .xlsx, .xls or .csv file.");
+  if (file.size > 10 * 1024 * 1024) return fail("File is too large (max 10 MB).");
+
+  let rows;
+  try {
+    const wb = XLSX.read(new Uint8Array(await file.arrayBuffer()), { type: "array" });
+    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "", raw: true });
+  } catch { return fail("This file could not be read."); }
+
+  let h = -1;
+  for (let i = 0; i < Math.min(rows.length, 15); i++) {
+    if (rows[i].some((c) => /name|student|surname/i.test(String(c)))) { h = i; break; }
+  }
+  if (h < 0) return fail("No Name column found. Use the template from step 1.");
+
+  const head = rows[h].map((c) => String(c).trim().toLowerCase());
+  const nameCols = head.map((t, i) => (/name|student|surname/.test(t) ? i : -1)).filter((i) => i >= 0);
+  const tn = typeName().toLowerCase();
+  let markCol = head.findIndex((t) => t && tn && (t === tn || t.includes(tn)));
+  if (markCol < 0) markCol = head.findIndex((t, i) => !nameCols.includes(i) && t && !/^(no\.?|#|sn|s\/n|gender|sex|class|stream|id|admission.*|roster.*)$/.test(t));
+  if (markCol < 0) return fail("No marks column found. Use the template from step 1.");
+
+  const roster = g.rows.map((r) => ({ rid: r.rosterId, tok: nameTokens(`${r.lastName} ${r.firstName}`) }));
+  const exact = new Map(roster.map((r) => [r.tok.join(" "), r.rid]));
+  const seen = new Set();
+  const unmatched = [];
+  let filled = 0, invalid = 0, dups = 0;
+
+  for (let r = h + 1; r < rows.length; r++) {
+    const name = nameCols.map((i) => rows[r][i]).join(" ").trim();
+    if (!name) continue;
+    const tok = nameTokens(name);
+    let rid = exact.get(tok.join(" "));
+    if (!rid && tok.length >= 2) {
+      const c = roster.filter((x) => tok.every((t) => x.tok.includes(t)));
+      if (c.length === 1) rid = c[0].rid;
+    }
+    if (!rid) { unmatched.push(name); continue; }
+    if (seen.has(rid)) { dups++; continue; }
+    seen.add(rid);
+
+    const raw = String(rows[r][markCol] == null ? "" : rows[r][markCol]).trim();
+    if (raw === "") continue;
+    const patch = parseEntry(raw);
+    if (patch.bad) invalid++;
+    g.dirty.set(rid, patch);
+    filled++;
+  }
+
+  renderGrid();
+
+  const pills = [`<span class="pill good">${filled} filled</span>`];
+  if (invalid) pills.push(`<span class="pill bad">${invalid} invalid</span>`);
+  if (unmatched.length) pills.push(`<span class="pill warn">${unmatched.length} names not matched</span>`);
+  if (dups) pills.push(`<span class="pill warn">${dups} repeated</span>`);
+
+  const list = unmatched.length
+    ? `<p>Not matched:</p><ul>${unmatched.slice(0, 8).map((n) => `<li>${escapeHtml(n)}</li>`).join("")}${unmatched.length > 8 ? `<li>and ${unmatched.length - 8} more</li>` : ""}</ul>`
+    : "";
+
+  out.innerHTML = `
+    <div class="result ${invalid || unmatched.length ? "warn" : ""}">
+      <h4>Marks added to the list</h4>
+      <div class="pills">${pills.join("")}</div>
+      <p>Column used: <b>${escapeHtml(String(rows[h][markCol]))}</b>.${invalid ? " Invalid marks are red in the list." : ""} Tap Save to keep them.</p>
+      ${list}
+      <button class="btn btn-primary btn-block" id="impDone" type="button">Review in list</button>
+    </div>`;
+  $("impDone").addEventListener("click", closeSheet);
+}
+
+/* ------------------------------------------------------------------ My Class */
+function openMyClass() {
+  const ct = state.teacher.classTeacherOf;
+  if (!ct) return;
+  const termOpts = state.terms.map((t) => `<option value="${escapeHtml(t.id)}" ${t.id === $("selTerm").value ? "selected" : ""}>${escapeHtml(t.name)}${t.year ? ", " + t.year : ""}</option>`).join("");
+  openSheet(`My Class: ${ct.class}${ct.stream ? " " + ct.stream : ""}`, `
+    <div class="cls-top"><div class="field"><label for="mcTerm">Term</label><select id="mcTerm">${termOpts}</select></div></div>
+    <div id="mcList"></div>`);
+  $("mcTerm").addEventListener("change", loadMyClass);
+  loadMyClass();
+}
+
+async function loadMyClass() {
+  const ct = state.teacher.classTeacherOf;
+  const termId = $("mcTerm").value;
+  const box = $("mcList");
+  box.innerHTML = `<div class="skel" style="margin:10px 0"></div><div class="skel" style="margin:10px 0"></div><div class="skel" style="margin:10px 0"></div>`;
+  try {
+    const p = new URLSearchParams({ termId, class: ct.class });
+    if (ct.stream) p.set("stream", ct.stream);
+    const data = await api(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/class?${p}`);
+    const students = data.students || [];
+    const cbc = data.scoringMode === "cbc";
+    if (!students.length) { box.innerHTML = `<div class="empty"><i class="fa-solid fa-users-slash"></i><h3>No students</h3></div>`; return; }
+
+    box.innerHTML = `<p class="hint" style="padding:0 0 8px">Tap a student to see the report card.</p>` + students.map((s) => {
+      let ov = "—", sub = "";
+      if (cbc) { ov = s.rollup && s.rollup.rows && s.rollup.rows[0] ? escapeHtml(s.rollup.rows[0].label) : "—"; }
+      else if (s.overall && s.overall.pct != null) { ov = s.overall.pct.toFixed(1) + "%"; sub = s.overall.grade ? escapeHtml(s.overall.grade.grade) : ""; }
+      return `<button class="cls-row" type="button" data-rid="${escapeHtml(s.rosterId)}">
+        <span class="pos">${data.publishRank && s.position ? s.position : ""}</span>
+        <span class="who">${escapeHtml(s.lastName)} ${escapeHtml(s.firstName)}</span>
+        <span class="ov">${ov}${sub ? `<small>${sub}</small>` : ""}</span>
+      </button>`;
+    }).join("");
+
+    box.querySelectorAll(".cls-row").forEach((b) => b.addEventListener("click", () => {
+      const s = students.find((x) => x.rosterId === b.dataset.rid);
+      openReportCard(b.dataset.rid, termId, s ? `${s.lastName} ${s.firstName}` : "Report card");
+    }));
+  } catch (err) {
+    box.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Could not load class</h3><p>${escapeHtml(err.message)}</p></div>`;
+  }
+}
+
+async function openReportCard(rid, termId, title) {
+  const body = openSheet(title, `<div class="skel" style="margin:0 0 10px;height:120px"></div>`);
+  try {
+    const token = await idToken();
+    const res = await fetch(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/card/${encodeURIComponent(rid)}?termId=${encodeURIComponent(termId)}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Could not load the report card.");
+    const html = await res.text();
+    body.innerHTML = `<button class="btn btn-outline" id="rcBack" type="button" style="height:44px;margin-bottom:12px"><i class="fa-solid fa-arrow-left"></i> Back to class</button><iframe class="rc-frame" id="rcFrame"></iframe>`;
+    $("rcFrame").srcdoc = html;
+    $("rcBack").addEventListener("click", () => { closeSheet(); openMyClass(); });
+  } catch (err) {
+    body.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Could not load report card</h3><p>${escapeHtml(err.message)}</p></div>`;
+  }
+}
+
+/* ------------------------------------------------------------------ cookie */
+(function () {
+  const KEY = "edutrace_cookie_consent_v1";
+  const b = $("cookie");
+  if (!recall(KEY)) b.classList.add("show");
+  const set = (x) => {
+    store(KEY, x);
+    b.classList.remove("show");
+    if (x === "allow" && typeof window.__edutraceAnalytics === "function") window.__edutraceAnalytics();
+  };
+  $("cookieAllow").addEventListener("click", () => set("allow"));
+  $("cookieReject").addEventListener("click", () => set("reject"));
+})();
+</script>
+
+</body>
+</html>

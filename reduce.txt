@@ -1,0 +1,12 @@
+new images are  security.svg 
+,upload.svg,favicon
+
+
+After uploading a roaster it should be visible on that same page every time and editable  it should have a heading like  S4 A roaster, and if another different is added also should be able like senior 2  roaster, so on each field editable
+
+
+Teachers should be able to add students for their classes they should find filled cells with names and  more that are empty the student they add others should see them
+
+
+
+
