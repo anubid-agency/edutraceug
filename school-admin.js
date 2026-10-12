@@ -15,7 +15,9 @@ const W = {
   roster: "https://edutraceug-roster-worker.anubisdigital114-9df.workers.dev",
   teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
   marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev",
-  email: "https://edutraceug-email-worker.anubisdigital114-9df.workers.dev"
+  email: "https://edutraceug-email-worker.anubisdigital114-9df.workers.dev",
+  phones: "https://edutraceug-phone-worker.anubisdigital114-9df.workers.dev",
+  ledger: "https://edutraceug-ledger-worker.anubisdigital114-9df.workers.dev"
 };
 
 const ROLE_ROUTES = {
@@ -355,6 +357,8 @@ function showView(name) {
     case "notes": renderNotes(); break;
     case "holds": renderHolds(); break;
     case "email": break;
+    case "phones": renderPhones(); break;
+    case "ledger": renderLedger(); break;
     case "audit": renderAudit(); break;
   }
 }
@@ -602,10 +606,12 @@ function renderElectivesGrid(containerId, band) {
 function goWizardStep(step, silent) {
   if (step < 1) step = 1;
   if (step > WZ.totalSteps) step = WZ.totalSteps;
+  if (step === 6) step = WZ.step < 6 ? 7 : 5;
   WZ.step = step;
   qa(".wizard-step").forEach((s) => s.classList.toggle("active", parseInt(s.dataset.wzStep, 10) === step));
-  $("wizardStepLabel").textContent = `Step ${step} of ${WZ.totalSteps}`;
-  $("wizardBar").style.width = (step / WZ.totalSteps * 100) + "%";
+  const shown = step > 6 ? step - 1 : step;
+  $("wizardStepLabel").textContent = `Step ${shown} of ${WZ.totalSteps - 1}`;
+  $("wizardBar").style.width = (shown / (WZ.totalSteps - 1) * 100) + "%";
   $("wizardBack").style.visibility = step === 1 ? "hidden" : "visible";
   $("wizardNext").innerHTML = step === WZ.totalSteps
     ? `<span class="btn-label">Finish</span> <i class="fa-solid fa-check"></i>`
@@ -836,7 +842,7 @@ function computeWizardStatus() {
   const hasAssignments = (S.teachers || []).some((t) => (t.assignments || []).length > 0);
   const hasPage = !!((school.heroImages && school.heroImages.length) || (school.headTeacher && school.headTeacher.trim()));
 
-  const required = { step2: hasStudents, step3: hasTeachers, step5: hasTerm, step6: hasAssignments };
+  const required = { step2: hasStudents, step3: hasTeachers, step5: hasTerm, step6: true };
   const optional = { step1: hasName, step4: WZ.step4Done, step7: hasPage };
 
   let missedRequired = 0;
@@ -863,13 +869,12 @@ function renderWzStep8() {
     { step: 3, label: "Teacher roster", done: status.required.step3, optional: false },
     { step: 4, label: "Subjects", done: status.optional.step4, optional: true },
     { step: 5, label: "Current term", done: status.required.step5, optional: false },
-    { step: 6, label: "Teacher assignments", done: status.required.step6, optional: false },
     { step: 7, label: "School page", done: status.optional.step7, optional: true }
   ];
   $("wzSummaryList").innerHTML = items.map((it) => `
     <li class="${it.done ? "done" : "missed"}">
       <i class="fa-solid ${it.done ? "fa-circle-check" : "fa-circle-minus"}"></i>
-      <span class="wz-label">Step ${it.step}: ${esc(it.label)}${it.optional ? " <em style=\"color:var(--muted);font-weight:400\">(optional)</em>" : ""}</span>
+      <span class="wz-label">${esc(it.label)}${it.optional ? " <em style=\"color:var(--muted);font-weight:400\">(optional)</em>" : ""}</span>
       <span class="wz-state">${it.done ? "Done" : "Skipped"}</span>
     </li>
   `).join("");
@@ -1650,7 +1655,7 @@ function openTeacherEdit(uid) {
     wide: "wide",
     body: `
       <div class="grid2">
-        <div>
+        <div style="display:none">
           <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Assignments</h3>
           <div id="assignList" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);padding:10px"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-top:10px">
@@ -1684,6 +1689,7 @@ function openTeacherEdit(uid) {
 
   function renderAssignList() {
     const list = $("assignList");
+    if (!list) return;
     if (!assignments.length) {
       list.innerHTML = `<div style="color:var(--muted);font-size:.85rem;text-align:center;padding:20px">No assignments yet</div>`;
       return;
@@ -2685,3 +2691,220 @@ async function renderAudit() {
   $("cookieAllow").addEventListener("click", () => set("allow"));
   $("cookieReject").addEventListener("click", () => set("reject"));
 })();
+
+// ====================== PHONES ======================
+const PH = { items: [] };
+const raw = (v) => String(v == null ? "" : v); // worker already HTML-escapes these
+const decode = (s) => { const t = document.createElement("textarea"); t.innerHTML = s; return t.value; };
+
+async function renderPhones() {
+  const list = $("phList");
+  list.innerHTML = `<div class="card-body"><div class="skel h20 w50"></div><div class="skel h40"></div></div>`;
+  $("phRole").onchange = renderPhones;
+  $("phRefresh").onclick = renderPhones;
+  $("phSearch").oninput = paintPhones;
+  try {
+    const role = $("phRole").value;
+    const data = await api(`${W.phones}/schools/${encodeURIComponent(S.schoolId)}/phones${role ? "?role=" + encodeURIComponent(role) : ""}`);
+    PH.items = data.items || [];
+    paintPhones();
+  } catch (err) {
+    list.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Couldn't load numbers</h3><p>${esc(err.message)}</p></div>`;
+  }
+}
+
+function paintPhones() {
+  const list = $("phList");
+  const term = $("phSearch").value.trim().toLowerCase();
+  const items = PH.items.filter((p) => !term || `${p.firstName} ${p.lastName} ${p.phone} ${p.childName || ""}`.toLowerCase().includes(term));
+  if (!items.length) {
+    list.innerHTML = `<div class="empty"><i class="fa-solid fa-phone-slash"></i><h3>No numbers yet</h3><p>Numbers appear here once people enter them.</p></div>`;
+    return;
+  }
+  const pillOf = { teacher: "blue", student: "green", parent: "yellow" };
+  list.innerHTML = `
+    <div style="padding:12px 18px;background:var(--light);border-bottom:1px solid var(--border);font-size:.85rem"><b>${items.length}</b> number${items.length === 1 ? "" : "s"}</div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Class / Child</th><th>Updated</th></tr></thead>
+        <tbody>
+          ${items.map((p) => `
+            <tr>
+              <td><b>${raw(p.lastName)}</b> ${raw(p.firstName)}</td>
+              <td><span class="pill ${pillOf[p.role] || "grey"}">${esc(p.role)}</span></td>
+              <td><a href="tel:${esc(p.phone)}" style="font-weight:700;color:var(--primary)">${esc(p.phone)}</a></td>
+              <td style="font-size:.85rem">${p.role === "parent"
+                ? (p.childName ? `Parent of ${raw(p.childName)} (${raw(p.childClass || "")} ${raw(p.childStream || "")})` : "—")
+                : (p.class ? `${raw(p.class)} ${raw(p.stream || "")}` : "—")}</td>
+              <td style="font-size:.82rem;color:var(--muted)">${fmtDate(p.updatedAt)}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ====================== LEDGER ======================
+const LD = { roster: null };
+
+async function ledgerRoster() {
+  if (LD.roster) return LD.roster;
+  const token = await idToken();
+  const res = await fetch(`${W.roster}/roster/list`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ schoolId: S.schoolId })
+  });
+  if (!res.ok) throw new Error("Could not load students");
+  LD.roster = (await res.json()).rows || [];
+  return LD.roster;
+}
+
+function renderLedger() {
+  $("ledClass").innerHTML = `<option value="">Select class</option>` + CLASSES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  $("ledList").innerHTML = `<div class="empty"><i class="fa-solid fa-book"></i><h3>Pick a class</h3><p>Then click Load to see its ledger entries.</p></div>`;
+  $("ledLoad").onclick = loadLedger;
+  $("ledAdd").onclick = openLedgerEntry;
+}
+
+async function loadLedger() {
+  const cls = $("ledClass").value;
+  if (!cls) { toast("Pick a class", "warn"); return; }
+  const list = $("ledList");
+  list.innerHTML = `<div class="card-body"><div class="skel h20 w50"></div><div class="skel h40"></div></div>`;
+  try {
+    const data = await api(`${W.ledger}/schools/${encodeURIComponent(S.schoolId)}/ledger?class=${encodeURIComponent(cls)}`);
+    const entries = data.entries || [];
+    if (!entries.length) {
+      list.innerHTML = `<div class="empty"><i class="fa-solid fa-book"></i><h3>No entries</h3><p>No ledger entries for ${esc(cls)}.</p></div>`;
+      return;
+    }
+    list.innerHTML = `
+      <div style="padding:12px 18px;background:var(--light);border-bottom:1px solid var(--border);font-size:.85rem">Latest ${entries.length} entries</div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Date</th><th>Student</th><th>Stream</th><th>Offence</th><th>Punishment</th><th>Commitment</th><th></th></tr></thead>
+          <tbody>
+            ${entries.map((e) => `
+              <tr>
+                <td style="white-space:nowrap">${fmtDate(e.date)}</td>
+                <td><b>${raw(e.studentName)}</b></td>
+                <td>${raw(e.stream) || "—"}</td>
+                <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${raw(e.offence)}</td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${raw(e.punishment)}</td>
+                <td>${e.hasCommitment ? `<span class="pill green">Written</span>` : `<span class="pill grey">Pending</span>`}</td>
+                <td class="actions"><button class="btn btn-outline btn-sm" data-led-open="${esc(e.rosterId)}" data-name="${esc(e.studentName)}" type="button"><i class="fa-solid fa-folder-open"></i> Open</button></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`;
+    qa("[data-led-open]").forEach((b) => b.onclick = () => openStudentLedger(b.dataset.ledOpen, b.dataset.name));
+  } catch (err) {
+    list.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Couldn't load ledger</h3><p>${esc(err.message)}</p></div>`;
+  }
+}
+
+async function openStudentLedger(rosterId, name) {
+  openModal({
+    title: decode(name || "Student ledger"),
+    wide: "wide",
+    body: `<div class="skel h60"></div><div class="skel h60"></div>`,
+    foot: `<button class="btn btn-outline" id="ldClose" type="button">Close</button>`
+  });
+  $("ldClose").onclick = closeModal;
+  try {
+    const data = await api(`${W.ledger}/schools/${encodeURIComponent(S.schoolId)}/ledger/students/${encodeURIComponent(rosterId)}`);
+    const entries = data.entries || [];
+    $("modalBody").innerHTML = entries.length ? entries.map((e) => `
+      <div style="border:1px solid var(--border);margin-bottom:14px">
+        <div style="padding:10px 14px;background:var(--light);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <b>${fmtDate(e.date)}</b>
+          <span style="font-size:.78rem;color:var(--muted)">Recorded ${fmtDateTime(e.recordedAt)}</span>
+        </div>
+        <div style="padding:12px 14px;font-size:.88rem;line-height:1.6">
+          <div><b>Offence:</b> ${raw(e.offence)}</div>
+          <div><b>Punishment:</b> ${raw(e.punishment)}</div>
+          ${e.remarks ? `<div><b>Remarks:</b> ${raw(e.remarks)}</div>` : ""}
+          <div style="margin-top:8px"><b>Student's commitment:</b> ${e.commitment
+            ? `${raw(e.commitment.text)} <span style="color:var(--muted);font-size:.78rem">(${fmtDateTime(e.commitment.at)})</span>`
+            : `<span class="pill grey">not written yet</span>`}</div>
+          ${(e.notes || []).length ? `<div style="margin-top:8px"><b>Notes:</b>${e.notes.map((n) => `<div style="padding:6px 0;border-top:1px solid var(--border)">${raw(n.text)} <span style="color:var(--muted);font-size:.75rem">${fmtDateTime(n.at)}</span></div>`).join("")}</div>` : ""}
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <input type="text" data-note-input="${esc(e.id)}" maxlength="2000" placeholder="Add a note" style="flex:1;padding:8px;border:2px solid var(--border);font-size:.85rem">
+            <button class="btn btn-primary btn-sm" data-note-add="${esc(e.id)}" type="button"><span class="spinner"></span><span class="btn-label">Add note</span></button>
+          </div>
+        </div>
+      </div>`).join("") : `<div class="empty"><i class="fa-solid fa-book"></i><h3>No entries</h3></div>`;
+
+    qa("[data-note-add]").forEach((b) => b.onclick = async () => {
+      const input = q(`[data-note-input="${b.dataset.noteAdd}"]`);
+      const text = input.value.trim();
+      if (!text) { toast("Write a note first", "warn"); return; }
+      setBtn(b, true);
+      try {
+        await api(`${W.ledger}/schools/${encodeURIComponent(S.schoolId)}/ledger/entries/${encodeURIComponent(b.dataset.noteAdd)}/notes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        toast("Note added", "success");
+        openStudentLedger(rosterId, name);
+      } catch (err) { toast(err.message, "error"); setBtn(b, false); }
+    });
+  } catch (err) {
+    $("modalBody").innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Couldn't load</h3><p>${esc(err.message)}</p></div>`;
+  }
+}
+
+async function openLedgerEntry() {
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  openModal({
+    title: "New ledger entry",
+    body: `
+      <div class="grid2">
+        <div class="field"><label for="leClass">Class</label><select id="leClass"><option value="">Select class</option>${CLASSES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}</select></div>
+        <div class="field"><label for="leStudent">Student</label><select id="leStudent"><option value="">Select class first</option></select></div>
+        <div class="field"><label for="leDate">Date</label><input type="date" id="leDate" value="${today}"></div>
+      </div>
+      <div class="field"><label for="leOffence">Offence</label><textarea id="leOffence" rows="3" maxlength="1000"></textarea></div>
+      <div class="field"><label for="lePunishment">Punishment</label><textarea id="lePunishment" rows="3" maxlength="1000"></textarea></div>
+      <div class="field"><label for="leRemarks">Remarks <span class="hint">optional</span></label><textarea id="leRemarks" rows="3" maxlength="2000"></textarea></div>`,
+    foot: `<button class="btn btn-outline" id="leCancel" type="button">Cancel</button><button class="btn btn-primary" id="leSave" type="button"><span class="spinner"></span><span class="btn-label">Save entry</span></button>`
+  });
+  $("leCancel").onclick = closeModal;
+
+  $("leClass").onchange = async () => {
+    const cls = $("leClass").value;
+    const sel = $("leStudent");
+    if (!cls) { sel.innerHTML = `<option value="">Select class first</option>`; return; }
+    sel.innerHTML = `<option value="">Loading…</option>`;
+    try {
+      const rows = (await ledgerRoster())
+        .filter((r) => normaliseClass(r.class) === cls)
+        .sort((a, b) => (a.lastName + a.firstName).localeCompare(b.lastName + b.firstName));
+      sel.innerHTML = `<option value="">Select student</option>` + rows.map((r) =>
+        `<option value="${esc(r.id)}">${esc(r.lastName)} ${esc(r.firstName)}${r.stream ? " (" + esc(r.stream) + ")" : ""}</option>`).join("");
+    } catch (err) { sel.innerHTML = `<option value="">Could not load</option>`; toast(err.message, "error"); }
+  };
+  if ($("ledClass").value) { $("leClass").value = $("ledClass").value; $("leClass").onchange(); }
+
+  $("leSave").onclick = async () => {
+    const rosterId = $("leStudent").value;
+    const offence = $("leOffence").value.trim();
+    const punishment = $("lePunishment").value.trim();
+    if (!rosterId || !offence || !punishment) { toast("Student, offence and punishment are required", "warn"); return; }
+    const ok = await confirmDialog("Save entry", "Ledger entries are permanent. They cannot be edited or deleted.", "Save entry", false);
+    if (!ok) return;
+    const btn = $("leSave"); setBtn(btn, true);
+    try {
+      await api(`${W.ledger}/schools/${encodeURIComponent(S.schoolId)}/ledger/entries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rosterId, date: $("leDate").value, offence, punishment, remarks: $("leRemarks").value.trim() })
+      });
+      closeModal();
+      toast("Entry saved", "success");
+      if ($("ledClass").value) loadLedger();
+    } catch (err) { toast(err.message, "error", 6000); }
+    finally { setBtn(btn, false); }
+  };
+  }
