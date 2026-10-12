@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-UG">
 <head>
 <meta charset="UTF-8">
@@ -324,6 +324,16 @@ footer .credit a{color:#999;text-decoration:underline}
           <div class="err-msg"></div>
         </div>
 
+        <!-- phone (shared by all roles) -->
+        <div class="field">
+          <label for="suPhone">Phone number <span class="hint">Ugandan mobile — e.g. 0772 123 456</span></label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-phone lead"></i>
+            <input type="tel" id="suPhone" autocomplete="tel" inputmode="tel" placeholder="07XX XXX XXX" maxlength="20" required>
+          </div>
+          <div class="err-msg"></div>
+        </div>
+
         <!-- student fields -->
         <div class="role-fields" data-role="student">
           <div class="field">
@@ -566,6 +576,7 @@ const firebaseConfig = {
 
 const AUTH_WORKER = "https://edutraceug-auth-worker.anubisdigital114-9df.workers.dev";
 const PROFILE_WORKER = "https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev";
+const PHONE_WORKER = "https://edutraceug-phone-worker.anubisdigital114-9df.workers.dev";
 const HOST_SUFFIX = ".edutraceug.com";
 
 const ROLE_ROUTES = {
@@ -622,6 +633,7 @@ let resolvedSchool = null;
 let pendingState = null;       // multi-match state token
 let pendingRole = null;         // role from the original signup
 let pendingEmail = null;
+let pendingPhone = null;        // phone captured on the signup form
 
 /* ------------------------------------------------------------------ *
  * Helpers
@@ -661,6 +673,20 @@ function clearErrors(form) {
 
 function validEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || "").trim()); }
 
+/* Accepts Ugandan mobile formats:
+   - 07XXXXXXXX
+   - 7XXXXXXXX
+   - 2567XXXXXXXX
+   - +2567XXXXXXXX
+   (Matches the phone worker's normalisePhone.) */
+function validPhone(s) {
+  const v = String(s || "")
+    .replace(/[\s\-().]/g, "")
+    .replace(/[^\d+]/g, "")
+    .replace(/(?!^)\+/g, "");
+  return /^(\+2567\d{8}|2567\d{8}|07\d{8}|7\d{8})$/.test(v);
+}
+
 function firebaseErrorMessage(err) {
   const code = err && err.code ? err.code : "";
   switch (code) {
@@ -693,6 +719,59 @@ async function readErrorBody(res) {
     return data && data.error ? data.error : `Request failed (${res.status})`;
   } catch {
     return `Request failed (${res.status})`;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Phone save (post-signup, best-effort)
+ * ------------------------------------------------------------------ */
+
+function extractNames(role, roleFields) {
+  if (role === "student" || role === "teacher") {
+    return {
+      firstName: (roleFields && roleFields.firstName) || "",
+      lastName: (roleFields && roleFields.lastName) || ""
+    };
+  }
+  // Parent: signup form doesn't collect the parent's own name.
+  // The worker fills child* fields from the roster using the childRosterId claim.
+  return { firstName: "", lastName: "" };
+}
+
+async function savePhoneToWorker(user, phone, firstName, lastName) {
+  if (!phone || !user) return;
+  try {
+    // Force refresh so the freshly-set role/schoolId claims are present.
+    const token = await user.getIdToken(true);
+    const tokenResult = await user.getIdTokenResult();
+    const claims = tokenResult.claims || {};
+    const schoolId = claims.schoolId;
+    if (!schoolId) {
+      console.warn("Phone save skipped: no schoolId claim yet");
+      return;
+    }
+    const res = await fetch(
+      `${PHONE_WORKER}/schools/${encodeURIComponent(schoolId)}/phones/me`,
+      {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          phone,
+          firstName: firstName || "",
+          lastName: lastName || ""
+        })
+      }
+    );
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      console.warn("Phone save failed", res.status, txt);
+    }
+  } catch (err) {
+    // Never block signup success on a phone-save failure.
+    console.warn("Phone save error", err);
   }
 }
 
@@ -1019,11 +1098,13 @@ signupForm.addEventListener("submit", async (e) => {
   const email = $("suEmail").value.trim();
   const password = $("suPassword").value;
   const password2 = $("suPassword2").value;
+  const phone = $("suPhone").value.trim();
 
   let bad = false;
   if (!validEmail(email)) { fieldError($("suEmail"), "Enter a valid email."); bad = true; }
   if (password.length < 6) { fieldError($("suPassword"), "Password must be at least 6 characters."); bad = true; }
   if (password !== password2) { fieldError($("suPassword2"), "Passwords do not match."); bad = true; }
+  if (!validPhone(phone)) { fieldError($("suPhone"), "Enter a valid Ugandan mobile (e.g. 0772 123 456)."); bad = true; }
 
   const roleFields = collectRoleFields(role);
   const roleErrors = validateRoleFields(role, roleFields);
@@ -1062,6 +1143,7 @@ signupForm.addEventListener("submit", async (e) => {
       pendingState = data.state;
       pendingRole = role;
       pendingEmail = email;
+      pendingPhone = phone;
       renderMatches(data.candidates || []);
       showMatch();
       setLoading(signupBtn, false);
@@ -1069,10 +1151,12 @@ signupForm.addEventListener("submit", async (e) => {
     }
 
     if (data.status === "created") {
-      // account created — sign in automatically
+      // account created — sign in automatically, then save phone, then redirect
       try {
         await setPersistence(auth, browserLocalPersistence);
         const cred = await signInWithEmailAndPassword(auth, email, password);
+        const names = extractNames(role, roleFields);
+        await savePhoneToWorker(cred.user, phone, names.firstName, names.lastName);
         showSuccess("Taking you to your dashboard…");
         await new Promise((r) => setTimeout(r, 500));
         const ok = await redirectByRole(cred.user, resolvedSchool.id);
@@ -1123,6 +1207,7 @@ matchCancel.addEventListener("click", () => {
   pendingState = null;
   pendingRole = null;
   pendingEmail = null;
+  pendingPhone = null;
   showSignup();
 });
 
@@ -1162,6 +1247,9 @@ matchBtn.addEventListener("click", async () => {
       try {
         await setPersistence(auth, browserLocalPersistence);
         const cred = await signInWithEmailAndPassword(auth, pendingEmail, password);
+        const roleFields = collectRoleFields(pendingRole || "student");
+        const names = extractNames(pendingRole || "student", roleFields);
+        await savePhoneToWorker(cred.user, pendingPhone, names.firstName, names.lastName);
         showSuccess("Taking you to your dashboard…");
         await new Promise((r) => setTimeout(r, 500));
         const ok = await redirectByRole(cred.user, resolvedSchool ? resolvedSchool.id : null);
@@ -1218,7 +1306,6 @@ $("year").textContent = new Date().getFullYear();
   // 1. check existing session
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      // already signed in — redirect by role
       const ok = await redirectByRole(user, resolvedSchool ? resolvedSchool.id : null, { allowMismatch: false });
       if (!ok) {
         hide(skeleton); show(card);
@@ -1243,13 +1330,10 @@ $("year").textContent = new Date().getFullYear();
   const mode = params.get("mode");
 
   if (!resolvedSchool) {
-    // Allow login even without a school context — but signup needs one
     showLogin();
-    // If they explicitly came to signup, they still need a school
     if (mode === "signup") {
       showNoSchool();
     } else {
-      // Hide the signup tab — can't sign up without knowing the school
       tabSignup.addEventListener("click", (e) => {
         e.preventDefault();
         showNoSchool();
@@ -1264,4 +1348,4 @@ $("year").textContent = new Date().getFullYear();
 </script>
 
 </body>
-</html>
+               </html>
