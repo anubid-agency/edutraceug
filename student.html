@@ -168,18 +168,6 @@ input,select,textarea{font-family:inherit;font-size:1rem;color:inherit}
 .ledger-body .row{margin-bottom:8px}
 .ledger-body .row:last-child{margin-bottom:0}
 .ledger-body .row b{font-weight:800}
-.ledger-commit{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-.ledger-commit .label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
-.ledger-commit .text{background:#F0F9F2;border-left:3px solid var(--green);padding:10px 12px;font-size:.88rem;line-height:1.6;font-style:italic}
-.ledger-commit .written-meta{color:var(--muted);font-size:.75rem;font-style:normal;margin-top:6px}
-.ledger-commit .pending{color:#8A6800;font-weight:700;font-size:.85rem;display:flex;align-items:center;gap:6px}
-.commit-form{margin-top:10px;display:flex;flex-direction:column;gap:8px}
-.commit-form textarea{width:100%;padding:10px 12px;border:2px solid var(--border);font-size:.9rem;font-family:inherit;resize:vertical;min-height:90px;line-height:1.5}
-.commit-form textarea:focus{outline:none;border-color:var(--primary)}
-.commit-form .hint{font-size:.75rem;color:var(--muted);line-height:1.4}
-.commit-form .err{color:var(--red);font-size:.78rem;font-weight:600;display:none}
-.commit-form .err.show{display:block}
-.commit-form .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}
 .ledger-notes{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
 .ledger-notes .label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
 .ledger-note{padding:8px 0;font-size:.86rem;line-height:1.5;color:var(--dark);border-bottom:1px dashed var(--border)}
@@ -256,7 +244,6 @@ input,select,textarea{font-family:inherit;font-size:1rem;color:inherit}
   .report-frame{height:70vh}
   .phone-form{flex-direction:column}
   .phone-form .btn{width:100%}
-  .commit-form .actions .btn{width:100%}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -1006,38 +993,9 @@ function renderLedger() {
   }
 
   body.innerHTML = entries.map((e) => ledgerEntryHtml(e)).join("");
-  wireLedgerActions();
 }
 
 function ledgerEntryHtml(e) {
-  const commit = e.commitment;
-  const hasCommit = !!(commit && commit.text);
-
-  const commitHtml = hasCommit
-    ? `
-      <div class="ledger-commit">
-        <div class="label">Your commitment</div>
-        <div class="text">
-          ${raw(commit.text)}
-          ${commit.at ? `<div class="written-meta">Written ${fmtDate(commit.at)}</div>` : ""}
-        </div>
-      </div>`
-    : `
-      <div class="ledger-commit">
-        <div class="label">Your commitment</div>
-        <div class="pending"><i class="fa-solid fa-pen"></i> Not written yet</div>
-        <div class="commit-form" data-entry="${escapeHtml(e.id)}">
-          <textarea maxlength="2000" placeholder="Write what you commit to do differently…"></textarea>
-          <div class="hint">At least 10 characters. This is a permanent record — you cannot edit or delete it after submitting.</div>
-          <div class="err"></div>
-          <div class="actions">
-            <button class="btn btn-green btn-sm" data-commit-save="${escapeHtml(e.id)}" type="button">
-              <span class="spinner"></span><span class="btn-label">Submit commitment</span>
-            </button>
-          </div>
-        </div>
-      </div>`;
-
   const notesHtml = (e.notes || []).length
     ? `
       <div class="ledger-notes">
@@ -1060,68 +1018,10 @@ function ledgerEntryHtml(e) {
         <div class="row"><b>Offence:</b> ${raw(e.offence)}</div>
         <div class="row"><b>Punishment:</b> ${raw(e.punishment)}</div>
         ${e.remarks ? `<div class="row"><b>Remarks:</b> ${raw(e.remarks)}</div>` : ""}
-        ${commitHtml}
         ${notesHtml}
       </div>
     </div>
   `;
-}
-
-function wireLedgerActions() {
-  document.querySelectorAll("[data-commit-save]").forEach((btn) => {
-    btn.onclick = () => saveCommitment(btn.dataset.commitSave, btn);
-  });
-  document.querySelectorAll(".commit-form textarea").forEach((ta) => {
-    ta.addEventListener("input", () => {
-      const form = ta.closest(".commit-form");
-      const err = form && form.querySelector(".err");
-      if (err) err.classList.remove("show");
-      ta.style.borderColor = "";
-    });
-  });
-}
-
-async function saveCommitment(entryId, btn) {
-  const form = document.querySelector(`.commit-form[data-entry="${entryId}"]`);
-  if (!form) return;
-  const textarea = form.querySelector("textarea");
-  const errBox = form.querySelector(".err");
-  const text = (textarea.value || "").trim();
-
-  if (text.length < 10) {
-    errBox.textContent = "Please write at least 10 characters.";
-    errBox.classList.add("show");
-    textarea.style.borderColor = "var(--red)";
-    textarea.focus();
-    return;
-  }
-  if (text.length > 2000) {
-    errBox.textContent = "Maximum 2000 characters.";
-    errBox.classList.add("show");
-    textarea.style.borderColor = "var(--red)";
-    return;
-  }
-
-  const ok = window.confirm(
-    "Are you sure? Your commitment will be saved permanently. It cannot be edited or deleted after submitting."
-  );
-  if (!ok) return;
-
-  setBtnLoading(btn, true);
-  try {
-    await api(`${WORKERS.ledger}/schools/${encodeURIComponent(state.schoolId)}/ledger/entries/${encodeURIComponent(entryId)}/commitment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
-    toast("Commitment saved", "success");
-    await loadLedger();
-  } catch (err) {
-    errBox.textContent = err.message || "Couldn't save. Try again.";
-    errBox.classList.add("show");
-    textarea.style.borderColor = "var(--red)";
-    setBtnLoading(btn, false);
-  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -1226,4 +1126,4 @@ function showHold(reason) {
 </script>
 
 </body>
-</html>
+  </html>
