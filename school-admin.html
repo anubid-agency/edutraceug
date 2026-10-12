@@ -63,6 +63,7 @@
     <div class="snav-item" data-view="roster"><i class="fa-solid fa-upload"></i> Roster Upload</div>
     <div class="snav-item" data-view="teachers"><i class="fa-solid fa-chalkboard-user"></i> Teachers</div>
     <div class="snav-item" data-view="structure"><i class="fa-solid fa-sitemap"></i> Structure</div>
+    <div class="snav-item" data-view="phones"><i class="fa-solid fa-phone"></i> Phone Numbers</div>
 
     <div class="snav-label">Academics</div>
     <div class="snav-item" data-view="terms"><i class="fa-solid fa-calendar-days"></i> Terms</div>
@@ -76,6 +77,7 @@
 
     <div class="snav-label">Administration</div>
     <div class="snav-item" data-view="holds"><i class="fa-solid fa-lock"></i> Report Holds</div>
+    <div class="snav-item" data-view="ledger"><i class="fa-solid fa-book"></i> Discipline Ledger</div>
     <div class="snav-item" data-view="email"><i class="fa-solid fa-envelope"></i> Bulk Email</div>
     <div class="snav-item" data-view="audit"><i class="fa-solid fa-clipboard-list"></i> Audit Log</div>
   </nav>
@@ -311,6 +313,28 @@
   </div>
 </section>
 
+<section class="view" data-view="phones">
+  <div class="page-head">
+    <div>
+      <h1>Phone Numbers</h1>
+      <p>Contact numbers entered by teachers, students and parents</p>
+    </div>
+  </div>
+  <div class="view-toolbar">
+    <select id="phRole" aria-label="Filter by role">
+      <option value="">All roles</option>
+      <option value="teacher">Teachers</option>
+      <option value="student">Students</option>
+      <option value="parent">Parents</option>
+    </select>
+    <input type="search" id="phSearch" placeholder="Search name, phone or child…" maxlength="100" aria-label="Search numbers">
+    <button class="btn btn-outline btn-sm" id="phRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+  </div>
+  <div class="card">
+    <div id="phList"></div>
+  </div>
+</section>
+
 <section class="view" data-view="terms">
   <div class="page-head">
     <div>
@@ -468,6 +492,26 @@
   </div>
   <div class="card">
     <div class="card-body tight" id="holdsList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="ledger">
+  <div class="page-head">
+    <div>
+      <h1>Discipline Ledger</h1>
+      <p>Permanent record of offences, punishments and student commitments</p>
+    </div>
+  </div>
+  <div class="view-toolbar">
+    <select id="ledClass" aria-label="Select class">
+      <option value="">Select class</option>
+    </select>
+    <span class="toolbar-spacer"></span>
+    <button class="btn btn-primary btn-sm" id="ledAdd" type="button"><i class="fa-solid fa-plus"></i> New entry</button>
+    <button class="btn btn-outline btn-sm" id="ledLoad" type="button"><i class="fa-solid fa-search"></i> Load</button>
+  </div>
+  <div class="card">
+    <div id="ledList"></div>
   </div>
 </section>
 
@@ -750,4 +794,4 @@
 <script type="module" src="school-admin.js"></script>
 
 </body>
-                                             </html>
+  </html>
