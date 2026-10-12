@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-UG">
 <head>
 <meta charset="UTF-8">
@@ -36,7 +36,7 @@ img{max-width:100%;height:auto;display:block}
 a{text-decoration:none;color:inherit}
 ul{list-style:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,select{font-family:inherit;font-size:1rem;color:inherit}
+input,select,textarea{font-family:inherit;font-size:1rem;color:inherit}
 :focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:#ccc}
@@ -169,6 +169,41 @@ input,select{font-family:inherit;font-size:1rem;color:inherit}
 .consent-card p{color:#6B5100;font-size:.92rem;margin-bottom:12px;line-height:1.6}
 .consent-card a{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);color:var(--dark);padding:11px 18px;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.4px}
 
+/* phone card */
+.phone-form{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+.phone-form input{flex:1;min-width:200px;padding:11px 14px;border:2px solid var(--border);background:#fff;font-size:1rem;font-weight:600;font-family:inherit}
+.phone-form input:focus{outline:none;border-color:var(--primary)}
+.phone-form input.error{border-color:var(--red)}
+.phone-current{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.phone-current .num{font-size:1.15rem;font-weight:800;letter-spacing:-.2px}
+.phone-current .meta{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.phone-hint{font-size:.85rem;color:var(--muted);margin-bottom:14px}
+.phone-err{color:var(--red);font-size:.78rem;font-weight:600;margin-top:8px;display:none}
+
+/* discipline ledger */
+.ledger-entry{border:1px solid var(--border);background:#fff;margin-bottom:14px}
+.ledger-entry:last-child{margin-bottom:0}
+.ledger-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 16px;background:var(--light);border-bottom:1px solid var(--border);font-size:.9rem;font-weight:800}
+.ledger-head .when{color:var(--muted);font-size:.78rem;font-weight:600}
+.ledger-body{padding:14px 16px;font-size:.9rem;line-height:1.6}
+.ledger-body .row{margin-bottom:8px}
+.ledger-body .row:last-child{margin-bottom:0}
+.ledger-body .row b{font-weight:800}
+.ledger-commit{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.ledger-commit .label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.ledger-commit .text{background:#F0F9F2;border-left:3px solid var(--green);padding:10px 12px;font-size:.88rem;line-height:1.6;font-style:italic}
+.ledger-commit .written-meta{color:var(--muted);font-size:.75rem;font-style:normal;margin-top:6px}
+.ledger-commit .pending{color:#8A6800;font-weight:700;font-size:.85rem;display:flex;align-items:center;gap:6px}
+.ledger-notes{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.ledger-notes .label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.ledger-note{padding:8px 0;font-size:.86rem;line-height:1.5;color:var(--dark);border-bottom:1px dashed var(--border)}
+.ledger-note:last-child{border-bottom:none}
+.ledger-note .when{color:var(--muted);font-size:.75rem;margin-left:6px;white-space:nowrap}
+.ledger-empty{padding:40px 20px;text-align:center;color:var(--muted)}
+.ledger-empty i{font-size:2.2rem;color:var(--green);margin-bottom:12px;display:block}
+.ledger-empty h3{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:6px}
+.ledger-empty p{font-size:.88rem}
+
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.4px;border:2px solid transparent;transition:all .15s;white-space:nowrap}
 .btn:disabled{opacity:.55;cursor:not-allowed}
@@ -178,6 +213,7 @@ input,select{font-family:inherit;font-size:1rem;color:inherit}
 .btn-green:hover:not(:disabled){background:#007029}
 .btn-outline{background:#fff;color:var(--dark);border-color:var(--border)}
 .btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn-sm{padding:8px 14px;font-size:.75rem}
 .btn .spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite}
 .btn.loading .spinner{display:inline-block}
 .btn.loading .btn-label{opacity:.7}
@@ -235,6 +271,8 @@ input,select{font-family:inherit;font-size:1rem;color:inherit}
   .cb-inner{gap:14px;padding:20px}
   .cb-avatar{width:54px;height:54px;font-size:1.3rem}
   .cb-text .cb-name{font-size:1.15rem}
+  .phone-form{flex-direction:column}
+  .phone-form .btn{width:100%}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -356,6 +394,32 @@ input,select{font-family:inherit;font-size:1rem;color:inherit}
       </div>
       <div class="subjects-grid" id="subjectsGrid" style="margin-top:14px"></div>
 
+      <!-- phone number -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-head">
+          <h2><i class="fa-solid fa-phone"></i> Your phone number</h2>
+        </div>
+        <div class="card-body" id="phoneBody">
+          <div class="skel h24 w50"></div>
+          <div class="skel h40"></div>
+        </div>
+      </div>
+
+      <!-- discipline ledger (read-only for parents) -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-head">
+          <h2><i class="fa-solid fa-book"></i> Discipline ledger</h2>
+          <button class="btn btn-outline btn-sm" id="ledgerRefresh" type="button">
+            <i class="fa-solid fa-rotate"></i> Refresh
+          </button>
+        </div>
+        <div class="card-body" id="ledgerBody">
+          <div class="skel h24 w50"></div>
+          <div class="skel h60"></div>
+          <div class="skel h60"></div>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -395,7 +459,9 @@ const firebaseConfig = {
 const WORKERS = {
   profile: "https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev",
   teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
-  marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev"
+  marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev",
+  phone: "https://edutraceug-phone-worker.anubisdigital114-9df.workers.dev",
+  ledger: "https://edutraceug-ledger-worker.anubisdigital114-9df.workers.dev"
 };
 
 const ROLE_ROUTES = {
@@ -418,11 +484,13 @@ const state = {
   user: null,
   claims: null,
   schoolId: null,
+  childRosterId: null,
   school: null,
   terms: [],
   currentTermId: null,
   report: null,
-  consentRequired: false
+  phone: null,
+  ledger: null
 };
 
 const $ = (id) => document.getElementById(id);
@@ -435,6 +503,8 @@ const els = (sel, root = document) => [...root.querySelectorAll(sel)];
 function escapeHtml(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
+// Worker pre-escapes ledger text fields — insert raw to avoid double-escaping.
+const raw = (s) => String(s == null ? "" : s);
 function fmtDate(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -445,6 +515,15 @@ function setBtnLoading(btn, on) {
   if (!btn) return;
   btn.classList.toggle("loading", on);
   btn.disabled = on;
+}
+
+/* Accepts Ugandan mobile formats. Matches the phone worker's normalisePhone. */
+function validPhone(s) {
+  const v = String(s || "")
+    .replace(/[\s\-().]/g, "")
+    .replace(/[^\d+]/g, "")
+    .replace(/(?!^)\+/g, "");
+  return /^(\+2567\d{8}|2567\d{8}|07\d{8}|7\d{8})$/.test(v);
 }
 
 function toast(msg, kind = "info", ms = 4000) {
@@ -547,11 +626,14 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   state.schoolId = claims.schoolId;
+  state.childRosterId = claims.childRosterId;
 
   try {
     await loadInitial();
     paintHeader();
     bindEvents();
+    loadMyPhone();    // parent's own phone
+    loadLedger();     // child's ledger (read-only)
     await loadReport();
   } catch (err) {
     console.error(err);
@@ -635,6 +717,7 @@ function bindEvents() {
   });
 
   $("viewCardBtn").addEventListener("click", openReportCard);
+  $("ledgerRefresh").addEventListener("click", loadLedger);
 
   $("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
@@ -695,7 +778,7 @@ async function loadReport() {
 }
 
 /* ------------------------------------------------------------------ *
- * RENDER
+ * RENDER REPORT
  * ------------------------------------------------------------------ */
 function renderReport() {
   const r = state.report;
@@ -707,7 +790,6 @@ function renderReport() {
   const isCbc = r.scoringMode === "cbc";
   const termLabel = `${r.term.name}${r.term.year ? ", " + r.term.year : ""}`;
 
-  // child banner
   const childFirst = (r.student.firstName || "").trim();
   const childInitial = (childFirst[0] || r.student.lastName?.[0] || "S").toUpperCase();
   $("childAvatar").textContent = childInitial;
@@ -717,7 +799,6 @@ function renderReport() {
   if (r.student.gender) metaParts.push(`<span><i class="fa-solid fa-user"></i> ${escapeHtml(r.student.gender)}</span>`);
   $("childMeta").innerHTML = metaParts.join("");
 
-  // overview
   $("termGreeting").textContent = termLabel;
   $("termLine").innerHTML = `<i class="fa-solid fa-calendar"></i> <span>${escapeHtml(termLabel)}${r.term.startDate && r.term.endDate ? " · " + fmtDate(r.term.startDate) + " → " + fmtDate(r.term.endDate) : ""}</span>`;
 
@@ -745,7 +826,6 @@ function renderReport() {
     }
   }
 
-  // stats
   const statsHtml = [
     `<div class="stat ${r.subjects.length ? "green" : ""}">
       <div class="label">Subjects</div>
@@ -771,7 +851,6 @@ function renderReport() {
   ].join("");
   $("statsRow").innerHTML = statsHtml;
 
-  // comment
   const note = r.note || {};
   if (note.comment || note.conduct) {
     $("commentWrap").innerHTML = `
@@ -785,7 +864,6 @@ function renderReport() {
     $("commentWrap").innerHTML = "";
   }
 
-  // subjects
   $("subjectCount").textContent = r.subjects.length ? `${r.subjects.length} subjects` : "";
   renderSubjects(r, isCbc);
 }
@@ -816,6 +894,190 @@ function renderSubjects(report, isCbc) {
 
   grid.style.display = "block";
   grid.innerHTML = `<div class="card" style="margin-bottom:0">${rows}</div>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * PHONE (parent's own number)
+ * ------------------------------------------------------------------ */
+async function loadMyPhone() {
+  try {
+    const data = await api(`${WORKERS.phone}/schools/${encodeURIComponent(state.schoolId)}/phones/me`);
+    state.phone = data && data.phone ? data : { phone: null };
+  } catch (err) {
+    console.warn("Couldn't load phone", err);
+    state.phone = { phone: null, error: true };
+  }
+  renderPhoneCard();
+}
+
+function renderPhoneCard() {
+  const body = $("phoneBody");
+  if (!body) return;
+
+  const current = state.phone && state.phone.phone;
+
+  if (current) {
+    body.innerHTML = `
+      <div class="phone-current">
+        <div>
+          <div class="meta">Current number</div>
+          <div class="num">${escapeHtml(current)}</div>
+          ${state.phone.updatedAt ? `<div style="font-size:.78rem;color:var(--muted);margin-top:4px">Last updated ${fmtDate(state.phone.updatedAt)}</div>` : ""}
+        </div>
+        <button class="btn btn-outline" id="phoneEditBtn" type="button">
+          <i class="fa-solid fa-pen"></i> <span class="btn-label">Update</span>
+        </button>
+      </div>`;
+    $("phoneEditBtn").onclick = showPhoneForm;
+  } else {
+    showPhoneForm();
+  }
+}
+
+function showPhoneForm() {
+  const body = $("phoneBody");
+  const current = (state.phone && state.phone.phone) || "";
+  body.innerHTML = `
+    <p class="phone-hint">We use this number to reach you about your child's schooling. Ugandan mobile numbers only.</p>
+    <div class="phone-form">
+      <input type="tel" id="phoneInput" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="07XX XXX XXX" value="${escapeHtml(current)}" aria-label="Phone number">
+      <button class="btn btn-primary" id="phoneSaveBtn" type="button">
+        <span class="spinner"></span><span class="btn-label">Save</span>
+      </button>
+      ${current ? `<button class="btn btn-outline" id="phoneCancelBtn" type="button">Cancel</button>` : ""}
+    </div>
+    <div class="phone-err" id="phoneErr"></div>
+  `;
+  if (current && $("phoneCancelBtn")) $("phoneCancelBtn").onclick = renderPhoneCard;
+  $("phoneSaveBtn").onclick = savePhone;
+  $("phoneInput").addEventListener("input", () => {
+    $("phoneInput").classList.remove("error");
+    $("phoneErr").style.display = "none";
+  });
+  $("phoneInput").focus();
+}
+
+async function savePhone() {
+  const input = $("phoneInput");
+  const errBox = $("phoneErr");
+  const btn = $("phoneSaveBtn");
+  const phone = input.value.trim();
+
+  if (!validPhone(phone)) {
+    errBox.textContent = "Enter a valid Ugandan mobile (e.g. 0772 123 456).";
+    errBox.style.display = "";
+    input.classList.add("error");
+    input.focus();
+    return;
+  }
+  errBox.style.display = "none";
+  input.classList.remove("error");
+
+  setBtnLoading(btn, true);
+  try {
+    // Parent name isn't collected at signup, so send blank names.
+    // The worker will fill child* fields from the roster via childRosterId claim.
+    const data = await api(`${WORKERS.phone}/schools/${encodeURIComponent(state.schoolId)}/phones/me`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, firstName: "", lastName: "" })
+    });
+
+    state.phone = { phone: data.phone, updatedAt: data.updatedAt };
+    renderPhoneCard();
+    toast("Phone number saved", "success");
+  } catch (err) {
+    errBox.textContent = err.message || "Couldn't save. Try again.";
+    errBox.style.display = "";
+    input.classList.add("error");
+  } finally {
+    setBtnLoading(btn, false);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * DISCIPLINE LEDGER (read-only)
+ * ------------------------------------------------------------------ */
+async function loadLedger() {
+  const body = $("ledgerBody");
+  if (!body) return;
+  body.innerHTML = `<div class="skel h24 w50"></div><div class="skel h60"></div><div class="skel h60"></div>`;
+  try {
+    const data = await api(`${WORKERS.ledger}/schools/${encodeURIComponent(state.schoolId)}/ledger/students/${encodeURIComponent(state.childRosterId)}`);
+    state.ledger = data.entries || [];
+    renderLedger();
+  } catch (err) {
+    state.ledger = null;
+    body.innerHTML = `
+      <div class="empty" style="padding:30px 20px">
+        <i class="fa-solid fa-triangle-exclamation" style="color:var(--red)"></i>
+        <h3>Couldn't load the ledger</h3>
+        <p>${escapeHtml(err.message || "Please try again.")}</p>
+      </div>`;
+  }
+}
+
+function renderLedger() {
+  const body = $("ledgerBody");
+  if (!body) return;
+  const entries = state.ledger || [];
+
+  if (!entries.length) {
+    body.innerHTML = `
+      <div class="ledger-empty">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>No discipline entries</h3>
+        <p>Your child has no recorded discipline matters.</p>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = entries.map((e) => ledgerEntryHtml(e)).join("");
+}
+
+function ledgerEntryHtml(e) {
+  const commit = e.commitment;
+  const hasCommit = !!(commit && commit.text);
+
+  // Read-only commitment block: no form for parents.
+  const commitHtml = `
+    <div class="ledger-commit">
+      <div class="label">Student's commitment</div>
+      ${hasCommit
+        ? `<div class="text">
+             ${raw(commit.text)}
+             ${commit.at ? `<div class="written-meta">Written ${fmtDate(commit.at)}</div>` : ""}
+           </div>`
+        : `<div class="pending"><i class="fa-solid fa-hourglass-half"></i> Not written yet</div>`}
+    </div>`;
+
+  const notesHtml = (e.notes || []).length
+    ? `
+      <div class="ledger-notes">
+        <div class="label">Notes from school</div>
+        ${e.notes.map((n) => `
+          <div class="ledger-note">
+            ${raw(n.text)}
+            <span class="when">${fmtDate(n.at)}</span>
+          </div>`).join("")}
+      </div>`
+    : "";
+
+  return `
+    <div class="ledger-entry">
+      <div class="ledger-head">
+        <span><i class="fa-solid fa-calendar-day"></i> ${escapeHtml(e.date || "—")}</span>
+        <span class="when">Recorded ${fmtDate(e.recordedAt)}</span>
+      </div>
+      <div class="ledger-body">
+        <div class="row"><b>Offence:</b> ${raw(e.offence)}</div>
+        <div class="row"><b>Punishment:</b> ${raw(e.punishment)}</div>
+        ${e.remarks ? `<div class="row"><b>Remarks:</b> ${raw(e.remarks)}</div>` : ""}
+        ${commitHtml}
+        ${notesHtml}
+      </div>
+    </div>
+  `;
 }
 
 /* ------------------------------------------------------------------ *
@@ -940,4 +1202,4 @@ function showConsent() {
 </script>
 
 </body>
-</html>
+     </html>
