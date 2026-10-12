@@ -302,3 +302,42 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 .rs-tbl tr.bad .rs-in.req-miss{border-color:var(--red)}
 .rs-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--border)}
 .rs-dirty{flex:1;font-size:.8rem;font-weight:600;color:var(--muted)}
+
+/* ===== Phone Numbers + Discipline Ledger (school-admin) ===== */
+.view-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.view-toolbar select{padding:9px 12px;border:2px solid var(--border);background:#fff;font-size:.86rem;font-weight:600;min-width:170px}
+.view-toolbar select:focus{outline:none;border-color:var(--primary)}
+.view-toolbar input[type="search"],.view-toolbar input[type="text"]{padding:9px 12px;border:2px solid var(--border);background:#fff;font-size:.86rem;font-weight:500;flex:1;min-width:200px}
+.view-toolbar input[type="search"]:focus,.view-toolbar input[type="text"]:focus{outline:none;border-color:var(--primary)}
+.view-toolbar .toolbar-spacer{flex:1}
+.view-toolbar .btn{min-height:40px}
+
+/* tel: links in tables (phones screen) */
+.tbl a[href^="tel:"]{color:var(--primary);font-weight:700;text-decoration:none;white-space:nowrap}
+.tbl a[href^="tel:"]:hover{text-decoration:underline}
+
+/* Ledger entry cards inside the student ledger modal */
+.ledger-entry{border:1px solid var(--border);background:#fff;margin-bottom:14px}
+.ledger-entry:last-child{margin-bottom:0}
+.ledger-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:var(--light);border-bottom:1px solid var(--border);font-size:.88rem}
+.ledger-head b{font-weight:800}
+.ledger-body{padding:12px 14px;font-size:.88rem;line-height:1.6}
+.ledger-body>div{margin-bottom:4px}
+.ledger-body b{font-weight:800}
+.ledger-body .pill{margin-left:4px}
+.ledger-notes{margin-top:8px}
+.ledger-note{padding:6px 0;border-top:1px solid var(--border);font-size:.85rem}
+.ledger-note:first-child{border-top:none}
+.ledger-note .when{color:var(--muted);font-size:.75rem;margin-left:6px}
+.note-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.note-row input{flex:1;min-width:180px;padding:9px 11px;border:2px solid var(--border);background:#fff;font-size:.85rem;font-weight:500}
+.note-row input:focus{outline:none;border-color:var(--primary)}
+.note-row .btn{flex-shrink:0}
+
+@media(max-width:560px){
+  .view-toolbar select,.view-toolbar input{min-width:0;width:100%}
+  .view-toolbar .btn{width:100%}
+  .note-row{flex-direction:column}
+  .note-row .btn{width:100%}
+  .ledger-head{flex-direction:column;align-items:flex-start;gap:4px}
+         }
