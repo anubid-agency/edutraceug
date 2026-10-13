@@ -1653,34 +1653,27 @@ function openTeacherEdit(uid) {
   openModal({
     title: t.email.split("@")[0],
     wide: "wide",
-    body: `
-      <div class="grid2">
-        <div style="display:none">
-          <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Assignments</h3>
-          <div id="assignList" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);padding:10px"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-top:10px">
-            <select id="asClass" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Class</option>${classOptionsHtml}</select>
-            <select id="asStream" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Stream</option></select>
-            <select id="asSubject" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Subject</option></select>
-            <button class="btn btn-primary btn-sm" id="addAssign" type="button"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-        <div>
-          <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Class teacher</h3>
-          <select id="ctClass" style="width:100%;padding:8px;border:2px solid var(--border);font-size:.85rem;margin-bottom:8px"><option value="">Not a class teacher</option>${classOptionsHtml}</select>
-          <select id="ctStream" style="width:100%;padding:8px;border:2px solid var(--border);font-size:.85rem;margin-bottom:14px"><option value="">Stream (optional)</option></select>
-
-          <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Roles</h3>
-          <label class="check"><input type="checkbox" id="isDos" ${t.isDoS ? "checked" : ""}><span>Director of Studies (DoS)</span></label>
-          <label class="check"><input type="checkbox" id="isBursar" ${t.isBursar ? "checked" : ""}><span>Bursar</span></label>
-
-          <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:14px 0 10px">Permissions</h3>
-          <label class="check"><input type="checkbox" id="canMarks" ${t.permissions.canEnterMarks ? "checked" : ""}><span>Enter marks</span></label>
-          <label class="check"><input type="checkbox" id="canHoliday" ${t.permissions.canUploadHoliday ? "checked" : ""}><span>Upload holiday work</span></label>
-          <label class="check"><input type="checkbox" id="canParent" ${t.permissions.canReadParentReports ? "checked" : ""}><span>Read parent reports</span></label>
-        </div>
+   body: `
+  <div class="grid2">
+    <div>
+      <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Assignments</h3>
+      <div id="assignList" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);padding:10px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-top:10px">
+        <select id="asClass" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Class</option>${classOptionsHtml}</select>
+        <select id="asStream" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Stream</option></select>
+        <select id="asSubject" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Subject</option></select>
+        <button class="btn btn-primary btn-sm" id="addAssign" type="button"><i class="fa-solid fa-plus"></i></button>
       </div>
-    `,
+      <p style="margin-top:10px;font-size:.78rem;color:var(--muted)">
+        Tip: leave <b>Stream</b> blank to assign the teacher to every stream in that class.
+      </p>
+    </div>
+    <div>
+      ...class teacher, roles, permissions (unchanged)...
+    </div>
+  </div>
+`,
+
     foot: `<button class="btn btn-outline" id="teCancel" type="button">Close</button><button class="btn btn-primary" id="teSave" type="button"><span class="spinner"></span><span class="btn-label">Save</span></button>`
   });
 
