@@ -1616,21 +1616,21 @@ async function renderTeachers() {
           </tr></thead>
           <tbody>
             ${S.teachers.map((t) => `
-              <tr data-uid="${esc(t.uid)}">
+              <tr data-uid="${esc(t.uid || t.id || "")}">
                 <td>
-                  <div style="font-weight:700">${esc(t.email.split("@")[0])}</div>
-                  <div style="font-size:.78rem;color:var(--muted)">${esc(t.email)}</div>
+                  <div style="font-weight:700">${esc((t.email || "").split("@")[0])}</div>
+                  <div style="font-size:.78rem;color:var(--muted)">${esc(t.email || "")}</div>
                 </td>
                 <td>${(t.assignments || []).length ? `<span class="pill blue">${(t.assignments || []).length}</span>` : `<span class="pill grey">none</span>`}</td>
                 <td>${t.classTeacherOf ? `<span class="pill green">${esc(t.classTeacherOf.class)}${t.classTeacherOf.stream ? " " + esc(t.classTeacherOf.stream) : ""}</span>` : `<span class="pill grey">—</span>`}</td>
                 <td>${t.isDoS ? `<span class="pill yellow">DoS</span> ` : ""}${t.isBursar ? `<span class="pill yellow">Bursar</span>` : ""}${!t.isDoS && !t.isBursar ? `<span class="pill grey">—</span>` : ""}</td>
                 <td>
-                  ${t.permissions.canEnterMarks ? `<span class="pill green" title="Can enter marks"><i class="fa-solid fa-pen"></i></span>` : ""}
-                  ${t.permissions.canUploadHoliday ? `<span class="pill blue" title="Can upload holiday work"><i class="fa-solid fa-umbrella-beach"></i></span>` : ""}
-                  ${t.permissions.canReadParentReports ? `<span class="pill yellow" title="Can read parent reports"><i class="fa-solid fa-eye"></i></span>` : ""}
+                  ${t.permissions && t.permissions.canEnterMarks ? `<span class="pill green" title="Can enter marks"><i class="fa-solid fa-pen"></i></span>` : ""}
+                  ${t.permissions && t.permissions.canUploadHoliday ? `<span class="pill blue" title="Can upload holiday work"><i class="fa-solid fa-umbrella-beach"></i></span>` : ""}
+                  ${t.permissions && t.permissions.canReadParentReports ? `<span class="pill yellow" title="Can read parent reports"><i class="fa-solid fa-eye"></i></span>` : ""}
                 </td>
                 <td class="actions">
-                  <button class="btn btn-outline btn-sm" data-act="edit" data-uid="${esc(t.uid)}" type="button"><i class="fa-solid fa-pen"></i></button>
+                  <button class="btn btn-outline btn-sm" data-act="edit" data-uid="${esc(t.uid || t.id || "")}" type="button"><i class="fa-solid fa-pen"></i></button>
                 </td>
               </tr>
             `).join("")}
@@ -1645,35 +1645,41 @@ async function renderTeachers() {
 }
 
 function openTeacherEdit(uid) {
-  const t = S.teachers.find((x) => x.uid === uid);
+  const t = S.teachers.find((x) => (x.uid || x.id) === uid);
   if (!t) return;
+  const teacherUid = t.uid || t.id;
+  const perms = t.permissions || {};
 
   const classOptionsHtml = CLASSES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
 
   openModal({
-    title: t.email.split("@")[0],
+    title: (t.email || "").split("@")[0] || "Teacher",
     wide: "wide",
-   body: `
-  <div class="grid2">
-    <div>
+    body: `
       <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Assignments</h3>
-      <div id="assignList" style="max-height:300px;overflow-y:auto;border:1px solid var(--border);padding:10px"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-top:10px">
+      <div id="assignList" style="max-height:240px;overflow-y:auto;border:1px solid var(--border);padding:10px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-top:10px;margin-bottom:18px">
         <select id="asClass" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Class</option>${classOptionsHtml}</select>
         <select id="asStream" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Stream</option></select>
         <select id="asSubject" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Subject</option></select>
         <button class="btn btn-primary btn-sm" id="addAssign" type="button"><i class="fa-solid fa-plus"></i></button>
       </div>
-      <p style="margin-top:10px;font-size:.78rem;color:var(--muted)">
-        Tip: leave <b>Stream</b> blank to assign the teacher to every stream in that class.
-      </p>
-    </div>
-    <div>
-      ...class teacher, roles, permissions (unchanged)...
-    </div>
-  </div>
-`,
 
+      <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Class teacher</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
+        <select id="ctClass" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Not a class teacher</option>${classOptionsHtml}</select>
+        <select id="ctStream" style="padding:8px;border:2px solid var(--border);font-size:.82rem"><option value="">Stream (optional)</option></select>
+      </div>
+
+      <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Roles</h3>
+      <label class="check"><input type="checkbox" id="isDos" ${t.isDoS ? "checked" : ""}><span>Director of Studies</span></label>
+      <label class="check"><input type="checkbox" id="isBursar" ${t.isBursar ? "checked" : ""}><span>Bursar</span></label>
+
+      <h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:16px 0 10px">Permissions</h3>
+      <label class="check"><input type="checkbox" id="canMarks" ${perms.canEnterMarks !== false ? "checked" : ""}><span>Can enter marks</span></label>
+      <label class="check"><input type="checkbox" id="canHoliday" ${perms.canUploadHoliday !== false ? "checked" : ""}><span>Can upload holiday work</span></label>
+      <label class="check"><input type="checkbox" id="canParent" ${perms.canReadParentReports !== false ? "checked" : ""}><span>Can read parent reports</span></label>
+    `,
     foot: `<button class="btn btn-outline" id="teCancel" type="button">Close</button><button class="btn btn-primary" id="teSave" type="button"><span class="spinner"></span><span class="btn-label">Save</span></button>`
   });
 
@@ -1726,11 +1732,6 @@ function openTeacherEdit(uid) {
     renderAssignList();
   };
 
-  if (classTeacherOf) {
-    $("ctClass").value = classTeacherOf.class;
-    $("ctClass").dispatchEvent(new Event("change"));
-    setTimeout(() => { if (classTeacherOf.stream) $("ctStream").value = classTeacherOf.stream; }, 0);
-  }
   $("ctClass").onchange = () => {
     const cls = $("ctClass").value;
     const s = $("ctStream");
@@ -1740,9 +1741,15 @@ function openTeacherEdit(uid) {
       streams.forEach((x) => s.insertAdjacentHTML("beforeend", `<option value="${esc(x)}">${esc(x)}</option>`));
     }
   };
-  $("ctClass").dispatchEvent(new Event("change"));
-  if (classTeacherOf && classTeacherOf.stream) {
-    setTimeout(() => { $("ctStream").value = classTeacherOf.stream; }, 50);
+
+  if (classTeacherOf) {
+    $("ctClass").value = classTeacherOf.class;
+    $("ctClass").dispatchEvent(new Event("change"));
+    if (classTeacherOf.stream) {
+      setTimeout(() => { $("ctStream").value = classTeacherOf.stream; }, 0);
+    }
+  } else {
+    $("ctClass").dispatchEvent(new Event("change"));
   }
 
   $("teCancel").onclick = closeModal;
@@ -1754,13 +1761,13 @@ function openTeacherEdit(uid) {
       const ctStream = $("ctStream").value;
       const newCt = ctClass ? { class: ctClass, stream: ctStream } : null;
 
-      await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers/${encodeURIComponent(uid)}/assignments`, {
+      await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers/${encodeURIComponent(teacherUid)}/assignments`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ assignments })
       });
 
-      await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers/${encodeURIComponent(uid)}/settings`, {
+      await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers/${encodeURIComponent(teacherUid)}/settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1778,7 +1785,7 @@ function openTeacherEdit(uid) {
         (newCt === null && classTeacherOf !== null) ||
         (newCt !== null && (!classTeacherOf || classTeacherOf.class !== newCt.class || (classTeacherOf.stream || "") !== (newCt.stream || "")));
       if (ctChanged) {
-        await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers/${encodeURIComponent(uid)}/class-teacher`, {
+        await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers/${encodeURIComponent(teacherUid)}/class-teacher`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ classTeacherOf: newCt })
