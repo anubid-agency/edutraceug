@@ -788,10 +788,16 @@
     </div>
   </div>
 </div>
+<input type="file" id="cimgCamera" accept="image/*" capture="environment" hidden>
+<input type="file" id="cimgGallery" accept="image/*" hidden>
 
+<div class="cimg-viewer" id="imgViewer" role="dialog" aria-label="Commitment photo">
+  <button class="cimg-viewer-close" id="imgViewerClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  <img id="imgViewerImg" alt="Commitment photo">
+</div>
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script type="module" src="school-admin.js"></script>
-
+<script type="module" src="ledger-images.js"></script>
 </body>
   </html>
