@@ -57,6 +57,14 @@ const A_LEVEL_COMBINATIONS = [
   { code: "AGR", name: "Agriculture, Biology, Chemistry" },
   { code: "CDF", name: "Computer Science, Divinity, Literature" }
 ];
+function setHtml(id, htmlContent) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.innerHTML = htmlContent;
+  } else {
+    console.warn(`Safe update skipped: element #${id} not found in current view.`);
+  }
+}
 
 // Helpers
 function normaliseClass(name) {
@@ -947,52 +955,52 @@ function maybeAutoOpenWizard() {
 
 // ====================== END WIZARD ======================
 
-async function renderDashboard() {
+  async function renderDashboard() {
   $("dashSub").textContent = S.school ? S.school.name : "School overview";
-  $("dashStats").innerHTML = `
+  setHtml("dashStats", `
     <div class="stat"><div class="skel h20"></div><div class="skel h40"></div></div>
     <div class="stat"><div class="skel h20"></div><div class="skel h40"></div></div>
     <div class="stat"><div class="skel h20"></div><div class="skel h40"></div></div>
-    <div class="stat"><div class="skel h20"></div><div class="skel h40"></div></div>`;
+    <div class="stat"><div class="skel h20"></div><div class="skel h40"></div></div>`);
 
   const status = computeWizardStatus();
-  const banner = $("wzDashBanner");
+  
   if (!status.allRequiredDone) {
     const missed = status.missedRequired;
-    banner.innerHTML = `
+    setHtml("wzDashBanner", `
       <div class="wz-banner">
         <div class="wz-banner-text"><b>Setup not finished:</b> ${missed} step${missed > 1 ? "s" : ""} left.</div>
         <button class="btn btn-primary btn-sm" id="wzContinueBtn" type="button">Continue from step ${status.firstMissed[0] || 1}</button>
-      </div>`;
+      </div>`);
     $("wzContinueBtn").onclick = () => openWizard(status.firstMissed[0] || 1);
   } else if (!status.optional.step7 && !status.optional.step4) {
-    banner.innerHTML = `
+    setHtml("wzDashBanner", `
       <div class="wz-banner" style="background:#F0F9F2;border-color:#C8E6C9;border-left-color:var(--green)">
         <div class="wz-banner-text" style="font-weight:500">All required steps are complete. <b>Add these to finish your school page:</b> subjects, school page details.</div>
         <button class="btn btn-outline btn-sm" id="wzContinueBtn" type="button">Continue setup</button>
-      </div>`;
+      </div>`);
     $("wzContinueBtn").onclick = () => openWizard(4);
   } else if (!status.optional.step7) {
-    banner.innerHTML = `
+    setHtml("wzDashBanner", `
       <div class="wz-banner" style="background:#F0F9F2;border-color:#C8E6C9;border-left-color:var(--green)">
         <div class="wz-banner-text" style="font-weight:500">All required steps are complete. <b>Add school page details</b> to finish your public page.</div>
         <button class="btn btn-outline btn-sm" id="wzContinueBtn" type="button">Continue setup</button>
-      </div>`;
+      </div>`);
     $("wzContinueBtn").onclick = () => openWizard(7);
   } else if (!status.optional.step4) {
-    banner.innerHTML = `
+    setHtml("wzDashBanner", `
       <div class="wz-banner" style="background:#F0F9F2;border-color:#C8E6C9;border-left-color:var(--green)">
         <div class="wz-banner-text" style="font-weight:500">All required steps are complete. <b>Tick electives</b> to complete your subjects list.</div>
         <button class="btn btn-outline btn-sm" id="wzContinueBtn" type="button">Continue setup</button>
-      </div>`;
+      </div>`);
     $("wzContinueBtn").onclick = () => openWizard(4);
   } else {
-    banner.innerHTML = "";
+    setHtml("wzDashBanner", "");
   }
 
   const curTerm = S.terms.find((t) => t.id === S.currentTermId);
 
-  $("dashStats").innerHTML = `
+  setHtml("dashStats", `
     <div class="stat">
       <div class="label">Current Term</div>
       <div class="value sm">${esc(curTerm ? curTerm.name + (curTerm.year ? ", " + curTerm.year : "") : "—")}</div>
@@ -1013,12 +1021,14 @@ async function renderDashboard() {
       <div class="value sm">${esc((S.scoring && S.scoring.mode) === "cbc" ? "CBC" : "Percentage")}</div>
       <div class="sub">${S.types.length} assessment types</div>
     </div>
-  `;
+  `);
+
   $("dashRefresh").onclick = async () => {
     await loadInitial(); paintHeader(); renderDashboard();
     toast("Refreshed", "success");
   };
 }
+
 
 function renderProfile() {
   const s = S.school || {};
