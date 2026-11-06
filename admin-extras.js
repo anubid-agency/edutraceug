@@ -122,9 +122,8 @@
     qa(".snav-item").forEach((el) => {
       if (!el.id.startsWith("snav-")) {
         el.addEventListener("click", () => {
-          qa(".ext-view").forEach((v) => {
-            v.classList.remove("active");
-            v.style.display = "none";
+          qa(".view").forEach((v) => {
+            v.style.display = "";
           });
           qa("[id^='snav-']").forEach((s) => s.classList.remove("active"));
         });
