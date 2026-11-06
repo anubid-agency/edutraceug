@@ -252,7 +252,7 @@ onAuthStateChanged(auth, async (user) => {
     maybeAutoOpenWizard();
   } catch (err) {
     console.error(err);
-    toast(err.message || "Failed to load", "error", 8000);
+    toast((err.stack || err.message || "Failed to load").split("\n").slice(0, 4).join(" | "), "error", 30000);
   }
 });
 
