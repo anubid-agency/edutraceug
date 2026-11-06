@@ -379,8 +379,8 @@ function lsKey(key) {
 
 function initWizard() {
   const classOptions = CLASSES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
-  $("wzStudentClass").innerHTML = `<option value="">Select class</option>` + classOptions;
-  $("wzAssignClass").innerHTML = `<option value="">Select class</option>` + classOptions;
+setHtml("wzStudentClass", `<option value="">Select class</option>` + classOptions);
+setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions);
 
   renderElectivesGrid("wzElectivesS1S2", "S1-S2");
   renderElectivesGrid("wzElectivesS3S4", "S3-S4");
