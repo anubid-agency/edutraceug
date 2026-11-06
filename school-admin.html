@@ -326,7 +326,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 <script type="module" src="ledger-images.js"></script>
 <script>
 // ================================================================
-// edutraceug - Admin Extras Extension Script (Embedded directly)
+// edutraceug - Admin Extras Extension Script (Null-Safe Integration)
 // ================================================================
 (function () {
   "use strict";
@@ -444,11 +444,11 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
   function injectViewContainers() {
     const mainContent = q(".main") || q("main") || document.body;
     const views = [
-      { id: "ext-datasets", title: "Custom Data Sets", render: renderDatasetsView },
-      { id: "ext-subjects", title: "Custom Subjects Management", render: renderSubjectsView },
-      { id: "ext-promotion", title: "Yearly Student Auto-Promotion", render: renderPromotionView },
-      { id: "ext-materials", title: "Class Materials (PDFs)", render: renderMaterialsView },
-      { id: "ext-compare", title: "Term Performance Comparison", render: renderCompareView }
+      { id: "ext-datasets", title: "Custom Data Sets" },
+      { id: "ext-subjects", title: "Custom Subjects Management" },
+      { id: "ext-promotion", title: "Yearly Student Auto-Promotion" },
+      { id: "ext-materials", title: "Class Materials (PDFs)" },
+      { id: "ext-compare", title: "Term Performance Comparison" }
     ];
 
     views.forEach((v) => {
@@ -506,6 +506,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
   async function renderSubjectsView() {
     const c = $("ext-subjects-content");
+    if (!c) return;
     c.innerHTML = `<div class="skel h20 w50"></div><div class="skel h80"></div>`;
     try {
       const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/subjects`);
@@ -529,15 +530,18 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
           </table>
         </div>
       `;
-      $("extSubAddBtn").onclick = async () => {
-        const val = $("extSubName").value.trim();
-        if (!val) return toast("Enter subject name", "warn");
-        try {
-          await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/subjects`, { method: "POST", body: { name: val } });
-          toast("Subject added", "success");
-          renderSubjectsView();
-        } catch (e) { toast(e.message, "error"); }
-      };
+      const addBtn = $("extSubAddBtn");
+      if (addBtn) {
+        addBtn.onclick = async () => {
+          const val = $("extSubName") ? $("extSubName").value.trim() : "";
+          if (!val) return toast("Enter subject name", "warn");
+          try {
+            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/subjects`, { method: "POST", body: { name: val } });
+            toast("Subject added", "success");
+            renderSubjectsView();
+          } catch (e) { toast(e.message, "error"); }
+        };
+      }
       qa("[data-del-sub]", c).forEach((btn) => {
         btn.onclick = async () => {
           if (!confirm("Delete this subject?")) return;
@@ -555,6 +559,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
   async function renderPromotionView() {
     const c = $("ext-promotion-content");
+    if (!c) return;
     c.innerHTML = `<div class="skel h40"></div><div class="skel h80"></div>`;
     try {
       const status = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/status`);
@@ -572,30 +577,40 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
         </div>
         <div id="extPromoPreviewResult" style="margin-top:16px"></div>
       `;
-      $("extPromoPreviewBtn").onclick = async () => {
-        const resBox = $("extPromoPreviewResult");
-        resBox.innerHTML = `Loading preview...`;
-        try {
-          const prev = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/preview`);
-          resBox.innerHTML = `<h4>Preview Summary (Moving ${prev.willMove} students)</h4>`;
-        } catch (e) { resBox.innerHTML = `<span style="color:var(--red)">${esc(e.message)}</span>`; }
-      };
-      $("extPromoRunBtn").onclick = async () => {
-        if (!confirm("Run yearly auto-promotion now?")) return;
-        try {
-          await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/run`, { method: "POST" });
-          toast("Promotion completed", "success");
-          renderPromotionView();
-        } catch (e) { toast(e.message, "error"); }
-      };
-      $("extPromoUndoBtn").onclick = async () => {
-        if (!confirm("Revert the last promotion execution?")) return;
-        try {
-          await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/undo`, { method: "POST" });
-          toast("Promotion undone", "success");
-          renderPromotionView();
-        } catch (e) { toast(e.message, "error"); }
-      };
+      const prevBtn = $("extPromoPreviewBtn");
+      if (prevBtn) {
+        prevBtn.onclick = async () => {
+          const resBox = $("extPromoPreviewResult");
+          if (!resBox) return;
+          resBox.innerHTML = `Loading preview...`;
+          try {
+            const prev = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/preview`);
+            resBox.innerHTML = `<h4>Preview Summary (Moving ${prev.willMove} students)</h4>`;
+          } catch (e) { resBox.innerHTML = `<span style="color:var(--red)">${esc(e.message)}</span>`; }
+        };
+      }
+      const runBtn = $("extPromoRunBtn");
+      if (runBtn) {
+        runBtn.onclick = async () => {
+          if (!confirm("Run yearly auto-promotion now?")) return;
+          try {
+            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/run`, { method: "POST" });
+            toast("Promotion completed", "success");
+            renderPromotionView();
+          } catch (e) { toast(e.message, "error"); }
+        };
+      }
+      const undoBtn = $("extPromoUndoBtn");
+      if (undoBtn) {
+        undoBtn.onclick = async () => {
+          if (!confirm("Revert the last promotion execution?")) return;
+          try {
+            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/undo`, { method: "POST" });
+            toast("Promotion undone", "success");
+            renderPromotionView();
+          } catch (e) { toast(e.message, "error"); }
+        };
+      }
     } catch (err) {
       c.innerHTML = `<div class="empty"><h3>Failed to load promotion status</h3><p>${esc(err.message)}</p></div>`;
     }
@@ -603,6 +618,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
   async function renderMaterialsView() {
     const c = $("ext-materials-content");
+    if (!c) return;
     c.innerHTML = `<div class="skel h20 w50"></div><div class="skel h80"></div>`;
     try {
       const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/materials`);
@@ -631,19 +647,22 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
           </table>
         </div>
       `;
-      $("extMaterialForm").onsubmit = async (e) => {
-        e.preventDefault();
-        const file = $("extMatFile").files[0];
-        if (!file) return;
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("title", $("extMatTitle").value.trim());
-        try {
-          await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/materials`, { method: "POST", body: fd });
-          toast("Material uploaded successfully", "success");
-          renderMaterialsView();
-        } catch (err) { toast(err.message, "error"); }
-      };
+      const form = $("extMaterialForm");
+      if (form) {
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const fileInput = $("extMatFile");
+          if (!fileInput || !fileInput.files[0]) return;
+          const fd = new FormData();
+          fd.append("file", fileInput.files[0]);
+          fd.append("title", $("extMatTitle") ? $("extMatTitle").value.trim() : "");
+          try {
+            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/materials`, { method: "POST", body: fd });
+            toast("Material uploaded successfully", "success");
+            renderMaterialsView();
+          } catch (err) { toast(err.message, "error"); }
+        };
+      }
       qa("[data-del-mat]", c).forEach((btn) => {
         btn.onclick = async () => {
           if (!confirm("Delete this material?")) return;
@@ -661,6 +680,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
   async function renderDatasetsView() {
     const c = $("ext-datasets-content");
+    if (!c) return;
     c.innerHTML = `<div class="skel h80"></div>`;
     try {
       const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/datasets`);
@@ -683,9 +703,10 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
   async function renderCompareView() {
     const c = $("ext-compare-content");
+    if (!c) return;
     c.innerHTML = `<div class="skel h80"></div>`;
     try {
-      const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/analytics/compare`);
+      await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/analytics/compare`);
       c.innerHTML = `<div style="padding:16px;background:#fff;border:1px solid var(--border)">Analytics comparison data loaded successfully.</div>`;
     } catch (err) {
       c.innerHTML = `<div class="empty"><h3>Failed to load analytics</h3><p>${esc(err.message)}</p></div>`;
