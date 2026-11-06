@@ -226,7 +226,10 @@ async function apiError(res) {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
+window.S = S;
+window.auth = auth;
+window.openModal = openModal;
+window.closeModal = closeModal;
 onAuthStateChanged(auth, async (user) => {
   if (!user) { location.replace("/account.html"); return; }
   S.user = user;
