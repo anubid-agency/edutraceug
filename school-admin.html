@@ -235,6 +235,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 <div class="sidebar-back" id="sidebarBack"></div>
 
 <div class="layout">
+  <!-- Sidebar with Hardcoded Native Elements for both Core and Extras -->
   <aside class="sidebar" id="sidebar">
     <nav class="snav" id="snav">
       <div class="snav-item active" data-view="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></div>
@@ -265,9 +266,18 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
       <div class="snav-item" data-view="discipline"><i class="fa-solid fa-book"></i><span>Discipline Ledger</span></div>
       <div class="snav-item" data-view="bulkemail"><i class="fa-solid fa-envelope"></i><span>Bulk Email</span></div>
       <div class="snav-item" data-view="auditlog"><i class="fa-solid fa-shield-halved"></i><span>Audit Log</span></div>
+
+      <!-- Hardcoded Extras & Analytics Items for Native Router Compatibility -->
+      <div class="snav-label">Extras &amp; Analytics</div>
+      <div class="snav-item" data-view="ext-datasets"><i class="fa-solid fa-database"></i><span>Custom Datasets</span></div>
+      <div class="snav-item" data-view="ext-subjects"><i class="fa-solid fa-book-bookmark"></i><span>Custom Subjects</span></div>
+      <div class="snav-item" data-view="ext-promotion"><i class="fa-solid fa-graduation-cap"></i><span>Yearly Promotion</span></div>
+      <div class="snav-item" data-view="ext-materials"><i class="fa-solid fa-folder-open"></i><span>Class Materials</span></div>
+      <div class="snav-item" data-view="ext-compare"><i class="fa-solid fa-chart-column"></i><span>Term Comparison</span></div>
     </nav>
   </aside>
 
+  <!-- Main Content with Hardcoded Native View Sections -->
   <main class="main" id="mainContent">
     <section class="view active" id="view-dashboard">
       <div class="page-head">
@@ -305,6 +315,28 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
     <section class="view" id="view-discipline"><div class="page-head"><h1>Discipline Ledger</h1></div><div class="card"><div class="card-body" id="disciplineContent"><div class="skel h60"></div></div></div></section>
     <section class="view" id="view-bulkemail"><div class="page-head"><h1>Bulk Email</h1></div><div class="card"><div class="card-body" id="bulkEmailContent"><div class="skel h60"></div></div></div></section>
     <section class="view" id="view-auditlog"><div class="page-head"><h1>Audit Log</h1></div><div class="card"><div class="card-body" id="auditLogContent"><div class="skel h60"></div></div></div></section>
+
+    <!-- Hardcoded Extras View Sections for Native Router Compatibility -->
+    <section class="view" id="view-ext-datasets">
+      <div class="page-head"><div><h1>Custom Data Sets</h1><p>Managed via Edutrace Extras Extension</p></div></div>
+      <div class="card"><div class="card-body" id="ext-datasets-content"><div class="skel h80"></div></div></div>
+    </section>
+    <section class="view" id="view-ext-subjects">
+      <div class="page-head"><div><h1>Custom Subjects Management</h1><p>Managed via Edutrace Extras Extension</p></div></div>
+      <div class="card"><div class="card-body" id="ext-subjects-content"><div class="skel h80"></div></div></div>
+    </section>
+    <section class="view" id="view-ext-promotion">
+      <div class="page-head"><div><h1>Yearly Student Auto-Promotion</h1><p>Managed via Edutrace Extras Extension</p></div></div>
+      <div class="card"><div class="card-body" id="ext-promotion-content"><div class="skel h80"></div></div></div>
+    </section>
+    <section class="view" id="view-ext-materials">
+      <div class="page-head"><div><h1>Class Materials (PDFs)</h1><p>Managed via Edutrace Extras Extension</p></div></div>
+      <div class="card"><div class="card-body" id="ext-materials-content"><div class="skel h80"></div></div></div>
+    </section>
+    <section class="view" id="view-ext-compare">
+      <div class="page-head"><div><h1>Term Performance Comparison</h1><p>Managed via Edutrace Extras Extension</p></div></div>
+      <div class="card"><div class="card-body" id="ext-compare-content"><div class="skel h80"></div></div></div>
+    </section>
   </main>
 </div>
 
@@ -321,17 +353,17 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- Core Admin Scripts & Embedded Admin Extras Extension -->
+<!-- Core Admin Scripts & Integrated Extras Worker Logic -->
 <script type="module" src="school-admin.js"></script>
 <script type="module" src="ledger-images.js"></script>
 <script>
 // ================================================================
-// edutraceug - Admin Extras Extension Script (Null-Safe Integration)
+// edutraceug - Hardcoded Extras Integration Logic
 // ================================================================
 (function () {
   "use strict";
   const EXTRAS_BASE = "https://edutraceug-extras-worker.anubisdigital114-9df.workers.dev";
-  const ES = { schoolId: null, activeView: null };
+  const ES = { schoolId: null };
 
   const $ = (id) => document.getElementById(id);
   const q = (sel, root = document) => root.querySelector(sel);
@@ -358,13 +390,15 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
   }
 
   async function getAuthToken() {
-    if (window.firebase && window.firebase.auth) {
-      const currentUser = window.firebase.auth().currentUser;
-      if (currentUser) return await currentUser.getIdToken();
-    }
-    if (window.auth && typeof window.auth.currentUser?.getIdToken === "function") {
-      return await window.auth.currentUser.getIdToken();
-    }
+    try {
+      if (window.firebase && window.firebase.auth) {
+        const u = window.firebase.auth().currentUser;
+        if (u) return await u.getIdToken();
+      }
+      if (window.auth && typeof window.auth.currentUser?.getIdToken === "function") {
+        return await window.auth.currentUser.getIdToken();
+      }
+    } catch (e) {}
     return null;
   }
 
@@ -388,120 +422,35 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
     return res.text();
   }
 
-  function initAdminExtras() {
+  function initExtrasIntegration() {
     if (window.S && window.S.schoolId) {
       ES.schoolId = window.S.schoolId;
     } else {
-      const hostParts = window.location.hostname.split(".");
-      if (hostParts.length > 2 && hostParts[0] !== "www") {
-        ES.schoolId = hostParts[0];
+      const parts = window.location.hostname.split(".");
+      if (parts.length > 2 && parts[0] !== "www") {
+        ES.schoolId = parts[0];
       }
     }
-    injectSidebarItems();
-    injectViewContainers();
-  }
 
-  function injectSidebarItems() {
-    const sidebarNav = q(".snav") || q("nav") || $("sidebar");
-    if (!sidebarNav || $("snav-datasets")) return;
+    // Listen to sidebar clicks so when an extras tab is selected, its respective data loader triggers
+    qa(".snav-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const view = item.dataset.view;
+        if (!view || !view.startsWith("ext-")) return;
 
-    const navItems = [
-      { id: "snav-datasets", view: "ext-datasets", icon: "fa-database", label: "Custom Datasets" },
-      { id: "snav-subjects", view: "ext-subjects", icon: "fa-book-bookmark", label: "Custom Subjects" },
-      { id: "snav-promotion", view: "ext-promotion", icon: "fa-graduation-cap", label: "Yearly Promotion" },
-      { id: "snav-materials", view: "ext-materials", icon: "fa-folder-open", label: "Class Materials" },
-      { id: "snav-compare", view: "ext-compare", icon: "fa-chart-column", label: "Term Comparison" }
-    ];
+        if (window.S && window.S.schoolId) ES.schoolId = window.S.schoolId;
+        if (!ES.schoolId) {
+          toast("School context missing", "error");
+          return;
+        }
 
-    const sectionHeader = document.createElement("div");
-    sectionHeader.className = "snav-label";
-    sectionHeader.textContent = "Extras & Analytics";
-    sidebarNav.appendChild(sectionHeader);
-
-    navItems.forEach((item) => {
-      const div = document.createElement("div");
-      div.id = item.id;
-      div.className = "snav-item";
-      div.dataset.view = item.view;
-      div.innerHTML = `<i class="fa-solid ${item.icon}"></i><span>${item.label}</span>`;
-      div.addEventListener("click", () => switchExtraView(item.view));
-      sidebarNav.appendChild(div);
+        if (view === "ext-datasets") renderDatasetsView();
+        if (view === "ext-subjects") renderSubjectsView();
+        if (view === "ext-promotion") renderPromotionView();
+        if (view === "ext-materials") renderMaterialsView();
+        if (view === "ext-compare") renderCompareView();
+      });
     });
-
-    qa(".snav-item").forEach((el) => {
-      if (!el.id.startsWith("snav-")) {
-        el.addEventListener("click", () => {
-          qa(".ext-view").forEach((v) => {
-            v.classList.remove("active");
-            v.style.display = "none";
-          });
-          qa("[id^='snav-']").forEach((s) => s.classList.remove("active"));
-        });
-      }
-    });
-  }
-
-  function injectViewContainers() {
-    const mainContent = q(".main") || q("main") || document.body;
-    const views = [
-      { id: "ext-datasets", title: "Custom Data Sets" },
-      { id: "ext-subjects", title: "Custom Subjects Management" },
-      { id: "ext-promotion", title: "Yearly Student Auto-Promotion" },
-      { id: "ext-materials", title: "Class Materials (PDFs)" },
-      { id: "ext-compare", title: "Term Performance Comparison" }
-    ];
-
-    views.forEach((v) => {
-      if ($(v.id)) return;
-      const sec = document.createElement("section");
-      sec.id = v.id;
-      sec.className = "view ext-view";
-      sec.dataset.view = v.id;
-      sec.style.display = "none";
-      sec.innerHTML = `
-        <div class="page-head">
-          <div>
-            <h1>${v.title}</h1>
-            <p>Managed via Edutrace Extras Extension</p>
-          </div>
-        </div>
-        <div class="card"><div class="card-body" id="${v.id}-content">Loading...</div></div>
-      `;
-      mainContent.appendChild(sec);
-    });
-  }
-
-  function switchExtraView(viewId) {
-    qa(".view").forEach((v) => {
-      v.classList.remove("active");
-      v.style.display = "none";
-    });
-    qa(".snav-item").forEach((n) => n.classList.remove("active"));
-
-    const targetNav = $(`snav-${viewId.replace("ext-", "")}`);
-    const targetView = $(viewId);
-
-    if (targetNav) targetNav.classList.add("active");
-    if (targetView) {
-      targetView.classList.add("active");
-      targetView.style.display = "block";
-    }
-
-    ES.activeView = viewId;
-    if (window.S && window.S.schoolId) ES.schoolId = window.S.schoolId;
-
-    if (!ES.schoolId) {
-      toast("School context missing", "error");
-      return;
-    }
-
-    switch (viewId) {
-      case "ext-datasets": renderDatasetsView(); break;
-      case "ext-subjects": renderSubjectsView(); break;
-      case "ext-promotion": renderPromotionView(); break;
-      case "ext-materials": renderMaterialsView(); break;
-      case "ext-compare": renderCompareView(); break;
-    }
   }
 
   async function renderSubjectsView() {
@@ -514,7 +463,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
       c.innerHTML = `
         <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
           <input type="text" id="extSubName" placeholder="New subject name" style="padding:11px 12px;border:2px solid var(--border);flex:1;min-width:200px">
-          <button class="btn btn-primary" id="extSubAddBtn"><i class="fa-solid fa-plus"></i> Add Subject</button>
+          <button class="btn btn-primary" id="extSubAddBtn" type="button"><i class="fa-solid fa-plus"></i> Add Subject</button>
         </div>
         <div class="table-wrap">
           <table class="tbl">
@@ -523,7 +472,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
               ${subjects.map((s) => `
                 <tr>
                   <td><b>${esc(s.name)}</b></td>
-                  <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-sub="${esc(s.id)}"><i class="fa-solid fa-trash"></i> Delete</button></td>
+                  <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-sub="${esc(s.id)}" type="button"><i class="fa-solid fa-trash"></i> Delete</button></td>
                 </tr>
               `).join("") || '<tr><td colspan="2" style="text-align:center;color:var(--muted)">No custom subjects found.</td></tr>'}
             </tbody>
@@ -571,9 +520,9 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
           <div style="margin-top:4px"><b>Last Run Status:</b> ${run.status ? `<span class="pill blue">${esc(run.status)}</span>` : "Not run yet"}</div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-outline" id="extPromoPreviewBtn"><i class="fa-solid fa-eye"></i> Preview Promotion</button>
-          <button class="btn btn-primary" id="extPromoRunBtn"><i class="fa-solid fa-play"></i> Run Auto-Promotion</button>
-          <button class="btn btn-red" id="extPromoUndoBtn"><i class="fa-solid fa-rotate-left"></i> Undo Promotion</button>
+          <button class="btn btn-outline" id="extPromoPreviewBtn" type="button"><i class="fa-solid fa-eye"></i> Preview Promotion</button>
+          <button class="btn btn-primary" id="extPromoRunBtn" type="button"><i class="fa-solid fa-play"></i> Run Auto-Promotion</button>
+          <button class="btn btn-red" id="extPromoUndoBtn" type="button"><i class="fa-solid fa-rotate-left"></i> Undo Promotion</button>
         </div>
         <div id="extPromoPreviewResult" style="margin-top:16px"></div>
       `;
@@ -640,7 +589,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
                 <tr>
                   <td><b>${esc(m.title)}</b></td>
                   <td><a href="${EXTRAS_BASE}/schools/${encodeURIComponent(ES.schoolId)}/materials/${encodeURIComponent(m.id)}/file" target="_blank" style="color:var(--primary);font-weight:700">PDF</a></td>
-                  <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-mat="${esc(m.id)}"><i class="fa-solid fa-trash"></i></button></td>
+                  <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-mat="${esc(m.id)}" type="button"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>
               `).join("") || '<tr><td colspan="3" style="text-align:center;color:var(--muted)">No class materials uploaded yet.</td></tr>'}
             </tbody>
@@ -714,9 +663,9 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAdminExtras);
+    document.addEventListener("DOMContentLoaded", initExtrasIntegration);
   } else {
-    initAdminExtras();
+    initExtrasIntegration();
   }
 })();
 </script>
