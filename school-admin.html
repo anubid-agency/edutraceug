@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en-UG">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#3570BC">
 <title>School Admin | Edutrace</title>
-<meta name="description" content="Manage your school portal, rosters, teachers, terms, and marks.">
+<meta name="description" content="Manage your school on Edutrace.">
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="icon" type="image/jpeg" href="/edutrace-favicon.jpg">
@@ -15,197 +15,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<style>
-:root{
-  --primary:#3570BC;--primary-dark:#2A5A96;--primary-light:#EBF1FB;
-  --green:#008E34;--yellow:#F9B515;--red:#D7040A;
-  --dark:#1A1A1A;--muted:#555;--border:#E5E5E5;--light:#F8F9FA;--white:#fff;--bg:#F2F4F7;
-  --font:'Plus Jakarta Sans',Arial,sans-serif;
-  --header-h:64px;--sidebar-w:250px;
-  --shadow:0 1px 3px rgba(0,0,0,.06);--shadow-lg:0 8px 24px rgba(0,0,0,.1);
-}
-*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
-body{font-family:var(--font);color:var(--dark);line-height:1.5;background:var(--bg);-webkit-font-smoothing:antialiased}
-img{max-width:100%;height:auto;display:block}
-a{text-decoration:none;color:inherit}
-ul{list-style:none}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,select,textarea{font-family:inherit;font-size:1rem;color:inherit}
-:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
-::-webkit-scrollbar{width:8px;height:8px}
-::-webkit-scrollbar-thumb{background:#ccc}
-
-.noscript-bar{background:var(--red);color:#fff;padding:12px 16px;text-align:center;font-weight:600;font-size:.9rem}
-
-.cookie{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;z-index:9999;display:none;border-top:3px solid var(--primary)}
-.cookie.show{display:block}
-.cookie-in{width:96%;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
-.cookie-text{flex:1;font-size:.78rem;min-width:200px}
-.cookie-text a{color:var(--yellow);text-decoration:underline;font-weight:600}
-.cookie-btn{padding:8px 14px;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
-.cookie-btn.allow{background:var(--green);color:#fff}
-.cookie-btn.reject{border:2px solid #fff;color:#fff}
-
-.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);z-index:100;display:flex;align-items:center}
-.header::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary) 25%,var(--green) 25% 50%,var(--yellow) 50% 75%,var(--red) 75%)}
-.header-inner{display:flex;align-items:center;gap:14px;width:100%;padding:0 20px}
-.h-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.h-brand img{height:38px;width:auto;border:2px solid var(--primary);background:#fff;object-fit:contain}
-.h-brand .h-name{font-weight:800;font-size:1rem;line-height:1.15;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.h-spacer{flex:1}
-.h-user{display:flex;align-items:center;gap:10px;font-size:.85rem}
-.h-user .avatar{width:36px;height:36px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
-.h-user .uname{font-weight:700;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.h-user .role-badge{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background:var(--primary-light);color:var(--primary);padding:3px 8px}
-.h-logout{padding:8px 14px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:2px solid var(--border);display:inline-flex;align-items:center;gap:6px}
-.h-logout:hover{border-color:var(--red);color:var(--red)}
-.h-menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center;font-size:1.2rem;border:2px solid var(--border)}
-
-.layout{padding-top:var(--header-h);min-height:100vh;display:flex}
-.sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);overflow-y:auto;z-index:90}
-.snav{padding:12px 0}
-.snav-label{padding:10px 20px 4px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
-.snav-item{display:flex;align-items:center;gap:12px;padding:10px 20px;font-weight:600;font-size:.86rem;color:var(--dark);border-left:3px solid transparent;transition:background .15s,color .15s;cursor:pointer}
-.snav-item:hover{background:var(--light);color:var(--primary)}
-.snav-item.active{background:var(--primary-light);color:var(--primary);border-left-color:var(--primary)}
-.snav-item i{width:18px;text-align:center;font-size:.95rem}
-.main{flex:1;margin-left:var(--sidebar-w);padding:24px 32px 80px;min-width:0}
-
-.sidebar-back{display:none;position:fixed;inset:0;background:rgba(10,15,25,.5);z-index:80}
-.sidebar-back.show{display:block}
-
-.page-head{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
-.page-head h1{font-size:1.55rem;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:4px}
-.page-head p{color:var(--muted);font-size:.88rem}
-.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
-.view{display:none}
-.view.active{display:block}
-
-.card{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px}
-.card-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.card-head h2{font-size:.95rem;font-weight:800;display:flex;align-items:center;gap:10px}
-.card-head h2 i{color:var(--primary)}
-.card-head .sub{font-size:.8rem;color:var(--muted);font-weight:600}
-.card-body{padding:20px}
-.card-body.tight{padding:0}
-
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
-.stat{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow);padding:18px;position:relative;overflow:hidden}
-.stat::before{content:"";position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--primary)}
-.stat.green::before{background:var(--green)}
-.stat.yellow::before{background:var(--yellow)}
-.stat.red::before{background:var(--red)}
-.stat .label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px}
-.stat .value{font-size:1.6rem;font-weight:800;line-height:1.1}
-.stat .value.sm{font-size:1.05rem}
-.stat .sub{font-size:.75rem;color:var(--muted);margin-top:4px}
-
-.field{margin-bottom:16px}
-.field label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
-.field label .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted);font-size:.75rem;margin-left:6px}
-.field input[type="text"],.field input[type="email"],.field input[type="number"],.field input[type="tel"],.field input[type="date"],.field select,.field textarea{width:100%;padding:11px 12px;border:2px solid var(--border);background:#fff;font-size:.9rem;font-weight:500;transition:border-color .15s}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary)}
-.field textarea{resize:vertical;min-height:90px;line-height:1.5}
-.field input:disabled,.field select:disabled{background:var(--light);color:var(--muted);cursor:not-allowed}
-.field .err{color:var(--red);font-size:.78rem;font-weight:600;margin-top:5px;display:none}
-.field.has-error .err{display:block}
-.field.has-error input,.field.has-error select,.field.has-error textarea{border-color:var(--red)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.4px;border:2px solid transparent;transition:all .15s;white-space:nowrap}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
-.btn-primary:hover:not(:disabled){background:var(--primary-dark);border-color:var(--primary-dark)}
-.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
-.btn-green:hover:not(:disabled){background:#007029}
-.btn-red{background:var(--red);color:#fff;border-color:var(--red)}
-.btn-red:hover:not(:disabled){background:#a00308}
-.btn-outline{background:#fff;color:var(--dark);border-color:var(--border)}
-.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
-.btn-sm{padding:7px 11px;font-size:.72rem}
-.btn-block{width:100%}
-.btn .spinner{display:none;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite}
-.btn.loading .spinner{display:inline-block}
-.btn.loading .btn-label{opacity:.7}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.table-wrap{overflow-x:auto}
-table.tbl{width:100%;border-collapse:collapse;font-size:.88rem}
-table.tbl th{background:var(--light);padding:10px 12px;text-align:left;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap}
-table.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-table.tbl tr:hover{background:#fafbfc}
-table.tbl td.actions{text-align:right;white-space:nowrap}
-
-.pill{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;white-space:nowrap}
-.pill.green{background:#E6F4EC;color:var(--green)}
-.pill.yellow{background:#FFF9E6;color:#8A6800}
-.pill.red{background:#FEF2F2;color:var(--red)}
-.pill.blue{background:var(--primary-light);color:var(--primary)}
-.pill.grey{background:var(--light);color:var(--muted)}
-
-.empty{padding:48px 24px;text-align:center;color:var(--muted)}
-.empty i{font-size:2.4rem;color:var(--border);margin-bottom:14px;display:block}
-.empty h3{font-size:1rem;font-weight:800;margin-bottom:6px;color:var(--dark)}
-.empty p{font-size:.88rem;margin-bottom:14px}
-
-.skel{background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:sh 1.4s infinite;height:16px;margin-bottom:12px}
-.skel.h20{height:20px}
-.skel.h40{height:40px}
-.skel.h60{height:60px}
-.skel.h80{height:80px}
-.skel.w30{width:30%}
-.skel.w50{width:50%}
-.skel.w70{width:70%}
-@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-.modal-back{position:fixed;inset:0;background:rgba(10,15,25,.65);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
-.modal-back.show{display:flex}
-.modal{background:#fff;width:100%;max-width:640px;margin:20px auto;border:1px solid var(--border);box-shadow:var(--shadow-lg)}
-.modal.wide{max-width:900px}
-.modal.wider{max-width:1200px}
-.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:2}
-.modal-head h2{font-size:1rem;font-weight:800}
-.modal-head .close{padding:7px 11px;font-size:1rem;color:var(--muted);border:2px solid var(--border)}
-.modal-head .close:hover{color:var(--red);border-color:var(--red)}
-.modal-body{padding:20px}
-.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:#fff;z-index:2}
-
-.toast-wrap{position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:calc(100vw - 40px)}
-.toast{background:#fff;border-left:4px solid var(--primary);padding:13px 16px;box-shadow:var(--shadow-lg);min-width:250px;max-width:380px;pointer-events:auto;animation:slideIn .25s;font-size:.86rem;font-weight:600;display:flex;align-items:flex-start;gap:10px}
-.toast i{flex-shrink:0;margin-top:2px}
-.toast.success{border-left-color:var(--green)}.toast.success i{color:var(--green)}
-.toast.error{border-left-color:var(--red)}.toast.error i{color:var(--red)}
-.toast.warn{border-left-color:var(--yellow)}.toast.warn i{color:var(--yellow)}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-
-@media(max-width:900px){
-  :root{--sidebar-w:0px}
-  .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0;padding:20px 16px 100px}
-  .h-menu-btn{display:inline-flex}
-  .grid2,.grid3{grid-template-columns:1fr}
-}
-@media(max-width:560px){
-  .h-user .uname,.h-user .role-badge{display:none}
-  .h-brand .h-name{max-width:150px;font-size:.9rem}
-  .h-brand img{height:32px}
-  .page-head h1{font-size:1.25rem}
-  .card-body{padding:16px}
-  .modal-body{padding:16px}
-  .stats{grid-template-columns:1fr 1fr}
-  .modal-foot{flex-direction:column-reverse}
-  .modal-foot .btn{width:100%}
-}
-</style>
+<link rel="stylesheet" href="school-admin.css">
 </head>
 <body>
 
-<noscript><div class="noscript-bar">JavaScript is required. Please enable it in your browser settings.</div></noscript>
+<noscript><div class="noscript-bar"><i class="fa-solid fa-triangle-exclamation"></i> JavaScript is required.</div></noscript>
 
 <div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent">
   <div class="cookie-in">
@@ -217,7 +31,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 
 <header class="header">
   <div class="header-inner">
-    <button class="h-menu-btn" id="menuBtn" type="button" aria-label="Open Menu"><i class="fa-solid fa-bars"></i></button>
+    <button class="h-menu-btn" id="menuBtn" type="button" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
     <a href="/" class="h-brand">
       <img src="/logo.png" alt="" id="schoolLogo">
       <span class="h-name" id="schoolName">Loading…</span>
@@ -225,7 +39,7 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
     <div class="h-spacer"></div>
     <div class="h-user">
       <div class="avatar" id="userAvatar">A</div>
-      <span class="uname" id="userName">Admin</span>
+      <span class="uname" id="userName">—</span>
       <span class="role-badge">Admin</span>
     </div>
     <button class="h-logout" id="logoutBtn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
@@ -235,439 +49,755 @@ table.tbl td.actions{text-align:right;white-space:nowrap}
 <div class="sidebar-back" id="sidebarBack"></div>
 
 <div class="layout">
-  <!-- Sidebar with Hardcoded Native Elements for both Core and Extras -->
-  <aside class="sidebar" id="sidebar">
-    <nav class="snav" id="snav">
-      <div class="snav-item active" data-view="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></div>
-      
-      <div class="snav-label">School</div>
-      <div class="snav-item" data-view="profile"><i class="fa-solid fa-school"></i><span>Profile</span></div>
-      <div class="snav-item" data-view="appearance"><i class="fa-solid fa-palette"></i><span>Appearance</span></div>
-      <div class="snav-item" data-view="webcontent"><i class="fa-solid fa-globe"></i><span>Web Content</span></div>
 
-      <div class="snav-label">People</div>
-      <div class="snav-item" data-view="roster"><i class="fa-solid fa-file-excel"></i><span>Roster Upload</span></div>
-      <div class="snav-item" data-view="teachers"><i class="fa-solid fa-chalkboard-user"></i><span>Teachers</span></div>
-      <div class="snav-item" data-view="structure"><i class="fa-solid fa-sitemap"></i><span>Structure</span></div>
-      <div class="snav-item" data-view="phones"><i class="fa-solid fa-phone"></i><span>Phone Numbers</span></div>
+<aside class="sidebar" id="sidebar">
+  <nav class="snav">
+    <div class="snav-item" data-view="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</div>
 
-      <div class="snav-label">Academics</div>
-      <div class="snav-item" data-view="terms"><i class="fa-solid fa-calendar-days"></i><span>Terms</span></div>
-      <div class="snav-item" data-view="assessmenttypes"><i class="fa-solid fa-list-check"></i><span>Assessment Types</span></div>
-      <div class="snav-item" data-view="scoring"><i class="fa-solid fa-sliders"></i><span>Scoring &amp; Grading</span></div>
+    <div class="snav-label">School</div>
+    <div class="snav-item" data-view="profile"><i class="fa-solid fa-school"></i> Profile</div>
+    <div class="snav-item" data-view="appearance"><i class="fa-solid fa-image"></i> Appearance</div>
+    <div class="snav-item" data-view="content"><i class="fa-solid fa-file-lines"></i> Web Content</div>
 
-      <div class="snav-label">Marks &amp; Reports</div>
-      <div class="snav-item" data-view="marksheets"><i class="fa-solid fa-table"></i><span>Mark Sheets</span></div>
-      <div class="snav-item" data-view="classreports"><i class="fa-solid fa-graduation-cap"></i><span>Class Reports</span></div>
-      <div class="snav-item" data-view="reportnotes"><i class="fa-solid fa-comment-dots"></i><span>Report Notes</span></div>
+    <div class="snav-label">People</div>
+    <div class="snav-item" data-view="roster"><i class="fa-solid fa-upload"></i> Roster Upload</div>
+    <div class="snav-item" data-view="teachers"><i class="fa-solid fa-chalkboard-user"></i> Teachers</div>
+    <div class="snav-item" data-view="structure"><i class="fa-solid fa-sitemap"></i> Structure</div>
+    <div class="snav-item" data-view="phones"><i class="fa-solid fa-phone"></i> Phone Numbers</div>
 
-      <div class="snav-label">Administration</div>
-      <div class="snav-item" data-view="reportholds"><i class="fa-solid fa-lock"></i><span>Report Holds</span></div>
-      <div class="snav-item" data-view="discipline"><i class="fa-solid fa-book"></i><span>Discipline Ledger</span></div>
-      <div class="snav-item" data-view="bulkemail"><i class="fa-solid fa-envelope"></i><span>Bulk Email</span></div>
-      <div class="snav-item" data-view="auditlog"><i class="fa-solid fa-shield-halved"></i><span>Audit Log</span></div>
+    <div class="snav-label">Academics</div>
+    <div class="snav-item" data-view="terms"><i class="fa-solid fa-calendar-days"></i> Terms</div>
+    <div class="snav-item" data-view="types"><i class="fa-solid fa-list"></i> Assessment Types</div>
+    <div class="snav-item" data-view="scoring"><i class="fa-solid fa-sliders"></i> Scoring &amp; Grading</div>
 
-      <!-- Hardcoded Extras & Analytics Items for Native Router Compatibility -->
-      <div class="snav-label">Extras &amp; Analytics</div>
-      <div class="snav-item" data-view="ext-datasets"><i class="fa-solid fa-database"></i><span>Custom Datasets</span></div>
-      <div class="snav-item" data-view="ext-subjects"><i class="fa-solid fa-book-bookmark"></i><span>Custom Subjects</span></div>
-      <div class="snav-item" data-view="ext-promotion"><i class="fa-solid fa-graduation-cap"></i><span>Yearly Promotion</span></div>
-      <div class="snav-item" data-view="ext-materials"><i class="fa-solid fa-folder-open"></i><span>Class Materials</span></div>
-      <div class="snav-item" data-view="ext-compare"><i class="fa-solid fa-chart-column"></i><span>Term Comparison</span></div>
-    </nav>
-  </aside>
+    <div class="snav-label">Marks &amp; Reports</div>
+    <div class="snav-item" data-view="sheets"><i class="fa-solid fa-list-check"></i> Mark Sheets</div>
+    <div class="snav-item" data-view="reports"><i class="fa-solid fa-chart-line"></i> Class Reports</div>
+    <div class="snav-item" data-view="notes"><i class="fa-solid fa-comment-dots"></i> Report Notes</div>
 
-  <!-- Main Content with Hardcoded Native View Sections -->
-  <main class="main" id="mainContent">
-    <section class="view active" id="view-dashboard">
-      <div class="page-head">
-        <div>
-          <h1>Dashboard</h1>
-          <p id="dashSub">School administration overview</p>
+    <div class="snav-label">Administration</div>
+    <div class="snav-item" data-view="holds"><i class="fa-solid fa-lock"></i> Report Holds</div>
+    <div class="snav-item" data-view="ledger"><i class="fa-solid fa-book"></i> Discipline Ledger</div>
+    <div class="snav-item" data-view="email"><i class="fa-solid fa-envelope"></i> Bulk Email</div>
+    <div class="snav-item" data-view="audit"><i class="fa-solid fa-clipboard-list"></i> Audit Log</div>
+  </nav>
+</aside>
+
+<main class="main">
+
+<section class="view active" data-view="dashboard">
+  <div class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p id="dashSub">School overview</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="dashRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div id="wzDashBanner"></div>
+  <div class="stats" id="dashStats"></div>
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-bolt"></i> Quick actions</h2></div>
+    <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-outline" data-goto="roster" type="button"><i class="fa-solid fa-upload"></i> Upload roster</button>
+      <button class="btn btn-outline" data-goto="teachers" type="button"><i class="fa-solid fa-users"></i> Manage teachers</button>
+      <button class="btn btn-outline" data-goto="terms" type="button"><i class="fa-solid fa-calendar"></i> Manage terms</button>
+      <button class="btn btn-outline" data-goto="sheets" type="button"><i class="fa-solid fa-lock"></i> Mark sheets</button>
+      <button class="btn btn-outline" data-goto="reports" type="button"><i class="fa-solid fa-chart-line"></i> Class reports</button>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="profile">
+  <div class="page-head">
+    <div>
+      <h1>School Profile</h1>
+      <p>Basic information, contact details, theme colour and slug</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-school"></i> Basic info</h2></div>
+    <div class="card-body">
+      <form id="profileForm">
+        <div class="grid2">
+          <div class="field">
+            <label for="pfName">School name</label>
+            <input type="text" id="pfName" maxlength="200" required>
+            <div class="err"></div>
+          </div>
+          <div class="field">
+            <label for="pfPhone">Phone <span class="hint">optional</span></label>
+            <input type="tel" id="pfPhone" maxlength="30">
+          </div>
+          <div class="field">
+            <label for="pfEmail">Email <span class="hint">optional</span></label>
+            <input type="email" id="pfEmail" maxlength="200">
+          </div>
+          <div class="field">
+            <label for="pfLocation">Location <span class="hint">optional</span></label>
+            <input type="text" id="pfLocation" maxlength="300">
+          </div>
         </div>
-        <button class="btn btn-outline" id="dashRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        <div class="field">
+          <label>Theme colour</label>
+          <div class="color-picker" id="colorPicker">
+            <div class="color-swatch" data-color="#3570BC" style="background:#3570BC" title="#3570BC"></div>
+            <div class="color-swatch" data-color="#008E34" style="background:#008E34" title="#008E34"></div>
+            <div class="color-swatch" data-color="#D7040A" style="background:#D7040A" title="#D7040A"></div>
+            <div class="color-swatch" data-color="#F9B515" style="background:#F9B515" title="#F9B515"></div>
+            <div class="color-swatch" data-color="#1A1A1A" style="background:#1A1A1A" title="#1A1A1A"></div>
+            <div class="color-swatch" data-color="#8B5CF6" style="background:#8B5CF6" title="#8B5CF6"></div>
+          </div>
+          <div class="color-input">
+            <input type="color" id="pfColor" value="#3570BC">
+            <input type="text" id="pfColorText" value="#3570BC" maxlength="7">
+          </div>
+        </div>
+        <button class="btn btn-primary" id="pfSave" type="submit">
+          <span class="spinner"></span><span class="btn-label">Save changes</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2><i class="fa-solid fa-link"></i> School slug</h2>
+      <span class="sub">Once set, cannot be changed</span>
+    </div>
+    <div class="card-body">
+      <div id="slugSection"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="appearance">
+  <div class="page-head">
+    <div>
+      <h1>Appearance</h1>
+      <p>Logo and hero images</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-image"></i> School logo</h2></div>
+    <div class="card-body">
+      <img id="logoPreview" class="logo-preview" src="/logo.png" alt="Logo">
+      <div class="dropzone" id="logoDrop" style="max-width:400px">
+        <i class="fa-solid fa-cloud-arrow-up big"></i>
+        <h3>Upload logo</h3>
+        <p>PNG, JPG or SVG — max 5 MB</p>
+        <input type="file" id="logoInput" accept="image/*">
       </div>
-      <div id="dashContent">
-        <div class="skel h45"></div>
-        <div class="stats">
-          <div class="stat"><div class="skel h40"></div></div>
-          <div class="stat"><div class="skel h40"></div></div>
-          <div class="stat"><div class="skel h40"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2><i class="fa-solid fa-images"></i> Hero images</h2>
+      <span class="sub" id="heroCount"></span>
+    </div>
+    <div class="card-body">
+      <div class="dropzone" id="heroDrop">
+        <i class="fa-solid fa-cloud-arrow-up big"></i>
+        <h3>Add hero image</h3>
+        <p>Wide landscape photos work best — max 10 MB, up to 5 images</p>
+        <input type="file" id="heroInput" accept="image/*">
+      </div>
+      <div id="heroGrid" class="img-grid" style="margin-top:20px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="content">
+  <div class="page-head">
+    <div>
+      <h1>Web Content</h1>
+      <p>Custom sections shown on your school's public page</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary btn-sm" id="addSectionBtn" type="button"><i class="fa-solid fa-plus"></i> Add section</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body" id="sectionsList">
+      <div class="empty"><i class="fa-solid fa-file-lines"></i><h3>No sections yet</h3><p>Add sections like About Us, Admissions, Fees, Contact.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="roster">
+  <div class="page-head">
+    <div>
+      <h1>Roster Upload</h1>
+      <p>Upload student or teacher rosters as Excel/CSV</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-file-excel"></i> Upload roster</h2></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="field">
+          <label for="rsType">Roster type</label>
+          <select id="rsType">
+            <option value="student">Students</option>
+            <option value="teacher">Teachers</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rsClass">Class <span class="hint">students only</span></label>
+          <select id="rsClass"></select>
+        </div>
+        <div class="field">
+          <label for="rsStream">Stream <span class="hint">optional</span></label>
+          <input type="text" id="rsStream" maxlength="60">
         </div>
       </div>
-    </section>
+      <div class="dropzone" id="rsDrop">
+        <i class="fa-solid fa-cloud-arrow-up big"></i>
+        <h3>Drop Excel or CSV here</h3>
+        <p>.xlsx, .xls, .xlsm, .csv — max 25 MB</p>
+        <input type="file" id="rsInput" accept=".xlsx,.xls,.xlsm,.csv">
+      </div>
+      <div id="rsFileInfo" style="margin-top:14px"></div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-green" id="rsUploadBtn" type="button" disabled>
+          <span class="spinner"></span><span class="btn-label">Upload and process</span>
+        </button>
+        <button class="btn btn-outline" id="rsClearBtn" type="button" disabled>Clear</button>
+      </div>
+      <div id="rsResult" style="margin-top:16px"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="card-head">
+      <h2><i class="fa-solid fa-table-list"></i> Student rosters</h2>
+      <button class="btn btn-outline btn-sm" id="rsListRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+    <div class="card-body">
+      <div id="rsLists"></div>
+    </div>
+  </div>
+</section>
 
-    <!-- Standard Views handled by school-admin.js -->
-    <section class="view" id="view-profile"><div class="page-head"><h1>School Profile</h1></div><div class="card"><div class="card-body" id="profileContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-appearance"><div class="page-head"><h1>Appearance</h1></div><div class="card"><div class="card-body" id="appearanceContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-webcontent"><div class="page-head"><h1>Web Content</h1></div><div class="card"><div class="card-body" id="webContentContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-roster"><div class="page-head"><h1>Roster Upload</h1></div><div class="card"><div class="card-body" id="rosterContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-teachers"><div class="page-head"><h1>Teachers Management</h1></div><div class="card"><div class="card-body" id="teachersContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-structure"><div class="page-head"><h1>School Structure</h1></div><div class="card"><div class="card-body" id="structureContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-phones"><div class="page-head"><h1>Phone Numbers</h1></div><div class="card"><div class="card-body" id="phonesContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-terms"><div class="page-head"><h1>Academic Terms</h1></div><div class="card"><div class="card-body" id="termsContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-assessmenttypes"><div class="page-head"><h1>Assessment Types</h1></div><div class="card"><div class="card-body" id="assessmentTypesContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-scoring"><div class="page-head"><h1>Scoring &amp; Grading</h1></div><div class="card"><div class="card-body" id="scoringContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-marksheets"><div class="page-head"><h1>Mark Sheets</h1></div><div class="card"><div class="card-body" id="markSheetsContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-classreports"><div class="page-head"><h1>Class Reports</h1></div><div class="card"><div class="card-body" id="classReportsContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-reportnotes"><div class="page-head"><h1>Report Notes</h1></div><div class="card"><div class="card-body" id="reportNotesContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-reportholds"><div class="page-head"><h1>Report Holds</h1></div><div class="card"><div class="card-body" id="reportHoldsContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-discipline"><div class="page-head"><h1>Discipline Ledger</h1></div><div class="card"><div class="card-body" id="disciplineContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-bulkemail"><div class="page-head"><h1>Bulk Email</h1></div><div class="card"><div class="card-body" id="bulkEmailContent"><div class="skel h60"></div></div></div></section>
-    <section class="view" id="view-auditlog"><div class="page-head"><h1>Audit Log</h1></div><div class="card"><div class="card-body" id="auditLogContent"><div class="skel h60"></div></div></div></section>
+<section class="view" data-view="teachers">
+  <div class="page-head">
+    <div>
+      <h1>Teachers</h1>
+      <p>Assignments, class teacher, permissions</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="teachersRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight">
+      <div id="teachersList"></div>
+    </div>
+  </div>
+</section>
 
-    <!-- Hardcoded Extras View Sections for Native Router Compatibility -->
-    <section class="view" id="view-ext-datasets">
-      <div class="page-head"><div><h1>Custom Data Sets</h1><p>Managed via Edutrace Extras Extension</p></div></div>
-      <div class="card"><div class="card-body" id="ext-datasets-content"><div class="skel h80"></div></div></div>
-    </section>
-    <section class="view" id="view-ext-subjects">
-      <div class="page-head"><div><h1>Custom Subjects Management</h1><p>Managed via Edutrace Extras Extension</p></div></div>
-      <div class="card"><div class="card-body" id="ext-subjects-content"><div class="skel h80"></div></div></div>
-    </section>
-    <section class="view" id="view-ext-promotion">
-      <div class="page-head"><div><h1>Yearly Student Auto-Promotion</h1><p>Managed via Edutrace Extras Extension</p></div></div>
-      <div class="card"><div class="card-body" id="ext-promotion-content"><div class="skel h80"></div></div></div>
-    </section>
-    <section class="view" id="view-ext-materials">
-      <div class="page-head"><div><h1>Class Materials (PDFs)</h1><p>Managed via Edutrace Extras Extension</p></div></div>
-      <div class="card"><div class="card-body" id="ext-materials-content"><div class="skel h80"></div></div></div>
-    </section>
-    <section class="view" id="view-ext-compare">
-      <div class="page-head"><div><h1>Term Performance Comparison</h1><p>Managed via Edutrace Extras Extension</p></div></div>
-      <div class="card"><div class="card-body" id="ext-compare-content"><div class="skel h80"></div></div></div>
-    </section>
-  </main>
+<section class="view" data-view="structure">
+  <div class="page-head">
+    <div>
+      <h1>School Structure</h1>
+      <p>Classes, streams and subjects derived from the student roster</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="structRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body" id="structContent"></div>
+  </div>
+</section>
+
+<section class="view" data-view="phones">
+  <div class="page-head">
+    <div>
+      <h1>Phone Numbers</h1>
+      <p>Contact numbers entered by teachers, students and parents</p>
+    </div>
+  </div>
+  <div class="view-toolbar">
+    <select id="phRole" aria-label="Filter by role">
+      <option value="">All roles</option>
+      <option value="teacher">Teachers</option>
+      <option value="student">Students</option>
+      <option value="parent">Parents</option>
+    </select>
+    <input type="search" id="phSearch" placeholder="Search name, phone or child…" maxlength="100" aria-label="Search numbers">
+    <button class="btn btn-outline btn-sm" id="phRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+  </div>
+  <div class="card">
+    <div id="phList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="terms">
+  <div class="page-head">
+    <div>
+      <h1>Terms</h1>
+      <p>Create and manage academic terms</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary btn-sm" id="addTermBtn" type="button"><i class="fa-solid fa-plus"></i> Add term</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight">
+      <div id="termsList"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="types">
+  <div class="page-head">
+    <div>
+      <h1>Assessment Types</h1>
+      <p>BOT, CA, AOI, Midterm, Endterm and custom types</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary btn-sm" id="addTypeBtn" type="button"><i class="fa-solid fa-plus"></i> Add type</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight">
+      <div id="typesList"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="scoring">
+  <div class="page-head">
+    <div>
+      <h1>Scoring &amp; Grading</h1>
+      <p>Percentage or CBC, max scores, grading scale, publish rank</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-sliders"></i> Scoring mode</h2></div>
+    <div class="card-body">
+      <div class="field">
+        <label>Mode</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label class="check" style="margin:0">
+            <input type="radio" name="scoringMode" value="percentage">
+            <span><b>Percentage</b> — weighted assessments, 0-100 scale</span>
+          </label>
+          <label class="check" style="margin:0">
+            <input type="radio" name="scoringMode" value="cbc">
+            <span><b>CBC</b> — competency levels (NCDC)</span>
+          </label>
+        </div>
+      </div>
+      <div id="cbcLevelsWrap" style="display:none;margin-top:16px">
+        <label style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">CBC Levels</label>
+        <div id="cbcLevelsList" style="margin-top:8px"></div>
+        <button class="btn btn-outline btn-sm" id="addCbcLevel" type="button" style="margin-top:8px"><i class="fa-solid fa-plus"></i> Add level</button>
+      </div>
+      <button class="btn btn-primary" id="scoringSave" type="button" style="margin-top:16px">
+        <span class="spinner"></span><span class="btn-label">Save scoring settings</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card" id="maxScoresCard">
+    <div class="card-head"><h2><i class="fa-solid fa-hashtag"></i> Max scores (per term)</h2></div>
+    <div class="card-body" id="maxScoresBody"></div>
+  </div>
+
+  <div class="card" id="gradingScaleCard">
+    <div class="card-head"><h2><i class="fa-solid fa-award"></i> Grading scale</h2></div>
+    <div class="card-body" id="gradingScaleBody"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-ranking-star"></i> Publish rank</h2></div>
+    <div class="card-body">
+      <label class="check">
+        <input type="checkbox" id="publishRank">
+        <span>Show class position on report cards to students and parents</span>
+      </label>
+      <button class="btn btn-primary btn-sm" id="rankSave" type="button"><span class="spinner"></span><span class="btn-label">Save</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="sheets">
+  <div class="page-head">
+    <div>
+      <h1>Mark Sheets</h1>
+      <p>View, lock and reopen teacher sheets</p>
+    </div>
+    <div class="head-actions">
+      <select id="sheetsTerm" style="padding:8px 12px;border:2px solid var(--border);font-size:.85rem;font-weight:600;background:#fff"></select>
+      <button class="btn btn-outline btn-sm" id="sheetsRefresh" type="button"><i class="fa-solid fa-rotate"></i></button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight" id="sheetsList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="reports">
+  <div class="page-head">
+    <div>
+      <h1>Class Reports</h1>
+      <p>View and export class results</p>
+    </div>
+    <div class="head-actions">
+      <select id="repClass" style="padding:8px 12px;border:2px solid var(--border);font-size:.85rem;font-weight:600;background:#fff"></select>
+      <input type="text" id="repStream" placeholder="Stream" maxlength="60" style="padding:8px 12px;border:2px solid var(--border);font-size:.85rem;width:120px">
+      <select id="repTerm" style="padding:8px 12px;border:2px solid var(--border);font-size:.85rem;font-weight:600;background:#fff"></select>
+      <button class="btn btn-primary btn-sm" id="repLoad" type="button"><i class="fa-solid fa-search"></i> Load</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight" id="repList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="notes">
+  <div class="page-head">
+    <div>
+      <h1>Report Notes</h1>
+      <p>Class teacher comments and conduct (usually written by class teachers)</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <h2><i class="fa-solid fa-user-graduate"></i> Select a student</h2>
+      <div class="head-actions" style="margin:0">
+        <select id="noteClass" style="padding:8px 12px;border:2px solid var(--border);font-size:.85rem;font-weight:600;background:#fff"></select>
+        <input type="text" id="noteStream" placeholder="Stream" maxlength="60" style="padding:8px 12px;border:2px solid var(--border);font-size:.85rem;width:110px">
+        <button class="btn btn-primary btn-sm" id="noteLoad" type="button"><i class="fa-solid fa-search"></i> Load</button>
+      </div>
+    </div>
+    <div class="card-body tight" id="notesList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="holds">
+  <div class="page-head">
+    <div>
+      <h1>Report Holds</h1>
+      <p>Withhold reports for fee arrears or other reasons</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary btn-sm" id="addHoldBtn" type="button"><i class="fa-solid fa-plus"></i> Add hold</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight" id="holdsList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="ledger">
+  <div class="page-head">
+    <div>
+      <h1>Discipline Ledger</h1>
+      <p>Permanent record of offences, punishments and student commitments</p>
+    </div>
+  </div>
+  <div class="view-toolbar">
+    <select id="ledClass" aria-label="Select class">
+      <option value="">Select class</option>
+    </select>
+    <span class="toolbar-spacer"></span>
+    <button class="btn btn-primary btn-sm" id="ledAdd" type="button"><i class="fa-solid fa-plus"></i> New entry</button>
+    <button class="btn btn-outline btn-sm" id="ledLoad" type="button"><i class="fa-solid fa-search"></i> Load</button>
+  </div>
+  <div class="card">
+    <div id="ledList"></div>
+  </div>
+</section>
+
+<section class="view" data-view="email">
+  <div class="page-head">
+    <div>
+      <h1>Bulk Email</h1>
+      <p>Send messages to students, parents or teachers</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2><i class="fa-solid fa-envelope"></i> Compose</h2></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="field">
+          <label for="emGroup">Recipient group</label>
+          <select id="emGroup">
+            <option value="students">Students</option>
+            <option value="parents">Parents</option>
+            <option value="teachers">Teachers</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="emSubject">Subject</label>
+          <input type="text" id="emSubject" maxlength="200" placeholder="Message from your school">
+        </div>
+      </div>
+      <div class="field">
+        <label for="emBody">Message</label>
+        <textarea id="emBody" rows="8" placeholder="Write your message here..." maxlength="5000"></textarea>
+      </div>
+      <button class="btn btn-primary" id="emSend" type="button">
+        <span class="spinner"></span><span class="btn-label">Send message</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="view" data-view="audit">
+  <div class="page-head">
+    <div>
+      <h1>Audit Log</h1>
+      <p>Recent activity in your school</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-outline btn-sm" id="auditRefresh" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body tight" id="auditList"></div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ===== Setup Wizard Overlay ===== -->
+<div class="wizard-overlay" id="wizardOverlay" role="dialog" aria-modal="true" aria-label="Setup wizard">
+  <div class="wizard-head">
+    <button class="wz-close" id="wizardClose" type="button" aria-label="Close wizard"><i class="fa-solid fa-xmark"></i></button>
+    <span class="wz-title" id="wizardTitle">School Setup</span>
+    <span class="wz-step" id="wizardStepLabel">Step 1 of 8</span>
+  </div>
+  <div class="wizard-progress"><div class="bar" id="wizardBar"></div></div>
+  <div class="wizard-body" id="wizardBody">
+
+    <!-- Step 1: Identity -->
+    <div class="wizard-step" data-wz-step="1">
+      <h2>School identity</h2>
+      <p class="lead">Logo, name, motto and vision. Only the school name is required.</p>
+      <div class="field">
+        <label>School logo <span class="hint">optional</span></label>
+        <img id="wzLogoPreview" class="logo-preview" src="/logo.png" alt="Logo preview">
+        <div class="dropzone" id="wzLogoDrop" style="max-width:400px">
+          <i class="fa-solid fa-cloud-arrow-up big"></i>
+          <h3>Upload logo</h3>
+          <p>PNG, JPG or SVG — max 5 MB</p>
+          <input type="file" id="wzLogoInput" accept="image/*">
+        </div>
+      </div>
+      <div class="field">
+        <label for="wzName">School name <span class="hint">required to finish</span></label>
+        <input type="text" id="wzName" maxlength="200" placeholder="e.g. St. Mary's Secondary School">
+      </div>
+      <div class="field">
+        <label for="wzMotto">Motto <span class="hint">optional</span></label>
+        <input type="text" id="wzMotto" maxlength="200">
+      </div>
+      <div class="field">
+        <label for="wzVision">Vision <span class="hint">optional</span></label>
+        <textarea id="wzVision" rows="3" maxlength="1000"></textarea>
+      </div>
+    </div>
+
+    <!-- Step 2: Students -->
+    <div class="wizard-step" data-wz-step="2">
+      <h2>Student roster</h2>
+      <p class="lead">Upload students from an Excel or CSV file. You can skip and do this later.</p>
+      <div class="field">
+        <label for="wzStudentClass">Class</label>
+        <select id="wzStudentClass"></select>
+      </div>
+      <div class="field">
+        <label for="wzStudentStream">Stream <span class="hint">optional</span></label>
+        <input type="text" id="wzStudentStream" maxlength="60">
+      </div>
+      <div class="dropzone" id="wzStudentDrop">
+        <i class="fa-solid fa-cloud-arrow-up big"></i>
+        <h3>Drop student roster here</h3>
+        <p>.xlsx, .xls, .xlsm, .csv — max 25 MB</p>
+        <input type="file" id="wzStudentInput" accept=".xlsx,.xls,.xlsm,.csv">
+      </div>
+      <div id="wzStudentFileInfo" style="margin-top:14px"></div>
+      <div style="margin-top:14px">
+        <button class="btn btn-green" id="wzStudentUpload" type="button" disabled>
+          <span class="spinner"></span><span class="btn-label">Upload students</span>
+        </button>
+      </div>
+      <div id="wzStudentResult" style="margin-top:14px"></div>
+      <button class="wizard-skip" id="wzStudentSkip" type="button" style="margin-top:12px">Skip this step</button>
+    </div>
+
+    <!-- Step 3: Teachers -->
+    <div class="wizard-step" data-wz-step="3">
+      <h2>Teacher roster</h2>
+      <p class="lead">Upload teachers from an Excel or CSV file. You can skip and do this later.</p>
+      <div class="dropzone" id="wzTeacherDrop">
+        <i class="fa-solid fa-cloud-arrow-up big"></i>
+        <h3>Drop teacher roster here</h3>
+        <p>.xlsx, .xls, .xlsm, .csv — max 25 MB</p>
+        <input type="file" id="wzTeacherInput" accept=".xlsx,.xls,.xlsm,.csv">
+      </div>
+      <div id="wzTeacherFileInfo" style="margin-top:14px"></div>
+      <div style="margin-top:14px">
+        <button class="btn btn-green" id="wzTeacherUpload" type="button" disabled>
+          <span class="spinner"></span><span class="btn-label">Upload teachers</span>
+        </button>
+      </div>
+      <div id="wzTeacherResult" style="margin-top:14px"></div>
+      <button class="wizard-skip" id="wzTeacherSkip" type="button" style="margin-top:12px">Skip this step</button>
+    </div>
+
+    <!-- Step 4: Subjects -->
+    <div class="wizard-step" data-wz-step="4">
+      <h2>Subjects</h2>
+      <p class="lead">Compulsory subjects are already ticked and locked. Tick electives for each band.</p>
+
+      <div class="wz-subject-group">
+        <h3>S1-S2 (Senior 1 &amp; 2)</h3>
+        <div class="locked-note"><i class="fa-solid fa-lock"></i> Compulsory: English, Mathematics, History, Geography, Physics, Biology, Chemistry</div>
+        <div class="wz-check-grid" id="wzElectivesS1S2"></div>
+      </div>
+
+      <div class="wz-subject-group">
+        <h3>S3-S4 (Senior 3 &amp; 4)</h3>
+        <div class="locked-note"><i class="fa-solid fa-lock"></i> Compulsory: English, Mathematics, History, Geography, Physics, Biology, Chemistry</div>
+        <div class="wz-check-grid" id="wzElectivesS3S4"></div>
+      </div>
+
+      <div class="wz-subject-group">
+        <h3>S5-S6 (Senior 5 &amp; 6)</h3>
+        <div class="locked-note"><i class="fa-solid fa-lock"></i> Compulsory: General Paper</div>
+        <div class="wz-check-grid" id="wzElectivesS5S6"></div>
+      </div>
+    </div>
+
+    <!-- Step 5: Term -->
+    <div class="wizard-step" data-wz-step="5">
+      <h2>Current term</h2>
+      <p class="lead">Set the current term so marks, reports and schedules know where you are.</p>
+      <div class="grid2">
+        <div class="field">
+          <label for="wzTermName">Term name</label>
+          <input type="text" id="wzTermName" maxlength="60" placeholder="e.g. Term 1">
+        </div>
+        <div class="field">
+          <label for="wzTermYear">Year</label>
+          <input type="number" id="wzTermYear" min="2000" max="2100" value="2025">
+        </div>
+        <div class="field">
+          <label for="wzTermStart">Start date</label>
+          <input type="date" id="wzTermStart">
+        </div>
+        <div class="field">
+          <label for="wzTermEnd">End date</label>
+          <input type="date" id="wzTermEnd">
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="wzTermCurrent" checked><span>Set as current term</span></label>
+      <button class="btn btn-primary" id="wzTermSave" type="button" style="margin-top:8px">
+        <span class="spinner"></span><span class="btn-label">Save term</span>
+      </button>
+    </div>
+
+    <!-- Step 6: Assign teachers -->
+    <div class="wizard-step" data-wz-step="6">
+      <h2>Assign teachers</h2>
+      <p class="lead">Pick a class to see its subjects, then choose a teacher beside each subject.</p>
+      <div class="field">
+        <label for="wzAssignClass">Class</label>
+        <select id="wzAssignClass"></select>
+      </div>
+      <div id="wzAssignList"></div>
+      <button class="btn btn-primary" id="wzAssignSave" type="button" style="margin-top:16px">
+        <span class="spinner"></span><span class="btn-label">Save assignments</span>
+      </button>
+    </div>
+
+    <!-- Step 7: School page -->
+    <div class="wizard-step" data-wz-step="7">
+      <h2>School page</h2>
+      <p class="lead">Hero images, head teacher and school leaders. All optional.</p>
+
+      <div class="field">
+        <label>Hero images</label>
+        <div class="dropzone" id="wzHeroDrop">
+          <i class="fa-solid fa-cloud-arrow-up big"></i>
+          <h3>Add hero image</h3>
+          <p>Wide landscape photos work best — max 10 MB, up to 5 images</p>
+          <input type="file" id="wzHeroInput" accept="image/*">
+        </div>
+        <div id="wzHeroGrid" class="wz-img-grid"></div>
+      </div>
+
+      <div class="field">
+        <label for="wzHeadTeacher">Head teacher name <span class="hint">optional</span></label>
+        <input type="text" id="wzHeadTeacher" maxlength="200">
+      </div>
+
+      <div class="field">
+        <label>School leaders <span class="hint">optional</span></label>
+        <div id="wzLeadersList"></div>
+        <button class="btn btn-outline btn-sm" id="wzAddLeader" type="button" style="margin-top:8px"><i class="fa-solid fa-plus"></i> Add leader</button>
+      </div>
+
+      <button class="btn btn-primary" id="wzPageSave" type="button" style="margin-top:8px">
+        <span class="spinner"></span><span class="btn-label">Save page details</span>
+      </button>
+    </div>
+
+    <!-- Step 8: Finish -->
+    <div class="wizard-step" data-wz-step="8">
+      <h2>You're all set</h2>
+      <p class="lead">Here's a summary of what was completed and what you skipped.</p>
+      <ul class="wz-summary-list" id="wzSummaryList"></ul>
+      <div class="wz-optional-note" id="wzOptionalNote" style="display:none"></div>
+    </div>
+
+  </div>
+  <div class="wizard-foot">
+    <button class="btn btn-outline" id="wizardBack" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <button class="btn btn-primary" id="wizardNext" type="button">Next <i class="fa-solid fa-arrow-right"></i></button>
+  </div>
 </div>
 
 <div class="modal-back" id="modalBack">
-  <div class="modal" id="modalBox">
+  <div class="modal" id="modal">
     <div class="modal-head">
-      <h2 id="modalTitle">Modal</h2>
-      <button class="close" id="modalClose" type="button"><i class="fa-solid fa-xmark"></i></button>
+      <h2 id="modalTitle">Title</h2>
+      <button class="close" id="modalClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-foot" id="modalFoot"></div>
   </div>
 </div>
 
+<div class="confirm-back" id="confirmBack">
+  <div class="confirm">
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmMsg">Are you sure?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-outline" id="confirmNo" type="button">Cancel</button>
+      <button class="btn btn-red" id="confirmYes" type="button">Confirm</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="cimgCamera" accept="image/*" capture="environment" hidden>
+<input type="file" id="cimgGallery" accept="image/*" hidden>
+
+<div class="cimg-viewer" id="imgViewer" role="dialog" aria-label="Commitment photo">
+  <button class="cimg-viewer-close" id="imgViewerClose" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  <img id="imgViewerImg" alt="Commitment photo">
+</div>
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- Core Admin Scripts & Integrated Extras Worker Logic -->
 <script type="module" src="school-admin.js"></script>
 <script type="module" src="ledger-images.js"></script>
-<script>
-// ================================================================
-// edutraceug - Hardcoded Extras Integration Logic
-// ================================================================
-(function () {
-  "use strict";
-  const EXTRAS_BASE = "https://edutraceug-extras-worker.anubisdigital114-9df.workers.dev";
-  const ES = { schoolId: null };
-
-  const $ = (id) => document.getElementById(id);
-  const q = (sel, root = document) => root.querySelector(sel);
-  const qa = (sel, root = document) => [...root.querySelectorAll(sel)];
-
-  function esc(s) {
-    return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
-  }
-
-  function toast(msg, kind = "info", ms = 4000) {
-    const wrap = $("toastWrap") || document.body;
-    const icons = { success: "fa-circle-check", error: "fa-circle-exclamation", warn: "fa-triangle-exclamation", info: "fa-circle-info" };
-    const t = document.createElement("div");
-    t.className = `toast ${kind}`;
-    t.innerHTML = `<i class="fa-solid ${icons[kind] || icons.info}"></i><span>${esc(msg)}</span>`;
-    wrap.appendChild(t);
-    setTimeout(() => {
-      t.style.opacity = "0";
-      t.style.transition = "opacity .3s";
-      setTimeout(() => t.remove(), 300);
-    }, ms);
-  }
-
-  async function getAuthToken() {
-    try {
-      if (window.firebase && window.firebase.auth) {
-        const u = window.firebase.auth().currentUser;
-        if (u) return await u.getIdToken();
-      }
-      if (window.auth && typeof window.auth.currentUser?.getIdToken === "function") {
-        return await window.auth.currentUser.getIdToken();
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  async function apiExtras(path, options = {}) {
-    const token = await getAuthToken();
-    const headers = {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {})
-    };
-    if (options.body && !(options.body instanceof FormData) && typeof options.body === "object") {
-      headers["Content-Type"] = "application/json";
-      options.body = JSON.stringify(options.body);
-    }
-    const res = await fetch(`${EXTRAS_BASE}${path}`, { ...options, headers });
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || `Request failed with status ${res.status}`);
-    }
-    const ct = res.headers.get("content-type") || "";
-    if (ct.includes("application/json")) return res.json();
-    return res.text();
-  }
-
-  function initExtrasIntegration() {
-    if (window.S && window.S.schoolId) {
-      ES.schoolId = window.S.schoolId;
-    } else {
-      const parts = window.location.hostname.split(".");
-      if (parts.length > 2 && parts[0] !== "www") {
-        ES.schoolId = parts[0];
-      }
-    }
-
-    // Listen to sidebar clicks so when an extras tab is selected, its respective data loader triggers
-    qa(".snav-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        const view = item.dataset.view;
-        if (!view || !view.startsWith("ext-")) return;
-
-        if (window.S && window.S.schoolId) ES.schoolId = window.S.schoolId;
-        if (!ES.schoolId) {
-          toast("School context missing", "error");
-          return;
-        }
-
-        if (view === "ext-datasets") renderDatasetsView();
-        if (view === "ext-subjects") renderSubjectsView();
-        if (view === "ext-promotion") renderPromotionView();
-        if (view === "ext-materials") renderMaterialsView();
-        if (view === "ext-compare") renderCompareView();
-      });
-    });
-  }
-
-  async function renderSubjectsView() {
-    const c = $("ext-subjects-content");
-    if (!c) return;
-    c.innerHTML = `<div class="skel h20 w50"></div><div class="skel h80"></div>`;
-    try {
-      const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/subjects`);
-      const subjects = data.subjects || [];
-      c.innerHTML = `
-        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-          <input type="text" id="extSubName" placeholder="New subject name" style="padding:11px 12px;border:2px solid var(--border);flex:1;min-width:200px">
-          <button class="btn btn-primary" id="extSubAddBtn" type="button"><i class="fa-solid fa-plus"></i> Add Subject</button>
-        </div>
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead><tr><th>Subject Name</th><th style="text-align:right">Actions</th></tr></thead>
-            <tbody>
-              ${subjects.map((s) => `
-                <tr>
-                  <td><b>${esc(s.name)}</b></td>
-                  <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-sub="${esc(s.id)}" type="button"><i class="fa-solid fa-trash"></i> Delete</button></td>
-                </tr>
-              `).join("") || '<tr><td colspan="2" style="text-align:center;color:var(--muted)">No custom subjects found.</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-      `;
-      const addBtn = $("extSubAddBtn");
-      if (addBtn) {
-        addBtn.onclick = async () => {
-          const val = $("extSubName") ? $("extSubName").value.trim() : "";
-          if (!val) return toast("Enter subject name", "warn");
-          try {
-            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/subjects`, { method: "POST", body: { name: val } });
-            toast("Subject added", "success");
-            renderSubjectsView();
-          } catch (e) { toast(e.message, "error"); }
-        };
-      }
-      qa("[data-del-sub]", c).forEach((btn) => {
-        btn.onclick = async () => {
-          if (!confirm("Delete this subject?")) return;
-          try {
-            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/subjects/${encodeURIComponent(btn.dataset.delSub)}`, { method: "DELETE" });
-            toast("Subject deleted", "success");
-            renderSubjectsView();
-          } catch (e) { toast(e.message, "error"); }
-        };
-      });
-    } catch (err) {
-      c.innerHTML = `<div class="empty"><h3>Failed to load subjects</h3><p>${esc(err.message)}</p></div>`;
-    }
-  }
-
-  async function renderPromotionView() {
-    const c = $("ext-promotion-content");
-    if (!c) return;
-    c.innerHTML = `<div class="skel h40"></div><div class="skel h80"></div>`;
-    try {
-      const status = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/status`);
-      const run = status.run || {};
-      c.innerHTML = `
-        <div style="padding:14px;background:var(--light);border:1px solid var(--border);margin-bottom:16px;font-size:.9rem">
-          <div><b>Target Academic Year:</b> ${status.year}</div>
-          <div style="margin-top:4px"><b>Auto-Promote Cron Enabled:</b> ${status.autoPromote ? "Yes" : "No"}</div>
-          <div style="margin-top:4px"><b>Last Run Status:</b> ${run.status ? `<span class="pill blue">${esc(run.status)}</span>` : "Not run yet"}</div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-outline" id="extPromoPreviewBtn" type="button"><i class="fa-solid fa-eye"></i> Preview Promotion</button>
-          <button class="btn btn-primary" id="extPromoRunBtn" type="button"><i class="fa-solid fa-play"></i> Run Auto-Promotion</button>
-          <button class="btn btn-red" id="extPromoUndoBtn" type="button"><i class="fa-solid fa-rotate-left"></i> Undo Promotion</button>
-        </div>
-        <div id="extPromoPreviewResult" style="margin-top:16px"></div>
-      `;
-      const prevBtn = $("extPromoPreviewBtn");
-      if (prevBtn) {
-        prevBtn.onclick = async () => {
-          const resBox = $("extPromoPreviewResult");
-          if (!resBox) return;
-          resBox.innerHTML = `Loading preview...`;
-          try {
-            const prev = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/preview`);
-            resBox.innerHTML = `<h4>Preview Summary (Moving ${prev.willMove} students)</h4>`;
-          } catch (e) { resBox.innerHTML = `<span style="color:var(--red)">${esc(e.message)}</span>`; }
-        };
-      }
-      const runBtn = $("extPromoRunBtn");
-      if (runBtn) {
-        runBtn.onclick = async () => {
-          if (!confirm("Run yearly auto-promotion now?")) return;
-          try {
-            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/run`, { method: "POST" });
-            toast("Promotion completed", "success");
-            renderPromotionView();
-          } catch (e) { toast(e.message, "error"); }
-        };
-      }
-      const undoBtn = $("extPromoUndoBtn");
-      if (undoBtn) {
-        undoBtn.onclick = async () => {
-          if (!confirm("Revert the last promotion execution?")) return;
-          try {
-            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/promotion/undo`, { method: "POST" });
-            toast("Promotion undone", "success");
-            renderPromotionView();
-          } catch (e) { toast(e.message, "error"); }
-        };
-      }
-    } catch (err) {
-      c.innerHTML = `<div class="empty"><h3>Failed to load promotion status</h3><p>${esc(err.message)}</p></div>`;
-    }
-  }
-
-  async function renderMaterialsView() {
-    const c = $("ext-materials-content");
-    if (!c) return;
-    c.innerHTML = `<div class="skel h20 w50"></div><div class="skel h80"></div>`;
-    try {
-      const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/materials`);
-      const list = data.materials || [];
-      c.innerHTML = `
-        <div style="margin-bottom:20px;padding:16px;border:1px solid var(--border);background:var(--light)">
-          <h4 style="font-size:.95rem;font-weight:800;margin-bottom:12px">Upload PDF Material</h4>
-          <form id="extMaterialForm" style="display:grid;gap:12px">
-            <input type="text" id="extMatTitle" placeholder="Document Title" required style="padding:11px 12px;border:2px solid var(--border)">
-            <input type="file" id="extMatFile" accept="application/pdf" required>
-            <button type="submit" class="btn btn-primary" style="width:fit-content"><i class="fa-solid fa-upload"></i> Upload Material</button>
-          </form>
-        </div>
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead><tr><th>Title</th><th>File</th><th style="text-align:right">Actions</th></tr></thead>
-            <tbody>
-              ${list.map((m) => `
-                <tr>
-                  <td><b>${esc(m.title)}</b></td>
-                  <td><a href="${EXTRAS_BASE}/schools/${encodeURIComponent(ES.schoolId)}/materials/${encodeURIComponent(m.id)}/file" target="_blank" style="color:var(--primary);font-weight:700">PDF</a></td>
-                  <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-mat="${esc(m.id)}" type="button"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>
-              `).join("") || '<tr><td colspan="3" style="text-align:center;color:var(--muted)">No class materials uploaded yet.</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-      `;
-      const form = $("extMaterialForm");
-      if (form) {
-        form.onsubmit = async (e) => {
-          e.preventDefault();
-          const fileInput = $("extMatFile");
-          if (!fileInput || !fileInput.files[0]) return;
-          const fd = new FormData();
-          fd.append("file", fileInput.files[0]);
-          fd.append("title", $("extMatTitle") ? $("extMatTitle").value.trim() : "");
-          try {
-            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/materials`, { method: "POST", body: fd });
-            toast("Material uploaded successfully", "success");
-            renderMaterialsView();
-          } catch (err) { toast(err.message, "error"); }
-        };
-      }
-      qa("[data-del-mat]", c).forEach((btn) => {
-        btn.onclick = async () => {
-          if (!confirm("Delete this material?")) return;
-          try {
-            await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/materials/${encodeURIComponent(btn.dataset.delMat)}`, { method: "DELETE" });
-            toast("Material deleted", "success");
-            renderMaterialsView();
-          } catch (e) { toast(e.message, "error"); }
-        };
-      });
-    } catch (err) {
-      c.innerHTML = `<div class="empty"><h3>Failed to load materials</h3><p>${esc(err.message)}</p></div>`;
-    }
-  }
-
-  async function renderDatasetsView() {
-    const c = $("ext-datasets-content");
-    if (!c) return;
-    c.innerHTML = `<div class="skel h80"></div>`;
-    try {
-      const data = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/datasets`);
-      const list = data.datasets || [];
-      c.innerHTML = `
-        <div style="margin-bottom:12px;font-size:.9rem">Configured Custom Datasets: <b>${list.length}</b></div>
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead><tr><th>Name</th><th>Description</th></tr></thead>
-            <tbody>
-              ${list.map((d) => `<tr><td><b>${esc(d.name)}</b></td><td>${esc(d.description || "—")}</td></tr>`).join("") || '<tr><td colspan="2" style="text-align:center;color:var(--muted)">No custom datasets configured.</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-      `;
-    } catch (err) {
-      c.innerHTML = `<div class="empty"><h3>Failed to load datasets</h3><p>${esc(err.message)}</p></div>`;
-    }
-  }
-
-  async function renderCompareView() {
-    const c = $("ext-compare-content");
-    if (!c) return;
-    c.innerHTML = `<div class="skel h80"></div>`;
-    try {
-      await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/analytics/compare`);
-      c.innerHTML = `<div style="padding:16px;background:#fff;border:1px solid var(--border)">Analytics comparison data loaded successfully.</div>`;
-    } catch (err) {
-      c.innerHTML = `<div class="empty"><h3>Failed to load analytics</h3><p>${esc(err.message)}</p></div>`;
-    }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initExtrasIntegration);
-  } else {
-    initExtrasIntegration();
-  }
-})();
-</script>
-</body>
+<script src="admin-extras.js"></script></body>
 </html>
