@@ -90,7 +90,7 @@ const S = {
   terms: [], structure: { classes: [] }, types: [], scoring: null,
   config: null, currentTermId: null, view: "dashboard", teachers: []
 };
-
+let CUSTOM_SUBJECTS = [];
 // Wizard state
 const WZ = {
   step: 1,
@@ -276,6 +276,10 @@ async function loadInitial() {
   S.scoring = scoringData;
   S.structure = structure;
   S.teachers = teachers.teachers || [];
+  try {
+  const cs = await api(`https://edutraceug-extras-worker.anubisdigital114-9df.workers.dev/schools/${encodeURIComponent(sid)}/subjects`);
+  CUSTOM_SUBJECTS = (cs.subjects || []).map((x) => x.name).filter(Boolean);
+} catch { CUSTOM_SUBJECTS = []; }
   const cur = S.terms.find((t) => t.isCurrent);
   S.currentTermId = cur ? cur.id : (S.terms[0] && S.terms[0].id) || null;
 
@@ -382,9 +386,9 @@ function lsKey(key) {
 
 function initWizard() {
   const classOptions = CLASSES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+
 setHtml("wzStudentClass", `<option value="">Select class</option>` + classOptions);
 setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions);
-
   renderElectivesGrid("wzElectivesS1S2", "S1-S2");
   renderElectivesGrid("wzElectivesS3S4", "S3-S4");
   renderElectivesGrid("wzElectivesS5S6", "S5-S6");
@@ -757,10 +761,10 @@ function subjectsForClass(cls) {
   if (!band) return [];
   if (band === "S5-S6") {
     const electives = WZ.electives["S5-S6"] || [];
-    return [...CORE_S5_S6, ...A_LEVEL_SUBJECTS, ...electives];
+    return [...CORE_S5_S6, ...A_LEVEL_SUBJECTS, ...electives, ...CUSTOM_SUBJECTS];
   }
   const electives = WZ.electives[band] || [];
-  return [...CORE_S1_S4, ...electives];
+  return [...CORE_S1_S4, ...electives, ...CUSTOM_SUBJECTS];
 }
 
 function renderAssignListForClass() {
