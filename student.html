@@ -360,6 +360,15 @@ input,select,textarea{font-family:inherit;font-size:1rem;color:inherit}
         </div>
       </div>
 
+      <!-- points (S5/S6 only) -->
+      <div class="card" id="pointsCard" style="margin-top:20px;display:none">
+        <div class="card-head">
+          <h2><i class="fa-solid fa-ranking-star"></i> Points</h2>
+          <span style="font-size:.82rem;color:var(--muted)" id="pointsTermLabel"></span>
+        </div>
+        <div class="card-body" id="pointsBody"></div>
+      </div>
+
       <!-- discipline ledger -->
       <div class="card" style="margin-top:20px">
         <div class="card-head">
@@ -416,7 +425,8 @@ const WORKERS = {
   teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
   marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev",
   phone: "https://edutraceug-phone-worker.anubisdigital114-9df.workers.dev",
-  ledger: "https://edutraceug-ledger-worker.anubisdigital114-9df.workers.dev"
+  ledger: "https://edutraceug-ledger-worker.anubisdigital114-9df.workers.dev",
+  points: "https://edutraceug-points-worker.anubisdigital114-9df.workers.dev"
 };
 
 const ROLE_ROUTES = {
@@ -439,7 +449,7 @@ const state = {
   currentTermId: null,
   report: null,
   phone: null,
-  ledger: null    // array of entries, or null while loading
+  ledger: null
 };
 
 const $ = (id) => document.getElementById(id);
@@ -452,7 +462,6 @@ const els = (sel, root = document) => [...root.querySelectorAll(sel)];
 function escapeHtml(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-// Worker stores these pre-escaped, so insert raw to avoid double-escaping.
 const raw = (s) => String(s == null ? "" : s);
 function fmtDate(iso) {
   if (!iso) return "—";
@@ -466,8 +475,6 @@ function setBtnLoading(btn, on) {
   btn.disabled = on;
 }
 
-/* Accepts Ugandan mobile formats: 07XXXXXXXX, 7XXXXXXXX, 2567XXXXXXXX, +2567XXXXXXXX.
-   Matches the phone worker's normalisePhone. */
 function validPhone(s) {
   const v = String(s || "")
     .replace(/[\s\-().]/g, "")
@@ -582,8 +589,8 @@ onAuthStateChanged(auth, async (user) => {
     await loadInitial();
     paintHeader();
     bindEvents();
-    loadMyPhone();   // fire-and-forget
-    loadLedger();    // fire-and-forget
+    loadMyPhone();
+    loadLedger();
     await loadReport();
   } catch (err) {
     console.error(err);
@@ -799,6 +806,7 @@ function renderReport() {
 
   $("subjectCount").textContent = r.subjects.length ? `${r.subjects.length} subjects` : "";
   renderSubjects(r, isCbc);
+  loadPoints();
 }
 
 function renderSubjects(report, isCbc) {
@@ -853,6 +861,87 @@ function renderSubjects(report, isCbc) {
       </div>
     `;
   }).join("");
+}
+
+/* ------------------------------------------------------------------ *
+ * POINTS (S5/S6 only)
+ * ------------------------------------------------------------------ */
+function isSenior56Class(cls) {
+  const s = String(cls || "").trim();
+  const m = s.match(/^(\D*?)(\d|one|two|three|four|five|six)\s*$/i);
+  if (!m) return false;
+  const prefix = m[1].toLowerCase().replace(/[^a-z]/g, "");
+  if (!["s", "sen", "senior", "f", "form"].includes(prefix)) return false;
+  const tok = m[2].toLowerCase();
+  const words = ["", "one", "two", "three", "four", "five", "six"];
+  const level = /\d/.test(tok) ? Number(tok) : words.indexOf(tok);
+  return level === 5 || level === 6;
+}
+
+async function loadPoints() {
+  const card = $("pointsCard");
+  const body = $("pointsBody");
+  const label = $("pointsTermLabel");
+  if (!card || !body) return;
+
+  const cls = state.report && state.report.student ? state.report.student.class : "";
+  if (!isSenior56Class(cls)) { card.style.display = "none"; return; }
+  if (!state.currentTermId) { card.style.display = "none"; return; }
+
+  card.style.display = "";
+  label.textContent = "";
+  body.innerHTML = `<div class="skel h24 w50"></div><div class="skel h60"></div>`;
+
+  try {
+    const token = await idToken();
+    const url = `${WORKERS.points}/schools/${encodeURIComponent(state.schoolId)}/points/me?termId=${encodeURIComponent(state.currentTermId)}`;
+    let res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+
+    if (res.status === 401) {
+      const fresh = await state.user.getIdToken(true);
+      res = await fetch(url, { headers: { Authorization: `Bearer ${fresh}` } });
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error || `Points unavailable (${res.status})`;
+      if (res.status === 403) {
+        body.innerHTML = `<div style="padding:10px;color:var(--red);font-size:.88rem"><i class="fa-solid fa-lock"></i> ${escapeHtml(msg)}</div>`;
+      } else if (res.status === 404) {
+        body.innerHTML = `<div style="padding:10px;color:var(--muted);font-size:.88rem">No points for this term yet.</div>`;
+      } else if (res.status === 409) {
+        body.innerHTML = `<div style="padding:10px;color:var(--muted);font-size:.88rem">The school hasn't set the points table yet.</div>`;
+      } else if (res.status === 400) {
+        card.style.display = "none";
+      } else {
+        body.innerHTML = `<div style="padding:10px;color:var(--red);font-size:.88rem">${escapeHtml(msg)}</div>`;
+      }
+      return;
+    }
+
+    const d = await res.json();
+    label.textContent = `${d.term.name}${d.term.year ? ", " + d.term.year : ""}`;
+
+    const rows = (d.subjects || []).map((s) => `
+      <div class="subj-row">
+        <span class="type">${escapeHtml(s.name)}</span>
+        <span class="val">
+          ${s.points != null ? `<b>${s.points}</b> <small>pts</small>` : `<span style="color:var(--muted);font-style:italic">—</span>`}
+          ${s.pct != null ? `<small>· ${s.pct.toFixed(1)}%</small>` : ""}
+        </span>
+      </div>`).join("");
+
+    body.innerHTML = `
+      <div style="margin-bottom:12px">${rows || `<div style="color:var(--muted);font-size:.88rem">No points this term.</div>`}</div>
+      <div style="display:flex;justify-content:space-between;padding:12px 0 0;border-top:2px solid var(--border);font-weight:800;font-size:1rem">
+        <span>Total</span><span>${d.totalPoints ?? "—"} pts</span>
+      </div>
+      ${d.averagePct != null ? `<div style="font-size:.8rem;color:var(--muted);margin-top:4px">Average ${d.averagePct}%</div>` : ""}
+      ${d.position != null ? `<div style="font-size:.85rem;margin-top:8px">Position: <b>${d.position}</b>${d.outOf ? ` of ${d.outOf}` : ""} in ${escapeHtml(d.student.stream || d.student.class || "class")}</div>` : ""}
+    `;
+  } catch (err) {
+    body.innerHTML = `<div style="padding:10px;color:var(--red);font-size:.88rem">${escapeHtml(err.message || "Couldn't load points.")}</div>`;
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -1128,4 +1217,3 @@ function showHold(reason) {
 <script src="/student-extras.js"></script>
 </body>
 </html>
-
