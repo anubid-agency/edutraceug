@@ -2,17 +2,40 @@
 // edutraceug - Admin Extras Extension Script (admin-extras.js)
 // Standalone extension module for admin dashboard (school-admin.html)
 // Endpoint: https://edutraceug-extras-worker.anubisdigital114-9df.workers.dev
+//
+// IMPORTANT: this file must be loaded with
+//   <script type="module" src="admin-extras.js"></script>
+// otherwise the imports below will fail and nothing will load.
 // ================================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 (function () {
   "use strict";
 
   const EXTRAS_BASE = "https://edutraceug-extras-worker.anubisdigital114-9df.workers.dev";
+  const POINTS_BASE = "https://edutraceug-points-worker.anubisdigital114-9df.workers.dev";
+  const TEACHERS_BASE = "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev";
+
+  const auth = getAuth(initializeApp({
+    apiKey: "AIzaSyAR1NEHhZwUujpGEjb-IvTV2A04PTQuYLE",
+    authDomain: "edutrace-ug.firebaseapp.com",
+    projectId: "edutrace-ug",
+    storageBucket: "edutrace-ug.firebasestorage.app",
+    messagingSenderId: "219055117140",
+    appId: "1:219055117140:web:97ec99de8e25b6f9266ec1"
+  }));
 
   const ES = {
     schoolId: null,
     activeView: null
   };
+
+  // Pull the school ID from the signed-in admin's token claims.
+  onAuthStateChanged(auth, async (u) => {
+    if (u) ES.schoolId = (await u.getIdTokenResult()).claims.schoolId;
+  });
 
   const $ = (id) => document.getElementById(id);
   const q = (sel, root = document) => root.querySelector(sel);
@@ -39,18 +62,10 @@
   }
 
   async function getAuthToken() {
-    if (window.firebase && window.firebase.auth) {
-      const currentUser = window.firebase.auth().currentUser;
-      if (currentUser) return await currentUser.getIdToken();
-    }
-    if (window.auth && typeof window.auth.currentUser?.getIdToken === "function") {
-      return await window.auth.currentUser.getIdToken();
-    }
-    // Fallback: extract token from local or session state if available
-    return null;
+    return auth.currentUser ? auth.currentUser.getIdToken() : null;
   }
 
-  async function apiExtras(path, options = {}) {
+  async function apiExtras(path, options = {}, base = EXTRAS_BASE) {
     const token = await getAuthToken();
     const headers = {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -60,7 +75,7 @@
       headers["Content-Type"] = "application/json";
       options.body = JSON.stringify(options.body);
     }
-    const res = await fetch(`${EXTRAS_BASE}${path}`, { ...options, headers });
+    const res = await fetch(`${base}${path}`, { ...options, headers });
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       throw new Error(errData.error || `Request failed with status ${res.status}`);
@@ -75,17 +90,6 @@
   // ================================================================
 
   function initAdminExtras() {
-    // Try to extract schoolId from existing global state if present
-    if (window.S && window.S.schoolId) {
-      ES.schoolId = window.S.schoolId;
-    } else {
-      // Extract from URL slug if possible (e.g. stjulianhigh.edutraceug.com -> match subdomain)
-      const hostParts = window.location.hostname.split(".");
-      if (hostParts.length > 2 && hostParts[0] !== "www") {
-        ES.schoolId = hostParts[0];
-      }
-    }
-
     injectSidebarItems();
     injectViewContainers();
     observeReportCards();
@@ -100,7 +104,8 @@
       { id: "snav-subjects", view: "ext-subjects", icon: "fa-book-bookmark", label: "Custom Subjects" },
       { id: "snav-promotion", view: "ext-promotion", icon: "fa-graduation-cap", label: "Yearly Promotion" },
       { id: "snav-materials", view: "ext-materials", icon: "fa-folder-open", label: "Class Materials" },
-      { id: "snav-compare", view: "ext-compare", icon: "fa-chart-column", label: "Term Comparison" }
+      { id: "snav-compare", view: "ext-compare", icon: "fa-chart-column", label: "Term Comparison" },
+      { id: "snav-points", view: "ext-points", icon: "fa-ranking-star", label: "S5/S6 Points" }
     ];
 
     const sectionHeader = document.createElement("div");
@@ -139,7 +144,8 @@
       { id: "ext-subjects", title: "Custom Subjects Management", render: renderSubjectsView },
       { id: "ext-promotion", title: "Yearly Student Auto-Promotion", render: renderPromotionView },
       { id: "ext-materials", title: "Class Materials (PDFs)", render: renderMaterialsView },
-      { id: "ext-compare", title: "Term Performance Comparison", render: renderCompareView }
+      { id: "ext-compare", title: "Term Performance Comparison", render: renderCompareView },
+      { id: "ext-points", title: "Senior 5 & 6 Points", render: renderPointsView }
     ];
 
     views.forEach((v) => {
@@ -179,7 +185,15 @@
     }
 
     ES.activeView = viewId;
-    if (window.S && window.S.schoolId) ES.schoolId = window.S.schoolId;
+
+    // Fallback: if the auth state change hasn't fired yet, re-read it now.
+    if (!ES.schoolId && auth.currentUser) {
+      auth.currentUser.getIdTokenResult().then((r) => {
+        ES.schoolId = r.claims.schoolId;
+        if (ES.schoolId) switchExtraView(viewId);
+      }).catch(() => {});
+      return;
+    }
 
     if (!ES.schoolId) {
       toast("School context missing", "error");
@@ -192,6 +206,7 @@
       case "ext-promotion": renderPromotionView(); break;
       case "ext-materials": renderMaterialsView(); break;
       case "ext-compare": renderCompareView(); break;
+      case "ext-points": renderPointsView(); break;
     }
   }
 
@@ -345,7 +360,7 @@
                   <td><b>${esc(m.title)}</b></td>
                   <td>${esc(m.subject || "—")}</td>
                   <td>${(m.classes || []).map((cl) => `<span class="pill blue">${esc(cl)}</span>`).join(" ")}</td>
-                  <td><a href="${EXTRAS_BASE}/schools/${encodeURIComponent(ES.schoolId)}/materials/${encodeURIComponent(m.id)}/file" target="_blank" style="color:var(--primary);font-weight:700">PDF</a></td>
+                  <td><a href="#" data-open-mat="${esc(m.id)}" style="color:var(--primary);font-weight:700">PDF</a></td>
                   <td style="text-align:right"><button class="btn btn-red btn-sm" data-del-mat="${esc(m.id)}"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>
               `).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No class materials uploaded yet.</td></tr>'}
@@ -384,8 +399,27 @@
           } catch (e) { toast(e.message, "error"); }
         };
       });
+
+      qa("[data-open-mat]", c).forEach((a) => {
+        a.onclick = (e) => { e.preventDefault(); openMaterial(a.dataset.openMat); };
+      });
     } catch (err) {
       c.innerHTML = `<div class="empty"><h3>Failed to load materials</h3><p>${esc(err.message)}</p></div>`;
+    }
+  }
+
+  async function openMaterial(id) {
+    const win = window.open("", "_blank");
+    try {
+      const token = await getAuthToken();
+      const res = await fetch(`${EXTRAS_BASE}/schools/${encodeURIComponent(ES.schoolId)}/materials/${encodeURIComponent(id)}/file`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Could not open the file");
+      win.location = URL.createObjectURL(await res.blob());
+    } catch (e) {
+      if (win) win.close();
+      toast(e.message, "error");
     }
   }
 
@@ -469,6 +503,92 @@
     }
   }
 
+  // ================================================================
+  // 3. Points view (S5/S6)
+  // ================================================================
+
+  async function renderPointsView() {
+    const c = $("ext-points-content");
+    const sid = encodeURIComponent(ES.schoolId);
+    c.innerHTML = `<div class="skel h80"></div>`;
+    try {
+      const [s, t] = await Promise.all([
+        apiExtras(`/schools/${sid}/points/settings`, {}, POINTS_BASE),
+        apiExtras(`/schools/${sid}/terms`, {}, TEACHERS_BASE)
+      ]);
+      const terms = t.terms || [];
+      let bands = s.bands.length ? s.bands : [{ min: 0, max: 100, points: 0 }];
+      const inp = "padding:8px;border:2px solid var(--border);font-size:.85rem;width:100%";
+      const read = () => qa("#ptBands > div").map((r) => ({
+        min: Number(q('[data-pb="min"]', r).value),
+        max: Number(q('[data-pb="max"]', r).value),
+        points: Number(q('[data-pb="points"]', r).value)
+      }));
+      const paint = () => {
+        $("ptBands").innerHTML = bands.map((b, i) => `
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:8px">
+            <input type="number" data-pb="min" value="${b.min}" placeholder="Min %" style="${inp}">
+            <input type="number" data-pb="max" value="${b.max}" placeholder="Max %" style="${inp}">
+            <input type="number" data-pb="points" value="${b.points}" placeholder="Points" style="${inp}">
+            <button class="btn btn-red btn-sm" data-pb-rm="${i}" type="button"><i class="fa-solid fa-trash"></i></button>
+          </div>`).join("");
+        qa("[data-pb-rm]", $("ptBands")).forEach((b) => b.onclick = () => {
+          bands = read(); bands.splice(Number(b.dataset.pbRm), 1); paint();
+        });
+      };
+
+      c.innerHTML = `
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Points for each subject, based on its total %. Applies to Senior 5 and Senior 6 only.</p>
+        <div id="ptBands"></div>
+        <label class="check"><input type="checkbox" id="ptPublish" ${s.publishPosition ? "checked" : ""}><span>Show position to students and parents</span></label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 24px">
+          <button class="btn btn-outline btn-sm" id="ptAdd" type="button"><i class="fa-solid fa-plus"></i> Add band</button>
+          <button class="btn btn-primary btn-sm" id="ptSave" type="button">Save points table</button>
+        </div>
+        <h4 style="font-weight:800;margin-bottom:10px">Class results</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+          <select id="ptClass" style="${inp};width:auto"><option>Senior 5</option><option>Senior 6</option></select>
+          <input id="ptStream" placeholder="Stream" style="${inp};width:120px">
+          <select id="ptTerm" style="${inp};width:auto">${terms.map((x) => `<option value="${esc(x.id)}"${x.isCurrent ? " selected" : ""}>${esc(x.name)}${x.year ? ", " + x.year : ""}</option>`).join("")}</select>
+          <button class="btn btn-primary btn-sm" id="ptLoad" type="button">Load</button>
+        </div>
+        <div id="ptResults"></div>`;
+      paint();
+
+      $("ptAdd").onclick = () => { bands = read(); bands.push({ min: 0, max: 0, points: 0 }); paint(); };
+      $("ptSave").onclick = async () => {
+        try {
+          await apiExtras(`/schools/${sid}/points/settings`, { method: "PUT", body: { bands: read(), publishPosition: $("ptPublish").checked } }, POINTS_BASE);
+          toast("Points table saved", "success");
+        } catch (e) { toast(e.message, "error", 6000); }
+      };
+      $("ptLoad").onclick = async () => {
+        const box = $("ptResults");
+        const p = new URLSearchParams({ termId: $("ptTerm").value, class: $("ptClass").value });
+        if ($("ptStream").value.trim()) p.set("stream", $("ptStream").value.trim());
+        box.innerHTML = `<div class="skel h80"></div>`;
+        try {
+          const d = await apiExtras(`/schools/${sid}/points/class?${p}`, {}, POINTS_BASE);
+          const names = [...new Set(d.students.flatMap((x) => x.subjects.map((y) => y.name)))].sort();
+          box.innerHTML = d.students.length ? `<div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Pos</th><th>Student</th>${names.map((n) => `<th style="text-align:center">${esc(n)}</th>`).join("")}<th>Total</th><th>Avg %</th></tr></thead>
+            <tbody>${d.students.map((x) => `<tr>
+              <td><b>${x.position || "—"}</b></td>
+              <td>${esc(x.lastName)} ${esc(x.firstName)}</td>
+              ${names.map((n) => { const y = x.subjects.find((z) => z.name === n); return `<td style="text-align:center">${y && y.points !== null ? y.points : "—"}</td>`; }).join("")}
+              <td><b>${x.totalPoints}</b></td><td>${x.averagePct ?? "—"}</td></tr>`).join("")}</tbody>
+          </table></div>` : `<div class="empty"><h3>No marks found</h3></div>`;
+        } catch (e) { box.innerHTML = `<span style="color:var(--red)">${esc(e.message)}</span>`; }
+      };
+    } catch (err) {
+      c.innerHTML = `<div class="empty"><h3>Failed to load</h3><p>${esc(err.message)}</p></div>`;
+    }
+  }
+
+  // ================================================================
+  // 4. Compact report card
+  // ================================================================
+
   function observeReportCards() {
     const target = $("repList") || document.body;
     const observer = new MutationObserver(() => {
@@ -487,14 +607,18 @@
     observer.observe(target, { childList: true, subtree: true });
   }
 
-  function openCompactReportCard(rid, termId) {
-    if (typeof window.openModal === "function") {
-      window.openModal({
-        title: "Compact Report Card",
-        wide: "wider",
-        body: `<iframe style="width:100%;height:520px;border:none" src="${EXTRAS_BASE}/schools/${encodeURIComponent(ES.schoolId)}/report-card?rosterId=${encodeURIComponent(rid)}&termId=${encodeURIComponent(termId)}"></iframe>`,
-        foot: `<button class="btn btn-outline" onclick="closeModal()">Close</button>`
-      });
+  async function openCompactReportCard(rid, termId) {
+    $("modalTitle").textContent = "Compact Report Card";
+    $("modal").className = "modal wider";
+    $("modalFoot").innerHTML = "";
+    $("modalBody").innerHTML = `<div class="skel h60"></div>`;
+    $("modalBack").classList.add("show");
+    try {
+      const html = await apiExtras(`/schools/${encodeURIComponent(ES.schoolId)}/report-card?rosterId=${encodeURIComponent(rid)}&termId=${encodeURIComponent(termId)}`);
+      $("modalBody").innerHTML = `<iframe class="report-frame" id="extRcFrame"></iframe>`;
+      $("extRcFrame").srcdoc = html;
+    } catch (e) {
+      $("modalBody").innerHTML = `<div class="empty"><h3>Could not load</h3><p>${esc(e.message)}</p></div>`;
     }
   }
 
