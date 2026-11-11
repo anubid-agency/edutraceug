@@ -321,6 +321,7 @@
     </div>
   </div>
   <div class="view-toolbar">
+    
     <select id="phRole" aria-label="Filter by role">
       <option value="">All roles</option>
       <option value="teacher">Teachers</option>
@@ -503,13 +504,17 @@
     </div>
   </div>
   <div class="view-toolbar">
-    <select id="ledClass" aria-label="Select class">
-      <option value="">Select class</option>
-    </select>
-    <span class="toolbar-spacer"></span>
-    <button class="btn btn-primary btn-sm" id="ledAdd" type="button"><i class="fa-solid fa-plus"></i> New entry</button>
-    <button class="btn btn-outline btn-sm" id="ledLoad" type="button"><i class="fa-solid fa-search"></i> Load</button>
-  </div>
+  <select id="ledClass" aria-label="Select class">
+    <option value="">Select class</option>
+  </select>
+  <input type="search" id="ledStudentSearch" list="ledStudentOptions"
+         placeholder="Search student by name…" maxlength="80"
+         autocomplete="off" aria-label="Search student">
+  <datalist id="ledStudentOptions"></datalist>
+  <span class="toolbar-spacer"></span>
+  <button class="btn btn-primary btn-sm" id="ledAdd" type="button"><i class="fa-solid fa-plus"></i> New entry</button>
+  <button class="btn btn-outline btn-sm" id="ledLoad" type="button"><i class="fa-solid fa-search"></i> Load</button>
+</div>
   <div class="card">
     <div id="ledList"></div>
   </div>
