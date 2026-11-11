@@ -2762,6 +2762,7 @@ function paintPhones() {
 
 // ====================== LEDGER ======================
 const LD = { roster: null };
+const LEDGER = { entries: [], filter: "" };
 
 async function ledgerRoster() {
   if (LD.roster) return LD.roster;
@@ -2781,6 +2782,37 @@ function renderLedger() {
   $("ledList").innerHTML = `<div class="empty"><i class="fa-solid fa-book"></i><h3>Pick a class</h3><p>Then click Load to see its ledger entries.</p></div>`;
   $("ledLoad").onclick = loadLedger;
   $("ledAdd").onclick = openLedgerEntry;
+
+  // NEW: clear search + repopulate suggestion datalist when class changes
+  $("ledClass").onchange = async () => {
+    $("ledStudentSearch").value = "";
+    await refreshLedgerStudentOptions();
+  };
+
+  // NEW: live filter on the already-loaded table
+  $("ledStudentSearch").oninput = () => {
+    LEDGER.filter = $("ledStudentSearch").value.trim().toLowerCase();
+    renderLedgerTable();
+  };
+}
+
+// NEW helper — builds the <datalist> suggestions from the cached roster
+async function refreshLedgerStudentOptions() {
+  const dl = $("ledStudentOptions");
+  if (!dl) return;
+  dl.innerHTML = "";
+  const cls = $("ledClass").value;
+  if (!cls) return;
+  try {
+    const rows = (await ledgerRoster())
+      .filter((r) => normaliseClass(r.class) === cls)
+      .sort((a, b) => (a.lastName + a.firstName).localeCompare(b.lastName + b.firstName));
+    dl.innerHTML = rows.map((r) =>
+      `<option value="${esc(r.lastName)} ${esc(r.firstName)}${r.stream ? " (" + esc(r.stream) + ")" : ""}"></option>`
+    ).join("");
+  } catch {
+    // ledgerRoster() failure is already surfaced by loadLedger(); ignore here
+  }
 }
 
 async function loadLedger() {
@@ -2790,36 +2822,62 @@ async function loadLedger() {
   list.innerHTML = `<div class="card-body"><div class="skel h20 w50"></div><div class="skel h40"></div></div>`;
   try {
     const data = await api(`${W.ledger}/schools/${encodeURIComponent(S.schoolId)}/ledger?class=${encodeURIComponent(cls)}`);
-    const entries = data.entries || [];
-    if (!entries.length) {
-      list.innerHTML = `<div class="empty"><i class="fa-solid fa-book"></i><h3>No entries</h3><p>No ledger entries for ${esc(cls)}.</p></div>`;
-      return;
-    }
-    list.innerHTML = `
-      <div style="padding:12px 18px;background:var(--light);border-bottom:1px solid var(--border);font-size:.85rem">Latest ${entries.length} entries</div>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead><tr><th>Date</th><th>Student</th><th>Stream</th><th>Offence</th><th>Punishment</th><th>Commitment</th><th></th></tr></thead>
-          <tbody>
-            ${entries.map((e) => `
-              <tr>
-                <td style="white-space:nowrap">${fmtDate(e.date)}</td>
-                <td><b>${raw(e.studentName)}</b></td>
-                <td>${raw(e.stream) || "—"}</td>
-                <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${raw(e.offence)}</td>
-                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${raw(e.punishment)}</td>
-                <td>${e.hasCommitment ? `<span class="pill green">Written</span>` : `<span class="pill grey">Pending</span>`}</td>
-                <td class="actions"><button class="btn btn-outline btn-sm" data-led-open="${esc(e.rosterId)}" data-name="${esc(e.studentName)}" type="button"><i class="fa-solid fa-folder-open"></i> Open</button></td>
-              </tr>`).join("")}
-          </tbody>
-        </table>
-      </div>`;
-    qa("[data-led-open]").forEach((b) => b.onclick = () => openStudentLedger(b.dataset.ledOpen, b.dataset.name));
+    LEDGER.entries = data.entries || [];
+    LEDGER.filter = "";
+    $("ledStudentSearch").value = "";
+    renderLedgerTable();
   } catch (err) {
     list.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Couldn't load ledger</h3><p>${esc(err.message)}</p></div>`;
   }
 }
 
+// NEW — renders the table, filtered by LEDGER.filter
+function renderLedgerTable() {
+  const list = $("ledList");
+  const term = LEDGER.filter;
+
+  if (!LEDGER.entries.length) {
+    list.innerHTML = `<div class="empty"><i class="fa-solid fa-book"></i><h3>No entries</h3><p>No ledger entries for this class.</p></div>`;
+    return;
+  }
+
+  const entries = LEDGER.entries.filter((e) => {
+    if (!term) return true;
+    const haystack = `${decode(e.studentName)} ${decode(e.stream)}`.toLowerCase();
+    return haystack.includes(term);
+  });
+
+  if (!entries.length) {
+    list.innerHTML = `<div class="empty"><i class="fa-solid fa-magnifying-glass"></i><h3>No matches</h3><p>No student matching "<b>${esc(term)}</b>".</p></div>`;
+    return;
+  }
+
+  list.innerHTML = `
+    <div style="padding:12px 18px;background:var(--light);border-bottom:1px solid var(--border);font-size:.85rem">
+      ${term
+        ? `Showing <b>${entries.length}</b> of ${LEDGER.entries.length} entries matching "<b>${esc(term)}</b>"`
+        : `Latest ${entries.length} entries`}
+    </div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Student</th><th>Stream</th><th>Offence</th><th>Punishment</th><th>Commitment</th><th></th></tr></thead>
+        <tbody>
+          ${entries.map((e) => `
+            <tr>
+              <td style="white-space:nowrap">${fmtDate(e.date)}</td>
+              <td><b>${raw(e.studentName)}</b></td>
+              <td>${raw(e.stream) || "—"}</td>
+              <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${raw(e.offence)}</td>
+              <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${raw(e.punishment)}</td>
+              <td>${e.hasCommitment ? `<span class="pill green">Written</span>` : `<span class="pill grey">Pending</span>`}</td>
+              <td class="actions"><button class="btn btn-outline btn-sm" data-led-open="${esc(e.rosterId)}" data-name="${esc(e.studentName)}" type="button"><i class="fa-solid fa-folder-open"></i> Open</button></td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+
+  qa("[data-led-open]").forEach((b) => b.onclick = () => openStudentLedger(b.dataset.ledOpen, b.dataset.name));
+}
 async function openStudentLedger(rosterId, name) {
   openModal({
     title: decode(name || "Student ledger"),
@@ -2902,8 +2960,22 @@ async function openLedgerEntry() {
         `<option value="${esc(r.id)}">${esc(r.lastName)} ${esc(r.firstName)}${r.stream ? " (" + esc(r.stream) + ")" : ""}</option>`).join("");
     } catch (err) { sel.innerHTML = `<option value="">Could not load</option>`; toast(err.message, "error"); }
   };
-  if ($("ledClass").value) { $("leClass").value = $("ledClass").value; $("leClass").onchange(); }
+const ledgerClassSel = $("ledClass");
+const ledgerSearchEl = $("ledStudentSearch");
 
+if (ledgerClassSel && ledgerClassSel.value) {
+  $("leClass").value = ledgerClassSel.value;
+  await $("leClass").onchange();
+
+  const typed = ledgerSearchEl ? ledgerSearchEl.value.trim() : "";
+  if (typed) {
+    const sel = $("leStudent");
+    const match = [...sel.options].find((o) =>
+      decode(o.textContent).toLowerCase().includes(typed.toLowerCase())
+    );
+    if (match) sel.value = match.value;
+  }
+}
   $("leSave").onclick = async () => {
     const rosterId = $("leStudent").value;
     const offence = $("leOffence").value.trim();
