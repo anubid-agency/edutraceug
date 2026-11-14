@@ -314,7 +314,8 @@ const firebaseConfig = {
 const WORKERS = {
   profile: "https://edutraceug-school-profile-worker.anubisdigital114-9df.workers.dev",
   teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
-  marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev"
+  marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev",
+  points: "https://edutraceug-points-worker.anubisdigital114-9df.workers.dev"
 };
 
 const ROLE_ROUTES = {
@@ -1086,12 +1087,37 @@ async function openReportCard(rid, termId, title) {
   const body = openSheet(title, `<div class="skel" style="margin:0 0 10px;height:120px"></div>`);
   try {
     const token = await idToken();
-    const res = await fetch(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/card/${encodeURIComponent(rid)}?termId=${encodeURIComponent(termId)}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    
+    // Fetch the report card HTML and the S5/S6 points summary simultaneously
+    const [res, pointsRes] = await Promise.all([
+      fetch(`${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/card/${encodeURIComponent(rid)}?termId=${encodeURIComponent(termId)}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+      fetch(`${WORKERS.points}/schools/${encodeURIComponent(state.schoolId)}/points/class?termId=${encodeURIComponent(termId)}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => null)
+    ]);
+
     if (!res.ok) throw new Error("Could not load the report card.");
-    const html = await res.text();
-    body.innerHTML = `<button class="btn btn-outline" id="rcBack" type="button" style="height:44px;margin-bottom:12px"><i class="fa-solid fa-arrow-left"></i> Back to class</button><iframe class="rc-frame" id="rcFrame"></iframe>`;
+    let html = await res.text();
+
+    // If points data exists for this student, inject an A-Level Points breakdown card into the report card HTML
+    if (pointsRes && pointsRes.ok) {
+      const pointsData = await pointsRes.json();
+      const studentPoints = (pointsData.students || []).find((s) => s.rosterId === rid);
+      
+      if (studentPoints) {
+        const pointsHtml = `
+          <div style="margin: 20px auto; max-width: 700px; padding: 14px 16px; border: 1px solid #3570BC; background: #EBF1FB;">
+            <h3 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 6px; color: #3570BC;"><i class="fa-solid fa-layer-group"></i> Senior 5 / Senior 6 Points Summary</h3>
+            <p style="font-size: 0.88rem; margin: 0; color: #1A1A1A;"><b>Total Points:</b> ${studentPoints.totalPoints} &nbsp;|&nbsp; <b>Average Percentage:</b> ${studentPoints.averagePct ?? "—"}% &nbsp;|&nbsp; <b>Position:</b> ${studentPoints.position || "—"}</p>
+          </div>
+        `;
+        html = html.replace("</body>", `${pointsHtml}</body>`);
+      }
+    }
+
+    body.innerHTML = `<button class="btn btn-outline" id="rcBack" type="button" style="height:44px;margin-bottom:12px"><i class="fa-solid fa-arrow-left"></i> Back to class</button><iframe class="rc-frame" id="rcFrame" sandbox="allow-same-origin allow-scripts allow-modals" style="background:#fff"></iframe>`;
     $("rcFrame").srcdoc = html;
     $("rcBack").addEventListener("click", () => { closeSheet(); openMyClass(); });
   } catch (err) {
