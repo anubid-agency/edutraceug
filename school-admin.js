@@ -2539,7 +2539,9 @@ function openNoteEditor(rid, student) {
     title: `${student.lastName} ${student.firstName}`,
     body: `
       <div class="field"><label for="ntConduct">Conduct</label><input type="text" id="ntConduct" maxlength="200" placeholder="e.g. Excellent"></div>
-      <div class="field"><label for="ntComment">Comment</label><textarea id="ntComment" rows="5" maxlength="2000"></textarea></div>
+      <div class="field"><label for="ntComment">Class Teacher's Comment</label><textarea id="ntComment" rows="5" maxlength="2000"></textarea></div>
+      <div class="field"><label for="ntHeadComment">Head Teacher's Comment <span class="hint">admin only</span></label><textarea id="ntHeadComment" rows="4" maxlength="2000"></textarea></div>
+      <div class="field"><label for="ntAdditionalComment">Additional Comment</label><textarea id="ntAdditionalComment" rows="3" maxlength="2000"></textarea></div>
     `,
     foot: `<button class="btn btn-outline" id="ntCancel" type="button">Cancel</button><button class="btn btn-primary" id="ntSave" type="button"><span class="spinner"></span><span class="btn-label">Save note</span></button>`
   });
@@ -2554,7 +2556,9 @@ function openNoteEditor(rid, student) {
           termId: S.currentTermId,
           rosterId: rid,
           conduct: $("ntConduct").value.trim(),
-          comment: $("ntComment").value.trim()
+          comment: $("ntComment").value.trim(),
+          headComment: $("ntHeadComment").value.trim(),
+          additionalComment: $("ntAdditionalComment").value.trim()
         })
       });
       closeModal(); toast("Note saved", "success");
