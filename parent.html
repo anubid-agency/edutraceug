@@ -830,8 +830,9 @@ function renderReport() {
     const pct = r.overall.pct != null ? `${r.overall.pct.toFixed(1)}%` : "—";
     $("overallValue").textContent = pct;
     const grade = r.overall.grade;
-    if (grade) {
-      $("overallGradeWrap").innerHTML = `<span class="grade-pill grade-${escapeHtml(grade.grade)}">${escapeHtml(grade.grade)}</span>`;
+    if (grade != null && String(grade) !== "") {
+      const g = String(grade);
+      $("overallGradeWrap").innerHTML = `<span class="grade-pill grade-${escapeHtml(g)}">${escapeHtml(g)}</span>`;
     } else {
       $("overallGradeWrap").innerHTML = "";
     }
@@ -893,9 +894,23 @@ function renderSubjects(report, isCbc) {
     const entered = (sub.assessments || []).filter((a) => a.status === "entered");
     let right;
     if (isCbc) {
-      right = sub.level ? `<span class="grade-pill grade-${escapeHtml(String(sub.level.level))}">${escapeHtml(sub.level.label)}</span>` : none;
+      if (sub.level != null) {
+        if (typeof sub.level === "object") {
+          right = `<span class="grade-pill grade-${escapeHtml(String(sub.level.level))}">${escapeHtml(sub.level.label)}</span>`;
+        } else {
+          const n = Number(sub.level);
+          right = `<span class="grade-pill grade-${escapeHtml(String(n))}">${escapeHtml(String(sub.level))}</span>`;
+        }
+      } else {
+        right = none;
+      }
     } else if (sub.pct != null) {
-      right = `<b style="font-size:1.1rem">${sub.pct.toFixed(1)}%</b>${sub.grade ? ` <span class="grade-pill grade-${escapeHtml(sub.grade.grade)}">${escapeHtml(sub.grade.grade)}</span>` : ""}`;
+      let gradeHtml = "";
+      if (sub.grade != null && String(sub.grade) !== "") {
+        const g = String(sub.grade);
+        gradeHtml = ` <span class="grade-pill grade-${escapeHtml(g)}">${escapeHtml(g)}</span>`;
+      }
+      right = `<b style="font-size:1.1rem">${sub.pct.toFixed(1)}%</b>${gradeHtml}`;
     } else if (entered.length) {
       right = entered.map((a) => `<div><b style="font-size:1.1rem">${escapeHtml(String(a.score))}</b><small style="color:var(--muted)">/${escapeHtml(String(a.maxScore))}</small> <small style="color:var(--muted)">${escapeHtml(a.typeName)}</small></div>`).join("");
     } else {
@@ -1182,17 +1197,25 @@ async function openReportCard() {
 
   try {
     const token = await idToken();
-    const url = `${WORKERS.marks}/schools/${encodeURIComponent(state.schoolId)}/reports/child/card?termId=${encodeURIComponent(termId)}`;
-    let res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const sid = state.schoolId;
+    const cls = state.report && state.report.student ? state.report.student.class : "";
+    const senior = isSenior56Class(cls);
 
-    if (res.status === 401) {
-      const fresh = await state.user.getIdToken(true);
-      res = await fetch(url, { headers: { Authorization: `Bearer ${fresh}` } });
-    }
+    const normalUrl = `${WORKERS.marks}/schools/${encodeURIComponent(sid)}/reports/child/card?termId=${encodeURIComponent(termId)}`;
+    const pointsUrl = `${WORKERS.points}/schools/${encodeURIComponent(sid)}/points/child/card?termId=${encodeURIComponent(termId)}`;
 
-    if (!res.ok) {
-      const err = await apiError(res);
-      if (err.status === 403) {
+    let html = null;
+
+    if (senior) {
+      let res = await fetch(pointsUrl, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 401) {
+        const fresh = await state.user.getIdToken(true);
+        res = await fetch(pointsUrl, { headers: { Authorization: `Bearer ${fresh}` } });
+      }
+      if (res.ok) {
+        html = await res.text();
+      } else if (res.status === 403) {
+        const err = await apiError(res);
         const msg = err.message || "";
         if (/consent/i.test(msg)) {
           toast("Consent is required. Please complete the consent form.", "error", 6000);
@@ -1201,13 +1224,36 @@ async function openReportCard() {
           const reason = msg.replace(/^Report withheld:\s*/i, "").trim();
           toast(`Report withheld — ${reason || "contact the school"}`, "error", 6000);
         }
-      } else {
-        toast(err.message || "Could not load report card.", "error", 6000);
+        return;
       }
-      return;
+      // any other status: fall through to normal card
     }
 
-    const html = await res.text();
+    if (html == null) {
+      let res = await fetch(normalUrl, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 401) {
+        const fresh = await state.user.getIdToken(true);
+        res = await fetch(normalUrl, { headers: { Authorization: `Bearer ${fresh}` } });
+      }
+      if (!res.ok) {
+        const err = await apiError(res);
+        if (err.status === 403) {
+          const msg = err.message || "";
+          if (/consent/i.test(msg)) {
+            toast("Consent is required. Please complete the consent form.", "error", 6000);
+            showConsent();
+          } else {
+            const reason = msg.replace(/^Report withheld:\s*/i, "").trim();
+            toast(`Report withheld — ${reason || "contact the school"}`, "error", 6000);
+          }
+        } else {
+          toast(err.message || "Could not load report card.", "error", 6000);
+        }
+        return;
+      }
+      html = await res.text();
+    }
+
     $("reportFrame").srcdoc = html;
     $("modalTitle").textContent = "Report Card";
     $("modalBack").classList.add("show");
