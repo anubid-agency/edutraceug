@@ -15,6 +15,8 @@ const W = {
   roster: "https://edutraceug-roster-worker.anubisdigital114-9df.workers.dev",
   teachers: "https://edutraceug-teachers-worker.anubisdigital114-9df.workers.dev",
   marks: "https://edutraceug-marks-worker.anubisdigital114-9df.workers.dev",
+  points: "https://edutraceug-points-worker.anubisdigital114-9df.workers.dev",
+  sync: "https://edutraceug-setup-and-sync-worker.anubisdigital114-9df.workers.dev",
   email: "https://edutraceug-email-worker.anubisdigital114-9df.workers.dev",
   phones: "https://edutraceug-phone-worker.anubisdigital114-9df.workers.dev",
   ledger: "https://edutraceug-ledger-worker.anubisdigital114-9df.workers.dev"
@@ -222,6 +224,51 @@ async function apiError(res) {
     }
   } catch {}
   return new ApiError(message, res.status, body);
+}
+
+async function runSync(scope, onProgress) {
+  const sid = S.schoolId;
+  let cursor = null;
+  toast("Syncing…", "info", 2500);
+  try {
+    while (true) {
+      const data = await api(`${W.sync}/schools/${encodeURIComponent(sid)}/sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scope, cursor })
+      });
+      if (typeof onProgress === "function") onProgress(data);
+      if (data && data.done) break;
+      cursor = data && data.cursor !== undefined ? data.cursor : null;
+      if (!cursor) break;
+    }
+    toast("Sync complete", "success");
+  } catch (err) {
+    toast(err.message || "Sync failed", "error", 6000);
+    throw err;
+  }
+}
+
+async function runSetup() {
+  const sid = S.schoolId;
+  let cursor = null;
+  toast("Syncing…", "info", 2500);
+  try {
+    while (true) {
+      const data = await api(`${W.sync}/schools/${encodeURIComponent(sid)}/setup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cursor })
+      });
+      if (data && data.done) break;
+      cursor = data && data.cursor !== undefined ? data.cursor : null;
+      if (!cursor) break;
+    }
+    toast("Sync complete", "success");
+  } catch (err) {
+    toast(err.message || "Setup failed", "error", 6000);
+    throw err;
+  }
 }
 
 const app = initializeApp(firebaseConfig);
@@ -474,6 +521,7 @@ setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions
           </div>
         </div></div>`;
       toast("Student roster uploaded", "success");
+      runSync("roster").catch(() => {});
       await loadInitial();
     } catch (err) {
       $("wzStudentResult").innerHTML = `<div class="card" style="border-left:4px solid var(--red)"><div class="card-body"><div style="font-weight:800;color:var(--red)"><i class="fa-solid fa-circle-xmark"></i> Upload failed</div><p style="font-size:.88rem;margin-top:6px">${esc(err.message)}</p></div></div>`;
@@ -529,6 +577,7 @@ setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions
           </div>
         </div></div>`;
       toast("Teacher roster uploaded", "success");
+      runSync("roster").catch(() => {});
       await loadInitial();
     } catch (err) {
       $("wzTeacherResult").innerHTML = `<div class="card" style="border-left:4px solid var(--red)"><div class="card-body"><div style="font-weight:800;color:var(--red)"><i class="fa-solid fa-circle-xmark"></i> Upload failed</div><p style="font-size:.88rem;margin-top:6px">${esc(err.message)}</p></div></div>`;
@@ -836,6 +885,7 @@ async function saveAssignments() {
     }
 
     toast("Assignments saved", "success");
+    runSync("teachers").catch(() => {});
     await loadInitial();
     renderAssignListForClass();
   } catch (err) { toast(err.message, "error", 6000); }
@@ -927,6 +977,7 @@ async function saveWzStep1() {
   const base = `${W.profile}/school/id/${encodeURIComponent(S.schoolId)}`;
   const updated = await api(base, { method: "PATCH", headers: hdr, body: JSON.stringify({ name }) });
   S.school = { ...(S.school || {}), ...(updated || {}), name };
+  runSync("school").catch(() => {});
   for (const [title, text] of [["Motto", $("wzMotto").value.trim()], ["Vision", $("wzVision").value.trim()]]) {
     const existing = (S.school.sections || []).find((s) => s.title === title);
     if (!text && !existing) continue;
@@ -1084,11 +1135,64 @@ function renderProfile() {
       });
       S.school = updated; paintHeader();
       toast("Profile saved", "success");
+      runSync("school").catch(() => {});
     } catch (err) { toast(err.message, "error", 6000); }
     finally { setBtn(btn, false); }
   };
 
   renderSlugSection();
+  renderSyncCard();
+}
+
+function renderSyncCard() {
+  const profileView = q('.view[data-view="profile"]');
+  if (!profileView) return;
+  let card = $("syncSettingsCard");
+  if (!card) {
+    card = document.createElement("div");
+    card.id = "syncSettingsCard";
+    card.className = "card";
+    card.style.marginTop = "20px";
+    card.innerHTML = `
+      <div class="card-head"><h3>Sync</h3></div>
+      <div class="card-body">
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Run this once when you first switch the school to the new system.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" id="btnStartSetup" type="button"><span class="spinner"></span><span class="btn-label">START SETUP</span></button>
+          <button class="btn btn-outline" id="btnSyncNow" type="button"><span class="spinner"></span><span class="btn-label">Sync now</span></button>
+        </div>
+      </div>
+    `;
+    profileView.appendChild(card);
+  }
+  const setupBtn = $("btnStartSetup");
+  const syncBtn = $("btnSyncNow");
+  if (setupBtn) {
+    setupBtn.onclick = async () => {
+      setBtn(setupBtn, true);
+      if (syncBtn) syncBtn.disabled = true;
+      try {
+        await runSetup();
+      } catch {}
+      finally {
+        setBtn(setupBtn, false);
+        if (syncBtn) syncBtn.disabled = false;
+      }
+    };
+  }
+  if (syncBtn) {
+    syncBtn.onclick = async () => {
+      setBtn(syncBtn, true);
+      if (setupBtn) setupBtn.disabled = true;
+      try {
+        await runSync("all");
+      } catch {}
+      finally {
+        setBtn(syncBtn, false);
+        if (setupBtn) setupBtn.disabled = false;
+      }
+    };
+  }
 }
 
 function renderSlugSection() {
@@ -1131,6 +1235,7 @@ function renderSlugSection() {
         });
         S.school = updated;
         toast("Slug set successfully", "success");
+        runSync("school").catch(() => {});
         renderSlugSection();
       } catch (err) { $("slugErr").textContent = err.message; }
       finally { setBtn(btn, false); }
@@ -1415,6 +1520,7 @@ function renderRoster() {
           </div>
         </div>`;
       toast("Roster uploaded", "success");
+      runSync("roster").catch(() => {});
       await loadInitial();
       paintHeader();
       await loadRosterLists();
@@ -1549,6 +1655,7 @@ function renderRosterGroups() {
           if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Update failed");
         }
         toast("Roster saved", "success");
+        runSync("roster").catch(() => {});
         await loadRosterLists();
       } catch (err) {
         toast(err.message, "error", 6000);
@@ -1585,6 +1692,7 @@ function renderRosterGroups() {
         });
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Delete failed");
         toast("Student removed", "success");
+        runSync("roster").catch(() => {});
         await loadRosterLists();
       } catch (err) { toast(err.message, "error"); }
     };
@@ -1616,6 +1724,23 @@ function rosterRowHtml(r) {
 
 async function renderTeachers() {
   const list = $("teachersList");
+  const refreshBtn = $("teachersRefresh");
+  if (refreshBtn && !$("teachersSyncMembers")) {
+    const syncMembersBtn = document.createElement("button");
+    syncMembersBtn.id = "teachersSyncMembers";
+    syncMembersBtn.type = "button";
+    syncMembersBtn.className = "btn btn-outline btn-sm";
+    syncMembersBtn.innerHTML = `<span class="spinner"></span><span class="btn-label">Refresh members</span>`;
+    syncMembersBtn.onclick = async () => {
+      setBtn(syncMembersBtn, true);
+      try {
+        await runSync("members");
+        await renderTeachers();
+      } catch {}
+      finally { setBtn(syncMembersBtn, false); }
+    };
+    refreshBtn.parentNode.insertBefore(syncMembersBtn, refreshBtn);
+  }
   list.innerHTML = `<div class="card-body"><div class="skel h20 w50"></div><div class="skel h40"></div><div class="skel h40"></div></div>`;
   try {
     const data = await api(`${W.teachers}/schools/${encodeURIComponent(S.schoolId)}/teachers`);
@@ -1811,6 +1936,7 @@ function openTeacherEdit(uid) {
 
       closeModal();
       toast("Saved", "success");
+      runSync("teachers").catch(() => {});
       renderTeachers();
     } catch (err) { toast(err.message, "error", 6000); }
     finally { setBtn(btn, false); }
@@ -2424,12 +2550,13 @@ function renderReports() {
                     ${subjectList.map((name) => {
                       const sub = subjMap[name];
                       if (!sub) return `<td style="text-align:center;color:var(--muted)">—</td>`;
-                      if (isCbc) return `<td style="text-align:center">${sub.level ? esc(sub.level.label) : "—"}</td>`;
-                      return `<td style="text-align:center">${sub.pct != null ? sub.pct.toFixed(1) : "—"}${sub.grade ? ` <span class="pill ${sub.grade.grade === "A" ? "green" : sub.grade.grade === "B" ? "blue" : sub.grade.grade === "C" ? "yellow" : "red"}">${esc(sub.grade.grade)}</span>` : ""}</td>`;
+                      if (isCbc) return `<td style="text-align:center">${sub.level != null ? (typeof sub.level === "object" ? esc(sub.level.label) : esc(sub.level)) : "—"}</td>`;
+                      const g = sub.grade != null ? String(sub.grade) : "";
+                      return `<td style="text-align:center">${sub.pct != null ? sub.pct.toFixed(1) : "—"}${g ? ` <span class="pill ${g === "A" ? "green" : g === "B" ? "blue" : g === "C" ? "yellow" : "red"}">${esc(g)}</span>` : ""}</td>`;
                     }).join("")}
                     <td style="text-align:center"><b>${isCbc ? (s.rollup && s.rollup.rows && s.rollup.rows[0] ? esc(s.rollup.rows[0].label) : "—") : (s.overall && s.overall.pct != null ? s.overall.pct.toFixed(1) + "%" : "—")}</b></td>
                     <td class="actions">
-                      <button class="btn btn-outline btn-sm" data-view-card="${esc(s.rosterId)}" data-term="${esc(termId)}" type="button"><i class="fa-solid fa-file-lines"></i></button>
+                      <button class="btn btn-outline btn-sm" data-view-card="${esc(s.rosterId)}" data-term="${esc(termId)}" data-class="${esc(s.class || cls)}" type="button"><i class="fa-solid fa-file-lines"></i></button>
                     </td>
                   </tr>
                 `;
@@ -2438,7 +2565,7 @@ function renderReports() {
           </table>
         </div>
       `;
-      qa("[data-view-card]").forEach((b) => b.onclick = () => viewReportCard(b.dataset.viewCard, b.dataset.term));
+      qa("[data-view-card]").forEach((b) => b.onclick = () => viewReportCard(b.dataset.viewCard, b.dataset.term, b.dataset.class));
       $("repExport").onclick = () => exportCsv(students, subjectList, isCbc, cls, stream);
     } catch (err) {
       list.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>Couldn't load report</h3><p>${esc(err.message)}</p></div>`;
@@ -2470,7 +2597,7 @@ function exportCsv(students, subjectList, isCbc, cls, stream) {
   toast("CSV downloaded", "success");
 }
 
-async function viewReportCard(rid, termId) {
+async function viewReportCard(rid, termId, studentClass) {
   openModal({
     title: "Report Card",
     wide: "wider",
@@ -2480,9 +2607,21 @@ async function viewReportCard(rid, termId) {
   $("rcClose").onclick = closeModal;
   try {
     const token = await idToken();
-    const res = await fetch(`${W.marks}/schools/${encodeURIComponent(S.schoolId)}/reports/card/${encodeURIComponent(rid)}?termId=${encodeURIComponent(termId)}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const sid = S.schoolId;
+    const normCls = normaliseClass(studentClass || ($("repClass") && $("repClass").value));
+    const isUpper = normCls === "Senior 5" || normCls === "Senior 6";
+    const normalUrl = `${W.marks}/schools/${encodeURIComponent(sid)}/reports/student/${encodeURIComponent(rid)}/card?termId=${encodeURIComponent(termId)}`;
+    let res = null;
+    if (isUpper) {
+      res = await fetch(`${W.points}/schools/${encodeURIComponent(sid)}/points/card/${encodeURIComponent(rid)}?termId=${encodeURIComponent(termId)}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => null);
+    }
+    if (!res || !res.ok) {
+      res = await fetch(normalUrl, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    }
     if (!res.ok) throw new Error("Could not load report card");
     const html = await res.text();
     $("modalBody").innerHTML = `<iframe class="report-frame" id="rcFrame"></iframe>`;
@@ -2550,7 +2689,7 @@ function openNoteEditor(rid, student) {
     const btn = $("ntSave"); setBtn(btn, true);
     try {
       await api(`${W.marks}/schools/${encodeURIComponent(S.schoolId)}/notes`, {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           termId: S.currentTermId,
@@ -2670,7 +2809,7 @@ async function renderAudit() {
   const list = $("auditList");
   list.innerHTML = `<div class="card-body"><div class="skel h20 w50"></div><div class="skel h40"></div></div>`;
   try {
-    const data = await api(`${W.marks}/schools/${encodeURIComponent(S.schoolId)}/audit-log?limit=100`);
+    const data = await api(`${W.marks}/schools/${encodeURIComponent(S.schoolId)}/audit?limit=100`);
     const entries = data.entries || [];
     if (!entries.length) {
       list.innerHTML = `<div class="empty"><i class="fa-solid fa-clipboard-list"></i><h3>No activity yet</h3></div>`;
@@ -3000,4 +3139,4 @@ if (ledgerClassSel && ledgerClassSel.value) {
     } catch (err) { toast(err.message, "error", 6000); }
     finally { setBtn(btn, false); }
   };
-  }
+    }
