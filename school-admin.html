@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-UG">
 <head>
 <meta charset="UTF-8">
@@ -80,6 +80,7 @@
     <div class="snav-item" data-view="ledger"><i class="fa-solid fa-book"></i> Discipline Ledger</div>
     <div class="snav-item" data-view="email"><i class="fa-solid fa-envelope"></i> Bulk Email</div>
     <div class="snav-item" data-view="audit"><i class="fa-solid fa-clipboard-list"></i> Audit Log</div>
+    <div class="snav-item" data-view="sync"><i class="fa-solid fa-arrows-rotate"></i> Data Sync</div>
   </nav>
 </aside>
 
@@ -570,6 +571,25 @@
   </div>
 </section>
 
+<section class="view" data-view="sync">
+  <div class="page-head">
+    <div>
+      <h1>Data Sync</h1>
+      <p>Keep the new database and the old one in step</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <p style="margin-bottom: 16px; color: var(--muted);">START SETUP: run this once when you first switch the school to the new system. Sync now: run it any time something looks out of date.</p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+        <button class="btn btn-primary" id="syncSetupBtn" type="button">START SETUP</button>
+        <button class="btn btn-outline" id="syncAllBtn" type="button">Sync now</button>
+      </div>
+      <div id="syncStatus"></div>
+    </div>
+  </div>
+</section>
+
 </main>
 </div>
 
@@ -807,4 +827,4 @@
 <script type="module" src="admin-extras.js"></script>
 <script src="admin-note-patch.js"></script>
 </body>
-</html>
+   </html>
