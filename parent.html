@@ -601,7 +601,8 @@ async function apiError(res) {
  * ------------------------------------------------------------------ */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
+window.state = state;
+window.auth = auth;
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     location.replace("/account.html");
@@ -1290,7 +1291,7 @@ function showConsent() {
 })();
 </script>
 
-<script type="module" src="parent-extras.js"></script>
+ <script type="module" src="parent-extras.js"></script>
 
 </body>
 </html>
