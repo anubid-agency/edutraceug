@@ -558,7 +558,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
       $("ptAdd").onclick = () => { bands = read(); bands.push({ min: 0, max: 0, points: 0 }); paint(); };
       $("ptSave").onclick = async () => {
         try {
-          await apiExtras(`/schools/${sid}/points/settings`, { method: "PUT", body: { bands: read(), publishPosition: $("ptPublish").checked } }, POINTS_BASE);
+          await apiExtras(`/schools/${sid}/settings`, { method: "PUT", body: { pointsBands: read(), publishPosition: $("ptPublish").checked } }, TEACHERS_BASE);
           toast("Points table saved", "success");
         } catch (e) { toast(e.message, "error", 6000); }
       };
