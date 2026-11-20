@@ -190,6 +190,25 @@ function closeModal() {
   $("modalFoot").innerHTML = "";
 }
 
+function askColumnQuestions(data) {
+  return new Promise((resolve) => {
+    const q = (data.questions || []).map((x, i) => `
+      <div class="field"><label>${esc(x.text)}</label>
+      ${(x.options || []).map((o) => `<label class="check"><input type="radio" name="cq${i}" value="${esc(o)}"><span>${esc(o)}</span></label>`).join("")}</div>`).join("");
+    const sample = `<div class="table-wrap"><table class="tbl"><tbody>${(data.sample || []).slice(0, 6).map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    openModal({ title: "Help us read your file", body: sample + q, foot: `<button class="btn btn-outline" id="cqNo" type="button">Cancel</button><button class="btn btn-primary" id="cqYes" type="button">Continue</button>` });
+    $("cqNo").onclick = () => { closeModal(); resolve(null); };
+    $("cqYes").onclick = () => {
+      const answers = {};
+      (data.questions || []).forEach((x, i) => {
+        const c = document.querySelector(`input[name="cq${i}"]:checked`);
+        if (c) answers[x.id] = c.value;
+      });
+      closeModal(); resolve(answers);
+    };
+  });
+}
+
 class ApiError extends Error {
   constructor(message, status, body) { super(message); this.status = status; this.body = body; }
 }
@@ -249,7 +268,7 @@ async function runSync(scope, onProgress) {
   }
 }
 
-async function runSetup() {
+async function runSetup(onProgress) {
   const sid = S.schoolId;
   let cursor = null;
   toast("Syncing…", "info", 2500);
@@ -260,6 +279,7 @@ async function runSetup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cursor })
       });
+      if (typeof onProgress === "function") onProgress(data);
       if (data && data.done) break;
       cursor = data && data.cursor !== undefined ? data.cursor : null;
       if (!cursor) break;
@@ -269,6 +289,26 @@ async function runSetup() {
     toast(err.message || "Setup failed", "error", 6000);
     throw err;
   }
+}
+
+function wireSyncPage() {
+  const a = $("syncSetupBtn"), b = $("syncAllBtn"), out = $("syncStatus");
+  if (!a || !b) return;
+  const show = (data) => {
+    const steps = (data && data.steps) || {};
+    out.innerHTML = Object.keys(steps).map((k) => {
+      const s = steps[k] || {};
+      const f = (s.failures || []).slice(0, 3).map((x) => esc(typeof x === "string" ? x : JSON.stringify(x))).join("<br>");
+      return `<div style="margin-top:8px"><b>${esc(k)}</b>: ${esc(s.status || "")} · written ${s.written ?? 0} · skipped ${s.skipped ?? 0} · failed ${s.failed ?? 0}${f ? `<div style="color:var(--red);font-size:.8rem">${f}</div>` : ""}</div>`;
+    }).join("") + (data && data.done ? `<div style="margin-top:10px"><b>Done</b></div>` : "");
+  };
+  const run = async (fn) => {
+    a.disabled = true; b.disabled = true; out.innerHTML = "";
+    try { await fn(); } catch {}
+    finally { a.disabled = false; b.disabled = false; }
+  };
+  a.onclick = () => run(() => runSetup(show));
+  b.onclick = () => run(() => runSync("all", show));
 }
 
 const app = initializeApp(firebaseConfig);
@@ -299,6 +339,7 @@ onAuthStateChanged(auth, async (user) => {
     bindShell();
     initWizard();
     showView(location.hash.replace(/^#\/?/, "") || "dashboard");
+    wireSyncPage();
     maybeAutoOpenWizard();
   } catch (err) {
     console.error(err);
@@ -488,6 +529,7 @@ setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions
       const token = await idToken();
       let offset = 0, batchId = null;
       let allCreated = 0, allUpdated = 0, allUnchanged = 0, allRejected = [], processedRows = 0;
+      let pendingState = null, pendingAnswers = null;
       while (true) {
         const fd = new FormData();
         fd.append("file", studentFile);
@@ -497,9 +539,17 @@ setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions
         fd.append("recordType", "student");
         if (batchId) fd.append("batchId", batchId);
         if (offset > 0) fd.append("offset", String(offset));
+        if (pendingState) { fd.append("state", pendingState); fd.append("answers", JSON.stringify(pendingAnswers)); }
         const res = await fetch(`${W.roster}/upload-roster`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+        if (data.status === "needs_answers") {
+          const answers = await askColumnQuestions(data);
+          if (!answers) throw new Error("Upload cancelled");
+          pendingState = data.state;
+          pendingAnswers = answers;
+          continue;
+        }
         batchId = data.batchId || batchId;
         allCreated += data.created || 0;
         allUpdated += data.updated || 0;
@@ -546,6 +596,7 @@ setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions
       const token = await idToken();
       let offset = 0, batchId = null;
       let allCreated = 0, allUpdated = 0, allUnchanged = 0, allRejected = [], processedRows = 0;
+      let pendingState = null, pendingAnswers = null;
       while (true) {
         const fd = new FormData();
         fd.append("file", teacherFile);
@@ -553,9 +604,17 @@ setHtml("wzAssignClass", `<option value="">Select class</option>` + classOptions
         fd.append("recordType", "teacher");
         if (batchId) fd.append("batchId", batchId);
         if (offset > 0) fd.append("offset", String(offset));
+        if (pendingState) { fd.append("state", pendingState); fd.append("answers", JSON.stringify(pendingAnswers)); }
         const res = await fetch(`${W.roster}/upload-roster`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+        if (data.status === "needs_answers") {
+          const answers = await askColumnQuestions(data);
+          if (!answers) throw new Error("Upload cancelled");
+          pendingState = data.state;
+          pendingAnswers = answers;
+          continue;
+        }
         batchId = data.batchId || batchId;
         allCreated += data.created || 0;
         allUpdated += data.updated || 0;
@@ -955,7 +1014,7 @@ function renderWzStep8() {
 }
 
 function onWizardNext() {
-  if (WZ.step === 8) { closeWizard(); return; }
+  if (WZ.step === 8) { runSetup().catch(() => {}); closeWizard(); return; }
   if (WZ.step === 4) {
     WZ.step4Done = true;
     try {
@@ -1141,58 +1200,6 @@ function renderProfile() {
   };
 
   renderSlugSection();
-  renderSyncCard();
-}
-
-function renderSyncCard() {
-  const profileView = q('.view[data-view="profile"]');
-  if (!profileView) return;
-  let card = $("syncSettingsCard");
-  if (!card) {
-    card = document.createElement("div");
-    card.id = "syncSettingsCard";
-    card.className = "card";
-    card.style.marginTop = "20px";
-    card.innerHTML = `
-      <div class="card-head"><h3>Sync</h3></div>
-      <div class="card-body">
-        <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Run this once when you first switch the school to the new system.</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-primary" id="btnStartSetup" type="button"><span class="spinner"></span><span class="btn-label">START SETUP</span></button>
-          <button class="btn btn-outline" id="btnSyncNow" type="button"><span class="spinner"></span><span class="btn-label">Sync now</span></button>
-        </div>
-      </div>
-    `;
-    profileView.appendChild(card);
-  }
-  const setupBtn = $("btnStartSetup");
-  const syncBtn = $("btnSyncNow");
-  if (setupBtn) {
-    setupBtn.onclick = async () => {
-      setBtn(setupBtn, true);
-      if (syncBtn) syncBtn.disabled = true;
-      try {
-        await runSetup();
-      } catch {}
-      finally {
-        setBtn(setupBtn, false);
-        if (syncBtn) syncBtn.disabled = false;
-      }
-    };
-  }
-  if (syncBtn) {
-    syncBtn.onclick = async () => {
-      setBtn(syncBtn, true);
-      if (setupBtn) setupBtn.disabled = true;
-      try {
-        await runSync("all");
-      } catch {}
-      finally {
-        setBtn(syncBtn, false);
-        if (setupBtn) setupBtn.disabled = false;
-      }
-    };
-  }
 }
 
 function renderSlugSection() {
@@ -1471,6 +1478,7 @@ function renderRoster() {
       let allCreated = 0, allUpdated = 0, allUnchanged = 0;
       const allRejected = [];
       let processedRows = 0;
+      let pendingState = null, pendingAnswers = null;
 
       while (true) {
         const fd = new FormData();
@@ -1481,6 +1489,7 @@ function renderRoster() {
         fd.append("recordType", recordType);
         if (batchId) fd.append("batchId", batchId);
         if (offset > 0) fd.append("offset", String(offset));
+        if (pendingState) { fd.append("state", pendingState); fd.append("answers", JSON.stringify(pendingAnswers)); }
 
         const res = await fetch(`${W.roster}/upload-roster`, {
           method: "POST",
@@ -1489,6 +1498,13 @@ function renderRoster() {
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+        if (data.status === "needs_answers") {
+          const answers = await askColumnQuestions(data);
+          if (!answers) throw new Error("Upload cancelled");
+          pendingState = data.state;
+          pendingAnswers = answers;
+          continue;
+        }
 
         batchId = data.batchId || batchId;
         allCreated += data.created || 0;
@@ -1543,11 +1559,12 @@ async function loadRosterLists() {
     const res = await fetch(`${W.roster}/roster/list`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ schoolId: S.schoolId })
+      body: JSON.stringify({ schoolId: S.schoolId, limit: 200 })
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Failed to load roster");
     const data = await res.json();
     RS.rows = data.rows || [];
+    RS.nextCursor = data.nextCursor || null;
     RS.original.clear();
     RS.rows.forEach((r) => RS.original.set(r.id, { ...r }));
     renderRosterGroups();
@@ -1697,6 +1714,22 @@ function renderRosterGroups() {
       } catch (err) { toast(err.message, "error"); }
     };
   });
+
+  if (RS.nextCursor) {
+    el.insertAdjacentHTML("beforeend", `<div style="text-align:center;margin-top:14px"><button class="btn btn-outline" id="rsLoadMore" type="button">Load more</button></div>`);
+    $("rsLoadMore").onclick = async () => {
+      const token = await idToken();
+      const res = await fetch(`${W.roster}/roster/list`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ schoolId: S.schoolId, limit: 200, cursor: RS.nextCursor })
+      });
+      const d = await res.json();
+      (d.rows || []).forEach((r) => { RS.rows.push(r); RS.original.set(r.id, { ...r }); });
+      RS.nextCursor = d.nextCursor || null;
+      renderRosterGroups();
+    };
+  }
 }
 
 function rosterRowHtml(r) {
