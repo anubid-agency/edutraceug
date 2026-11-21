@@ -309,6 +309,16 @@ function wireSyncPage() {
   };
   a.onclick = () => run(() => runSetup(show));
   b.onclick = () => run(() => runSync("all", show));
+  const c = $("syncRebuildBtn");
+  if (c) c.onclick = async () => {
+    c.disabled = true; out.innerHTML = "Rebuilding…";
+    try {
+      const d = await api(`${W.marks}/schools/${encodeURIComponent(S.schoolId)}/rebuild-summaries`, { method: "POST" });
+      out.innerHTML = `<b>Done</b> · ${esc(String(d.subjectGroups))} subject groups, ${esc(String(d.classes))} classes`;
+    } catch (err) {
+      out.innerHTML = `<span style="color:var(--red)">${esc(err.message)}</span>`;
+    } finally { c.disabled = false; }
+  };
 }
 
 const app = initializeApp(firebaseConfig);
@@ -3172,4 +3182,4 @@ if (ledgerClassSel && ledgerClassSel.value) {
     } catch (err) { toast(err.message, "error", 6000); }
     finally { setBtn(btn, false); }
   };
-    }
+          }
